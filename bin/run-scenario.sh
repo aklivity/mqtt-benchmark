@@ -10,7 +10,7 @@
 #              2. PUBLISHERS emqtt-bench publishers connect; each publishes once every PUBLISH_INTERVAL_MS.
 #              3. After WARMUP_S, it measures for DURATION_S: messages sent, records written to Kafka, messages
 #                 received by subscribers, end-to-end latency, publish response time (bin/puback-probe.py on
-#                 PROBE_CONNECTIONS extra connections), and broker/Kafka host CPU and memory.
+#                 PROBE_CONNECTIONS extra connections, at the scenario's QOS), and broker/Kafka host CPU and memory.
 #
 # Clients are spread over the client hosts. PLACEMENT=split gives each host an equal share and its own range of
 # client numbers (so subscriber N and publisher N, which use topic device/N, run on the same host);
@@ -151,7 +151,7 @@ log "warm-up ${WARMUP_S}s"; sleep "$WARMUP_S"
 
 # --- measure ---------------------------------------------------------------------------------------------
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
-  on "${CLIENTS[0]}" "nohup python3 /opt/mqtt-benchmark/puback-probe.py $BROKER_IP $MQTT_PORT $PROBE_CONNECTIONS $DURATION_S $RUN_ID $PAYLOAD_BYTES \
+  on "${CLIENTS[0]}" "nohup python3 /opt/mqtt-benchmark/puback-probe.py $BROKER_IP $MQTT_PORT $PROBE_CONNECTIONS $DURATION_S $RUN_ID $PAYLOAD_BYTES $QOS \
     < /dev/null > /tmp/probe-$RUN_ID.json 2>/tmp/probe-$RUN_ID.err &"
 fi
 T0=$(date +%s); K0=$(offsets); snapshot t0; emqx_action t0
