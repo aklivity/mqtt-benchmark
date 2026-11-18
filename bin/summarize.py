@@ -116,6 +116,7 @@ else:
     except Exception:
         probe = {}
     probe_msgs = probe.get('acked', 0) or 0
+    PCT = ('avg_ms', 'p50_ms', 'p90_ms', 'p99_ms', 'p999_ms', 'max_ms')
     kafka_records = values['k1'] - values['k0'] - probe_msgs
     deliveries = num('DELIVERIES_PER_MSG', 1)
     recv = delta('sub', 'recv')
@@ -137,8 +138,12 @@ else:
         # received vs what the publishers sent in the same window, times subscribers per message (1,000 for fan-out)
         'delivery_pct': round(100 * recv / (sent * deliveries), 2) if sent and num('SUBSCRIBERS') else None,
         'e2e_latency': histogram('sub', 'e2e_latency'),
-        'publish_response_ms': {k: probe.get(k) for k in ('avg_ms', 'p50_ms', 'p90_ms', 'p99_ms', 'p999_ms', 'max_ms')} if probe else None,
-        'probe': {k: probe.get(k) for k in ('connections', 'sent', 'acked', 'timed_out', 'connect_failed', 'disconnected')} if probe else None,
+        # QoS 1: PUBLISH -> PUBACK. QoS 2: PUBLISH -> PUBCOMP (the whole exchange), and PUBLISH -> PUBREC separately.
+        'publish_response_ms': {k: probe.get(k) for k in PCT} if probe else None,
+        'publish_to_pubrec_ms': {k: probe['pubrec'].get(k) for k in PCT} if probe.get('pubrec') else None,
+        'probe': {k: probe.get(k, 1 if k == 'qos' else None)
+                  for k in ('qos', 'connections', 'sent', 'acked', 'timed_out', 'connect_failed', 'disconnected')}
+        if probe else None,
     })
 
 

@@ -210,11 +210,12 @@
         path: /opt/mqtt-benchmark
         state: directory
         mode: "0755"
-    - name: Publish response time probe
+    - name: Publish response time probe and QoS 2 delivery check client
       ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../../bin/puback-probe.py"
-        dest: /opt/mqtt-benchmark/puback-probe.py
+        src: "{{ playbook_dir }}/../../bin/{{ item }}"
+        dest: "/opt/mqtt-benchmark/{{ item }}"
         mode: "0755"
+      loop: [puback-probe.py, qos2-delivery.py]
 
 - name: Prometheus and Grafana
   hosts: monitor

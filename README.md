@@ -18,11 +18,25 @@ with the same clients, Kafka and hosts.
 | `basic-p2p-1k` | Basic Set | 1,000 publisher/subscriber pairs, one topic per pair, 1,000 msg/s in and out, QoS 1, 16 B |
 | `basic-sharedsub-1k-5` | Basic Set | 1,000 publishers, 5 subscribers in one shared subscription group, MQTT 5, QoS 1, 16 B. Needs shared subscription support in Zilla's mqtt-kafka proxy, which isn't available yet. |
 | `smoke-1k` | | 1,000 publishers for 2 minutes, to check a new environment |
+| `*-q2` | | QoS 2 versions of `smoke-1k`, `basic-p2p-1k`, `basic-fanout-1-1k` (QoS 2 publishers and subscribers) and `emqx-kafka-100k` (see [QoS 2](#qos-2)) |
 
 All scenarios use MQTT 3.1.1 (except shared subscriptions, which need MQTT 5), keep alive 300 s and clean session,
 as the suite specifies. Subscribers connect and subscribe before any publisher connects. The Basic Set scenarios run
 for 30 minutes; the suite doesn't fix connection rates for the fan-out, point-to-point and shared subscription
 cases, so those use 500/s. Through Zilla, every message is written to Kafka and subscribers are served from Kafka.
+
+### QoS 2
+
+The `*-q2` scenarios run the same load with every publish a full QoS 2 exchange (PUBLISH, PUBREC, PUBREL, PUBCOMP),
+and `QOS=2 bin/verify-delivery.sh` checks exactly-once delivery into Kafka. Neither EMQ's benchmark nor the Open MQTT
+Benchmark Suite's Basic Set defines a QoS 2 case, so there are no published numbers to compare with.
+
+- **Zilla version.** Zilla up to 2.7.2-rc1 stops its engine on the first QoS 2 PUBLISH
+  ([aklivity/zilla#3303](https://github.com/aklivity/zilla/issues/3303)). Deploy a build that includes the fix
+  ([aklivity/zilla#3309](https://github.com/aklivity/zilla/pull/3309)) with `-e zilla_image=<image>`.
+- **One exchange in flight per connection.** The scenarios keep `INFLIGHT=1`: each client finishes PUBCOMP before
+  its next PUBLISH. With several QoS 2 PUBLISHes in flight on one connection, Zilla's mqtt-kafka proxy stops its
+  engine (noted in aklivity/zilla#3309), so the delivery check and the probe also keep one exchange in flight.
 
 ## Infrastructure
 
@@ -65,6 +79,11 @@ pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark
    bin/run-scenario.sh scenarios/smoke-1k.env
    bin/verify-delivery.sh
    ```
+   For QoS 2 runs, also check the QoS 2 path:
+   ```bash
+   bin/run-scenario.sh scenarios/smoke-1k-q2.env
+   QOS=2 bin/verify-delivery.sh
+   ```
 4. **Run the benchmark.** Re-run the deploy step first so Kafka and the broker start empty. The runner reads which
    broker is deployed (and its MQTT port: Zilla 7183, EMQX 1883) from the broker host.
    ```bash
@@ -89,9 +108,9 @@ pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark
 | Messages sent | emqtt-bench `pub`. It counts messages sent, not PUBACKs, so it is not a delivery measure. |
 | Messages received | emqtt-bench subscribers' `recv`; `delivery_pct` compares it with the messages the publishers sent in the same window, times the deliveries per message (1,000 for fan-out) |
 | End-to-end latency | emqtt-bench's publisher timestamp in each message (`--payload-hdrs ts`) against the subscriber's clock. Every host syncs to the Amazon Time Sync Service; point-to-point pairs run on the same host. Percentiles are bucket bounds (1, 5, 10, 25, 50, 100 ms ...), the average is exact. The 8-byte timestamp is part of the payload: publishers send `PAYLOAD_BYTES - 8` bytes plus the timestamp, so the size on the wire matches the scenario. Scenarios without subscribers send no timestamp. |
-| Publish response time | `bin/puback-probe.py`: extra connections that publish once per second at QoS 1 and time each PUBLISH-to-PUBACK round trip (avg, p50, p90, p99, p99.9, max). emqtt-bench doesn't report this. |
+| Publish response time | `bin/puback-probe.py`: extra connections that publish once per second at the scenario's QoS and time each publish until the broker completes it (avg, p50, p90, p99, p99.9, max): PUBLISH to PUBACK at QoS 1; at QoS 2, PUBLISH to PUBCOMP (`publish_response_ms`) and PUBLISH to PUBREC (`publish_to_pubrec_ms`). emqtt-bench doesn't report this. |
 | CPU and memory | node_exporter on the broker and Kafka hosts, averaged over the window in Prometheus |
-| Delivery | `bin/verify-delivery.sh`: 20,000 numbered QoS 1 messages; PUBACK count = Kafka records with those keys, no duplicates. It scans the whole topic, so run it after a fresh deploy or the smoke scenario, not after a full-size run. |
+| Delivery | `bin/verify-delivery.sh`: 20,000 numbered QoS 1 messages; PUBACK count = Kafka records with those keys, no duplicates. `QOS=2`: 20,000 numbered QoS 2 messages (PUBCOMP count = Kafka records, no duplicates), plus 60 QoS 2 exchanges interrupted by a dropped connection after PUBREC, before PUBREC or after PUBREL and resumed on reconnect (`bin/qos2-delivery.py`), each of which must be in Kafka exactly once. It scans the whole topic, so run it after a fresh deploy or the smoke scenario, not after a full-size run. |
 | Stability | Broker container restarts; Zilla `AgentTerminationException` lines, or EMQX log lines at error level or above |
 | EMQX Kafka action (EMQX only) | EMQX's own `matched`, `success`, `failed` and `dropped` counters for the Kafka action over the window, read from its REST API, as EMQ compared them with the Kafka offsets |
 
@@ -129,8 +148,9 @@ Use [docs/disclosure-report-template.md](docs/disclosure-report-template.md) for
 scenarios/            scenario definitions (.env)
 bin/run-scenario.sh   runs a scenario on the provisioned hosts and writes results/<run-id>/
 bin/summarize.py      turns a run's metric snapshots into summary.json
-bin/puback-probe.py   publish response time probe (runs on a load generator)
-bin/verify-delivery.sh exact PUBACK-to-Kafka delivery check
+bin/puback-probe.py   publish response time probe, QoS 1 or 2 (runs on a load generator)
+bin/verify-delivery.sh exact delivery check into Kafka, QoS 1 or 2
+bin/qos2-delivery.py  QoS 2 publishers for the delivery check (runs on a load generator)
 deploy/terraform/     AWS: VPC, placement group, broker host, Kafka, load generators, monitoring host
 deploy/ansible/       Docker, kernel tuning, Kafka, Zilla or EMQX, emqtt-bench, Prometheus, Grafana
 docs/                 disclosure report template
