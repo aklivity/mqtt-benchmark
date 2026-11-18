@@ -1,0 +1,14 @@
+# Terraform
+deploy/terraform/.terraform/
+deploy/terraform/.terraform.lock.hcl
+deploy/terraform/*.tfstate
+deploy/terraform/*.tfstate.*
+deploy/terraform/terraform.tfvars
+deploy/inventory.ini
+
+# Raw run output (publish summaries and disclosure reports under docs/ instead)
+results/
+
+# Python / OS
+__pycache__/
+.DS_Store

@@ -1,0 +1,246 @@
+# Installs and starts everything on the hosts from deploy/inventory.ini (written by Terraform).
+#   cd deploy/ansible && ansible-playbook deploy.yaml
+# Re-running it restarts Kafka and the broker from scratch (Kafka data is wiped), so every run starts from the same state.
+# Broker under test: `broker` in group_vars/all.yaml, or `ansible-playbook deploy.yaml -e broker=emqx`.
+---
+- name: Kernel tuning, Docker and node_exporter on every host
+  hosts: all
+  become: true
+  gather_facts: false   # new instances may not accept SSH yet; facts are gathered once they do
+  tasks:
+    - name: Wait for SSH on new instances
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+    - name: Gather facts
+      ansible.builtin.setup:
+    - name: Install Docker and tools
+      ansible.builtin.apt:
+        name: [docker.io, python3, curl, jq, xfsprogs, chrony]
+        update_cache: true
+    # End-to-end latency compares the publisher's timestamp with the subscriber's clock, and fan-out subscribers
+    # run on other hosts than the publisher: sync every host to the Amazon Time Sync Service.
+    - name: Clock sync to Amazon Time Sync
+      ansible.builtin.lineinfile:
+        path: /etc/chrony/chrony.conf
+        line: "server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4"
+        insertbefore: BOF
+    - name: Restart chrony
+      ansible.builtin.service:
+        name: chrony
+        state: restarted
+    - name: Kernel settings
+      ansible.builtin.copy:
+        src: files/99-mqtt-benchmark.conf
+        dest: /etc/sysctl.d/99-mqtt-benchmark.conf
+        mode: "0644"
+    - name: Load conntrack so its settings apply
+      ansible.builtin.command: modprobe nf_conntrack
+      changed_when: false
+    - name: Apply kernel settings
+      ansible.builtin.command: sysctl -e -p /etc/sysctl.d/99-mqtt-benchmark.conf
+      changed_when: false
+    - name: Open file limits
+      ansible.builtin.copy:
+        dest: /etc/security/limits.d/99-mqtt-benchmark.conf
+        content: |
+          * soft nofile 1048576
+          * hard nofile 1048576
+        mode: "0644"
+    - name: Let ubuntu use Docker
+      ansible.builtin.user:
+        name: ubuntu
+        groups: docker
+        append: true
+    - name: node_exporter
+      ansible.builtin.shell: |
+        docker rm -f node-exporter >/dev/null 2>&1 || true
+        docker run -d --name node-exporter --restart unless-stopped --network host --pid host \
+          -v /:/host:ro,rslave {{ node_exporter_image }} --path.rootfs=/host
+
+- name: Kafka (single broker, KRaft)
+  hosts: kafka
+  become: true
+  tasks:
+    - name: Format and mount the data volume at /data
+      ansible.builtin.shell: |
+        set -e
+        mountpoint -q /data && exit 0
+        DEV=$(lsblk -dpno NAME,TYPE | awk '$2=="disk" {print $1}' | while read -r d; do
+          [ -z "$(lsblk -no MOUNTPOINT "$d" | tr -d '[:space:]')" ] && [ "$(lsblk -no NAME "$d" | wc -l)" -eq 1 ] && echo "$d"; done | head -1)
+        [ -n "$DEV" ] || { echo "no unused data disk found"; exit 1; }
+        blkid "$DEV" >/dev/null || mkfs.xfs "$DEV"
+        mkdir -p /data
+        echo "UUID=$(blkid -s UUID -o value "$DEV") /data xfs defaults,noatime 0 2" >> /etc/fstab
+        mount /data
+    - name: Start Kafka with an empty log directory
+      ansible.builtin.shell: |
+        docker rm -f kafka >/dev/null 2>&1 || true
+        rm -rf /data/kafka && mkdir -p /data/kafka && chown 1000:1000 /data/kafka
+        docker run -d --name kafka --network host --ulimit nofile=1048576:1048576 \
+          -v /data/kafka:/var/lib/kafka/data \
+          -e KAFKA_NODE_ID=1 -e KAFKA_PROCESS_ROLES=broker,controller \
+          -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093 \
+          -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{ private_ip }}:9092 \
+          -e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+          -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT \
+          -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 \
+          -e KAFKA_LOG_DIRS=/var/lib/kafka/data \
+          -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+          -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
+          -e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 \
+          -e KAFKA_NUM_NETWORK_THREADS=8 -e KAFKA_NUM_IO_THREADS=16 \
+          -e KAFKA_AUTO_CREATE_TOPICS_ENABLE=false \
+          -e KAFKA_HEAP_OPTS="{{ kafka_heap }}" \
+          {{ kafka_image }}
+    - name: Wait for the broker
+      ansible.builtin.shell: docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+      register: kafka_ready
+      until: kafka_ready.rc == 0
+      retries: 30
+      delay: 2
+      changed_when: false
+    - name: Create topics
+      ansible.builtin.command: >
+        docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --if-not-exists
+        --topic {{ item.name }} --partitions {{ item.partitions }} --replication-factor {{ kafka_replication }}
+        --config {{ item.config | join(' --config ') }}
+      loop: "{{ kafka_topics }}"
+
+- name: Broker (Zilla or EMQX, set by `broker` in group_vars/all.yaml or -e broker=emqx)
+  hosts: broker
+  become: true
+  pre_tasks:
+    - name: Unknown broker
+      ansible.builtin.fail:
+        msg: "broker must be zilla or emqx, not {{ broker }}"
+      when: broker not in ['zilla', 'emqx']
+    - name: Config directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop: [/etc/zilla, /etc/emqx, /opt/mqtt-benchmark]
+    - name: Remove both brokers, so only the one under test runs and it starts empty
+      ansible.builtin.shell: docker rm -f zilla emqx >/dev/null 2>&1 || true
+      changed_when: true
+    # bin/run-scenario.sh reads this to know which broker it is measuring and on which port
+    - name: Record the broker under test
+      ansible.builtin.copy:
+        dest: /opt/mqtt-benchmark/broker.env
+        content: |
+          BROKER={{ broker }}
+          MQTT_PORT={{ mqtt_port[broker] }}
+        mode: "0644"
+  tasks:
+    - name: Zilla
+      when: broker == 'zilla'
+      block:
+        - name: Zilla configuration
+          ansible.builtin.template:
+            src: templates/zilla.yaml.j2
+            dest: /etc/zilla/zilla.yaml
+            mode: "0644"
+        - name: Start Zilla with an empty engine directory
+          ansible.builtin.shell: |
+            docker pull {{ zilla_image }} >/dev/null
+            docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
+              -v /etc/zilla:/etc/zilla:ro \
+              -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
+              -e ZILLA_INCUBATOR_ENABLED=true \
+              {{ zilla_image }} start -e -w {{ zilla_workers }}
+        # rc 0: ENGINE_STARTED logged; rc 2: the container exited (stop retrying and show its log); rc 1: not yet
+        - name: Wait for ENGINE_STARTED
+          ansible.builtin.shell: |
+            state=$(docker inspect zilla --format '{{ '{{' }}.State.Status{{ '}}' }}')
+            if [ "$state" != running ]; then echo "zilla is $state"; docker logs --tail 40 zilla 2>&1; exit 2; fi
+            docker logs zilla 2>&1 | grep -q ENGINE_STARTED
+          register: zilla_ready
+          until: zilla_ready.rc in [0, 2]
+          retries: 60
+          delay: 2
+          changed_when: false
+          failed_when: zilla_ready.rc != 0
+
+    - name: EMQX
+      when: broker == 'emqx'
+      block:
+        # The REST API (port 18083, reachable only inside the VPC) is used by bin/run-scenario.sh to read the Kafka
+        # action's counters. The key is regenerated on every deploy.
+        - name: EMQX API key
+          ansible.builtin.copy:
+            dest: /etc/emqx/api-keys.txt
+            content: "bench:{{ lookup('ansible.builtin.password', '/dev/null', length=32, chars=['ascii_letters', 'digits']) }}:administrator\n"
+            mode: "0644"
+        - name: EMQX configuration (Kafka connector, action and rule)
+          ansible.builtin.template:
+            src: templates/emqx.hocon.j2
+            dest: /etc/emqx/base.hocon
+            mode: "0644"
+        - name: Start EMQX
+          ansible.builtin.shell: |
+            docker pull {{ emqx_image }} >/dev/null
+            docker run -d --name emqx --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
+              -v /etc/emqx/base.hocon:/opt/emqx/etc/base.hocon:ro \
+              -v /etc/emqx/api-keys.txt:/opt/emqx/etc/api-keys.txt:ro \
+              {{ emqx_image }}
+        # rc 0: the Kafka action is connected; rc 2: the container exited; rc 1: not yet
+        - name: Wait for EMQX and its Kafka action
+          ansible.builtin.shell: |
+            state=$(docker inspect emqx --format '{{ '{{' }}.State.Status{{ '}}' }}')
+            if [ "$state" != running ]; then echo "emqx is $state"; docker logs --tail 40 emqx 2>&1; exit 2; fi
+            key=$(cut -d: -f1,2 /etc/emqx/api-keys.txt)
+            curl -sf -u "$key" localhost:18083/api/v5/actions/kafka_producer:devices | grep -Eq '"status" *: *"connected"'
+          register: emqx_ready
+          until: emqx_ready.rc in [0, 2]
+          retries: 60
+          delay: 2
+          changed_when: false
+          failed_when: emqx_ready.rc != 0
+
+- name: Load generators
+  hosts: clients
+  become: true
+  tasks:
+    - name: Pull client images
+      ansible.builtin.command: docker pull {{ item }}
+      loop: ["{{ bench_image }}", "{{ mosquitto_image }}", "{{ kafkacat_image }}"]
+      changed_when: false
+    - name: Probe directory
+      ansible.builtin.file:
+        path: /opt/mqtt-benchmark
+        state: directory
+        mode: "0755"
+    - name: Publish response time probe
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../bin/puback-probe.py"
+        dest: /opt/mqtt-benchmark/puback-probe.py
+        mode: "0755"
+
+- name: Prometheus and Grafana
+  hosts: monitor
+  become: true
+  tasks:
+    - name: Config directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop: [/etc/prometheus, /etc/grafana/provisioning/datasources]
+    - name: Prometheus configuration
+      ansible.builtin.template:
+        src: templates/prometheus.yml.j2
+        dest: /etc/prometheus/prometheus.yml
+        mode: "0644"
+    - name: Grafana datasource
+      ansible.builtin.copy:
+        src: files/grafana-datasource.yaml
+        dest: /etc/grafana/provisioning/datasources/prometheus.yaml
+        mode: "0644"
+    - name: Start Prometheus and Grafana
+      ansible.builtin.shell: |
+        docker rm -f prometheus grafana >/dev/null 2>&1 || true
+        docker run -d --name prometheus --restart unless-stopped --network host \
+          -v /etc/prometheus:/etc/prometheus:ro {{ prometheus_image }} \
+          --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.time=15d
+        docker run -d --name grafana --restart unless-stopped --network host \
+          -v /etc/grafana/provisioning:/etc/grafana/provisioning:ro {{ grafana_image }}

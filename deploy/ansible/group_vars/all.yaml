@@ -1,0 +1,31 @@
+# Broker under test: zilla or emqx (override with `ansible-playbook deploy.yaml -e broker=emqx`)
+broker: zilla
+
+# Versions under test. Pin a release tag or an image digest for any result you publish.
+# EMQX 6.x ships a free single-node Community License (10M sessions) that includes the Kafka integration. The
+# version in EMQ's benchmark, Enterprise 5.1.0, ships a trial license limited to 100 connections.
+emqx_image: emqx/emqx:6.3.3@sha256:54778dba62a5cbcb03ca381c9bceb3d8a87cab9e3da155ed3607d994454df900
+zilla_image: ghcr.io/aklivity/zilla:2.7.2-rc1@sha256:0dce0a7df4cb362454465cd7d4c129b307a2a251069256d7280046089926b0fb
+kafka_image: apache/kafka:4.1.1
+bench_image: emqx/emqtt-bench:0.6.3
+mosquitto_image: eclipse-mosquitto:2.0
+kafkacat_image: confluentinc/cp-kafkacat:7.1.9
+node_exporter_image: prom/node-exporter:v1.8.2
+prometheus_image: prom/prometheus:v2.54.1
+grafana_image: grafana/grafana:11.2.0
+
+mqtt_port: { zilla: 7183, emqx: 1883 }
+# Zilla engine workers. Not left to the default (one per vCPU): Zilla 2.7.2-rc1 fails to start with exactly
+# 32 workers ("affinity mask must specify at least one bit"), which is the default on a 32-vCPU c6i.8xlarge.
+zilla_workers: 31
+# "no" keeps a crashed broker down so the run shows it; set "unless-stopped" for soak tests
+broker_restart: "no"
+
+kafka_heap: "-Xms8g -Xmx8g"
+# mqtt-devices keeps 15 minutes: at 100K msg/s that bounds Kafka's and Zilla's cached copy to about 90 GB each
+kafka_topics:
+  - { name: mqtt-devices,  partitions: 16, config: ["cleanup.policy=delete", "retention.ms=900000"] }
+  - { name: mqtt-messages, partitions: 16, config: ["cleanup.policy=delete"] }
+  - { name: mqtt-retained, partitions: 1,  config: ["cleanup.policy=compact"] }
+  - { name: mqtt-sessions, partitions: 1,  config: ["cleanup.policy=compact"] }
+kafka_replication: 1

@@ -1,0 +1,28 @@
+# EMQX for the EMQX-to-Kafka comparison, as in EMQ's benchmark: one rule forwards every message published on device/#
+# to the Kafka topic mqtt-devices. Everything not set here is an EMQX default, including the Kafka producer settings
+# (async, memory buffer, max_inflight 10, required_acks all_isr, no compression).
+#
+# This file replaces the image's etc/base.hocon, so it repeats the dashboard listener defined there.
+dashboard.listeners.http.bind = 18083
+api_key.bootstrap_file = "/opt/emqx/etc/api-keys.txt"
+
+connectors.kafka_producer.kafka {
+  bootstrap_hosts = "{{ hostvars[groups['kafka'][0]].private_ip }}:9092"
+  authentication = none
+}
+
+actions.kafka_producer.devices {
+  connector = kafka
+  parameters {
+    topic = "mqtt-devices"
+    # Same key and value as Zilla's mqtt-kafka proxy writes: the MQTT topic as key, the payload as value.
+    # key_dispatch hashes the key to a partition, like Zilla (EMQX's default is random).
+    message { key = "${topic}", value = "${payload}" }
+    partition_strategy = key_dispatch
+  }
+}
+
+rule_engine.rules.devices_to_kafka {
+  sql = "SELECT * FROM \"device/#\""
+  actions = ["kafka_producer:devices"]
+}

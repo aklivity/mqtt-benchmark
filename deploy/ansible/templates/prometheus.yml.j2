@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: node
+    static_configs:
+{% for group in ['broker', 'kafka', 'clients', 'monitor'] %}
+{% for host in groups[group] %}
+      - targets: ["{{ hostvars[host].private_ip }}:9100"]
+        labels: { role: "{{ 'client' if group == 'clients' else group }}", host: "{{ host }}" }
+{% endfor %}
+{% endfor %}
+
+  # emqtt-bench exposes its counters while a run is in progress: publishers/conn on 8080, subscribers on 8081
+  - job_name: emqtt-bench
+    static_configs:
+{% for host in groups['clients'] %}
+      - targets: ["{{ hostvars[host].private_ip }}:8080", "{{ hostvars[host].private_ip }}:8081"]
+        labels: { host: "{{ host }}" }
+{% endfor %}
