@@ -28,3 +28,6 @@ results/
 # Python / OS
 __pycache__/
 .DS_Store
+
+# saved Terraform plans can carry sensitive values
+tfplan
