@@ -5,6 +5,22 @@ deploy/terraform/*.tfstate
 deploy/terraform/*.tfstate.*
 deploy/terraform/terraform.tfvars
 deploy/inventory.ini
+deploy/inventory-private.ini
+deploy/terraform-controller/.terraform/
+deploy/terraform-controller/.terraform.lock.hcl
+deploy/terraform-controller/*.tfstate
+deploy/terraform-controller/*.tfstate.*
+deploy/terraform-controller/terraform.tfvars
+*.tfplan
+
+# SSH private keys (the benchmark's key lives in ~/.ssh; these catch a copy made next to the repo)
+*.pem
+id_ed25519*
+/mqtt-benchmark
+/mqtt-benchmark.pub
+
+# Zilla image archives for bin/aws/zilla-image.sh
+zilla-image*.tar*
 
 # Raw run output (publish summaries and disclosure reports under docs/ instead)
 results/

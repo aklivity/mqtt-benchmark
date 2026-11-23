@@ -1,0 +1,11 @@
+# Copy to terraform.tfvars (git-ignored) and fill in. Apply with credentials that may create IAM roles.
+owner                = "your-name"
+region               = "us-east-1"
+bucket_name          = "mqtt-benchmark-your-name-1234"      # globally unique
+
+# From `terraform output network` in deploy/terraform
+subnet_id            = "subnet-0123456789abcdef0"
+security_group_id    = "sg-0123456789abcdef0"
+
+ssh_private_key_file = "~/.ssh/mqtt-benchmark"
+# max_lifetime_minutes = 300

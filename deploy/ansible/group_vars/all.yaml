@@ -15,14 +15,23 @@ prometheus_image: prom/prometheus:v2.54.1
 grafana_image: grafana/grafana:11.2.0
 
 mqtt_port: { zilla: 7183, emqx: 1883 }
+# true after bin/aws/zilla-image.sh loaded zilla_image onto the broker host: skips the docker pull
+zilla_image_loaded: false
+# true: GC log and a continuous Flight Recorder recording of Zilla under /var/log/zilla on the broker host
+# (bin/run-scenario.sh with DIAG=1 collects them)
+zilla_diagnostics: false
 # "no" keeps a crashed broker down so the run shows it; set "unless-stopped" for soak tests
 broker_restart: "no"
 
 kafka_heap: "-Xms8g -Xmx8g"
+mqtt_devices_partitions: 16
+mqtt_messages_partitions: 16
+mqtt_sessions_partitions: 1
+mqtt_retained_partitions: 1
 # mqtt-devices keeps 15 minutes: at 100K msg/s that bounds Kafka's and Zilla's cached copy to about 90 GB each
 kafka_topics:
-  - { name: mqtt-devices,  partitions: 16, config: ["cleanup.policy=delete", "retention.ms=900000"] }
-  - { name: mqtt-messages, partitions: 16, config: ["cleanup.policy=delete"] }
-  - { name: mqtt-retained, partitions: 1,  config: ["cleanup.policy=compact"] }
-  - { name: mqtt-sessions, partitions: 1,  config: ["cleanup.policy=compact"] }
+  - { name: mqtt-devices,  partitions: "{{ mqtt_devices_partitions }}",  config: ["cleanup.policy=delete", "retention.ms=900000"] }
+  - { name: mqtt-messages, partitions: "{{ mqtt_messages_partitions }}", config: ["cleanup.policy=delete"] }
+  - { name: mqtt-retained, partitions: "{{ mqtt_retained_partitions }}", config: ["cleanup.policy=compact"] }
+  - { name: mqtt-sessions, partitions: "{{ mqtt_sessions_partitions }}", config: ["cleanup.policy=compact"] }
 kafka_replication: 1

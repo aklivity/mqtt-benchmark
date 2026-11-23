@@ -106,6 +106,12 @@ locals {
     vpc_security_group_ids = [aws_security_group.bench.id]
     key_name               = aws_key_pair.bench.key_name
   }
+  # Hard stop for forgotten environments: a shutdown from inside the instance terminates it (see
+  # instance_initiated_shutdown_behavior on every instance), whatever happens to the operator's session.
+  shutdown_guard = <<-EOT
+    #!/bin/bash
+    shutdown -h +${var.max_lifetime_minutes}
+  EOT
 }
 
 resource "aws_instance" "broker" {
@@ -115,6 +121,10 @@ resource "aws_instance" "broker" {
   vpc_security_group_ids = local.common.vpc_security_group_ids
   key_name               = local.common.key_name
   placement_group        = aws_placement_group.bench.id
+
+  instance_initiated_shutdown_behavior = "terminate"
+  user_data                            = local.shutdown_guard
+
   # The broker host (Zilla or EMQX). Zilla caches the Kafka topics it bootstraps (including mqtt-devices) under
   # /var/run/zilla: at 100K msg/s of 1 KB that's about 360 GB per hour, so give it room and throughput (topic
   # retention keeps it bounded). EMQX keeps nothing on disk in this setup.
@@ -137,6 +147,10 @@ resource "aws_instance" "kafka" {
   vpc_security_group_ids = local.common.vpc_security_group_ids
   key_name               = local.common.key_name
   placement_group        = aws_placement_group.bench.id
+
+  instance_initiated_shutdown_behavior = "terminate"
+  user_data                            = local.shutdown_guard
+
   root_block_device {
     volume_size = 50
     volume_type = "gp3"
@@ -163,6 +177,10 @@ resource "aws_instance" "client" {
   vpc_security_group_ids = local.common.vpc_security_group_ids
   key_name               = local.common.key_name
   placement_group        = aws_placement_group.bench.id
+
+  instance_initiated_shutdown_behavior = "terminate"
+  user_data                            = local.shutdown_guard
+
   root_block_device {
     volume_size = 30
     volume_type = "gp3"
@@ -179,6 +197,10 @@ resource "aws_instance" "monitor" {
   subnet_id              = local.common.subnet_id
   vpc_security_group_ids = local.common.vpc_security_group_ids
   key_name               = local.common.key_name
+
+  instance_initiated_shutdown_behavior = "terminate"
+  user_data                            = local.shutdown_guard
+
   root_block_device {
     volume_size = 50
     volume_type = "gp3"
@@ -189,10 +211,23 @@ resource "aws_instance" "monitor" {
   }
 }
 
-# Ansible inventory used by deploy/ansible and bin/*.sh
+# Ansible inventory used by deploy/ansible and bin/*.sh, reached over the instances' public addresses
 resource "local_file" "inventory" {
   filename = "${path.module}/../inventory.ini"
   content = templatefile("${path.module}/inventory.tftpl", {
+    address = "public_ip"
+    broker  = aws_instance.broker
+    kafka   = aws_instance.kafka
+    clients = aws_instance.client
+    monitor = aws_instance.monitor
+  })
+}
+
+# The same inventory with private addresses, for the controller inside the VPC (docs/aws-no-ssh.md)
+resource "local_file" "inventory_private" {
+  filename = "${path.module}/../inventory-private.ini"
+  content = templatefile("${path.module}/inventory.tftpl", {
+    address = "private_ip"
     broker  = aws_instance.broker
     kafka   = aws_instance.kafka
     clients = aws_instance.client

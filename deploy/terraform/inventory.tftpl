@@ -1,16 +1,16 @@
 [broker]
-broker-0 ansible_host=${broker.public_ip} private_ip=${broker.private_ip}
+broker-0 ansible_host=${broker[address]} private_ip=${broker.private_ip}
 
 [kafka]
-kafka-0 ansible_host=${kafka.public_ip} private_ip=${kafka.private_ip}
+kafka-0 ansible_host=${kafka[address]} private_ip=${kafka.private_ip}
 
 [clients]
 %{ for i, c in clients ~}
-client-${i} ansible_host=${c.public_ip} private_ip=${c.private_ip}
+client-${i} ansible_host=${c[address]} private_ip=${c.private_ip}
 %{ endfor ~}
 
 [monitor]
-monitor-0 ansible_host=${monitor.public_ip} private_ip=${monitor.private_ip}
+monitor-0 ansible_host=${monitor[address]} private_ip=${monitor.private_ip}
 
 [all:vars]
 ansible_user=ubuntu

@@ -136,6 +136,7 @@
         content: |
           BROKER={{ broker }}
           MQTT_PORT={{ mqtt_port[broker] }}
+          ZILLA_DIAGNOSTICS={{ zilla_diagnostics | bool | lower }}
         mode: "0644"
   tasks:
     - name: Zilla
@@ -146,11 +147,25 @@
             src: templates/zilla.yaml.j2
             dest: /etc/zilla/zilla.yaml
             mode: "0644"
+        - name: Log directory for the diagnostics
+          ansible.builtin.file:
+            path: /var/log/zilla
+            state: directory
+            mode: "0777"   # written by the container's user, read by bin/run-scenario.sh through sudo
+          when: zilla_diagnostics | bool
+        - name: Pull the Zilla image
+          ansible.builtin.shell: docker pull {{ zilla_image }} >/dev/null
+          when: not (zilla_image_loaded | bool)
         - name: Start Zilla with an empty engine directory
+          vars:
+            diagnostics_args: >-
+              {{ "-v /var/log/zilla:/var/log/zilla
+              -e JAVA_TOOL_OPTIONS='-Xlog:gc*:file=/var/log/zilla/gc.log:time,uptime,level,tags
+              -XX:StartFlightRecording=disk=true,maxsize=1g,filename=/var/log/zilla/zilla.jfr,settings=profile'"
+              if zilla_diagnostics | bool else '' }}
           ansible.builtin.shell: |
-            docker pull {{ zilla_image }} >/dev/null
             docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
-              -v /etc/zilla:/etc/zilla:ro \
+              -v /etc/zilla:/etc/zilla:ro {{ diagnostics_args }} \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
               {{ zilla_image }} start -e -v

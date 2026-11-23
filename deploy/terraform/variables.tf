@@ -10,14 +10,28 @@ variable "owner" {
 }
 
 variable "operator_cidrs" {
-  description = "CIDRs allowed to reach SSH, Grafana (3000) and Prometheus (9090), e.g. [\"203.0.113.7/32\"]"
+  description = <<-EOT
+    CIDRs allowed to reach SSH, Grafana (3000) and Prometheus (9090), e.g. ["203.0.113.7/32"]. An operator who cannot
+    SSH (docs/aws-no-ssh.md) passes a harmless placeholder such as ["127.0.0.1/32"]: the hosts are then reachable
+    only from inside the VPC.
+  EOT
   type        = list(string)
 }
 
 variable "public_key_path" {
-  description = "SSH public key installed on every host; the matching private key is SSH_KEY for bin/*.sh"
+  description = "SSH public key installed on every host; the matching private key is SSH_KEY for bin/*.sh (or the controller's key)"
   type        = string
   default     = "~/.ssh/mqtt-benchmark.pub"
+}
+
+variable "max_lifetime_minutes" {
+  description = "Every instance shuts itself down, and so terminates, this many minutes after it boots. Keep it above the longest run plus deploy time."
+  type        = number
+  default     = 300
+  validation {
+    condition     = var.max_lifetime_minutes >= 1 && floor(var.max_lifetime_minutes) == var.max_lifetime_minutes
+    error_message = "max_lifetime_minutes must be a whole number of minutes, at least 1."
+  }
 }
 
 variable "arch" {

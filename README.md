@@ -59,13 +59,17 @@ vCPU quota of the account before provisioning. If the load generators' CPU goes 
 ## Running a benchmark
 
 Prerequisites: an AWS account with credentials in your environment, Terraform 1.5+, Ansible, Python 3, and an SSH key
-pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark`).
+pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark`). Without an SSH client or outbound
+port 22, run everything through a controller instance in the VPC instead: see
+[docs/aws-no-ssh.md](docs/aws-no-ssh.md).
 
 1. **Provision.** Copy `deploy/terraform/terraform.tfvars.example` to `terraform.tfvars` and fill it in, then:
    ```bash
    cd deploy/terraform && terraform init && terraform apply
    ```
-   This writes `deploy/inventory.ini` and prints the Grafana and Prometheus URLs.
+   This writes `deploy/inventory.ini` (and `deploy/inventory-private.ini`, with private addresses, for the controller)
+   and prints the Grafana and Prometheus URLs. Every instance terminates itself `max_lifetime_minutes` (default 300)
+   after it boots, as a guard against forgotten environments: raise it for longer sessions.
 2. **Deploy.** Installs Docker, tunes the kernel, and starts Kafka (with the topics), the broker, node_exporter,
    Prometheus and Grafana. The broker is Zilla unless you pass `-e broker=emqx`; the images are set in
    `deploy/ansible/group_vars/all.yaml`.
@@ -74,6 +78,8 @@ pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark
    cd deploy/ansible && ansible-playbook deploy.yaml -e broker=emqx   # EMQX baseline
    ```
    Redeploying switches brokers on the same hosts: it removes both broker containers and starts the chosen one.
+   Other variables to pass with `-e`: the topic partition counts (`mqtt_devices_partitions` and
+   three more), `zilla_diagnostics=true` and `zilla_image_loaded=true`; see `deploy/ansible/group_vars/all.yaml`.
 3. **Check the environment** with the small scenario and the exact delivery check:
    ```bash
    bin/run-scenario.sh scenarios/smoke-1k.env
@@ -90,7 +96,8 @@ pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark
    (cd deploy/ansible && ansible-playbook deploy.yaml)
    bin/run-scenario.sh scenarios/emqx-kafka-100k.env
    ```
-   Do the same for each `scenarios/basic-*.env`, redeploying between runs. Results go to `results/<run-id>/`:
+   Do the same for each `scenarios/basic-*.env`, redeploying between runs. `DIAG=1 bin/run-scenario.sh ...` also saves
+   per-thread CPU, class histograms and the like of the broker (see the script's header). Results go to `results/<run-id>/`:
    `summary.json` (made by `bin/summarize.py`), the scenario, the broker config, image versions, emqtt-bench metric
    snapshots and logs, and the publish response time probe output.
 5. **Tear down.** Do this as soon as you're done. The default setup costs several dollars per hour.
@@ -146,13 +153,15 @@ Use [docs/disclosure-report-template.md](docs/disclosure-report-template.md) for
 ```
 scenarios/            scenario definitions (.env)
 bin/run-scenario.sh   runs a scenario on the provisioned hosts and writes results/<run-id>/
+bin/aws/              the same without SSH: runs the above and the deployment on a controller through AWS Systems Manager
 bin/summarize.py      turns a run's metric snapshots into summary.json
 bin/puback-probe.py   publish response time probe, QoS 1 or 2 (runs on a load generator)
 bin/verify-delivery.sh exact delivery check into Kafka, QoS 1 or 2
 bin/qos2-delivery.py  QoS 2 publishers for the delivery check (runs on a load generator)
 deploy/terraform/     AWS: VPC, placement group, broker host, Kafka, load generators, monitoring host
+deploy/terraform-controller/  the controller instance, its S3 bucket and IAM role for the no-SSH flow (needs IAM rights)
 deploy/ansible/       Docker, kernel tuning, Kafka, Zilla or EMQX, emqtt-bench, Prometheus, Grafana
-docs/                 disclosure report template
+docs/                 disclosure report template, running without SSH
 ```
 
 ## Not done yet
