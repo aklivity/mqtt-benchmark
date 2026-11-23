@@ -16,7 +16,7 @@ with the same clients, Kafka and hosts.
 | `basic-conn-10k` | [Open MQTT Benchmark Suite](https://github.com/emqx/mqttbs), Basic Set | 10,000 connections within 100 s, held for 30 minutes |
 | `basic-fanout-1-1k` | Basic Set | 1 publisher, 1,000 subscribers on one topic, 1 msg/s in, 1,000 msg/s out, QoS 1, 16 B |
 | `basic-p2p-1k` | Basic Set | 1,000 publisher/subscriber pairs, one topic per pair, 1,000 msg/s in and out, QoS 1, 16 B |
-| `basic-sharedsub-1k-5` | Basic Set | 1,000 publishers, 5 subscribers in one shared subscription group, MQTT 5, QoS 1, 16 B. Needs shared subscription support in Zilla's mqtt-kafka proxy, which isn't available yet. |
+| `basic-sharedsub-1k-5` | Basic Set | 1,000 publishers, 5 subscribers in one shared subscription group, MQTT 5, QoS 1, 16 B. Through Zilla, the group is a Kafka share group (Kafka has share groups enabled and the mqtt-kafka binding has a store). |
 | `smoke-1k` | | 1,000 publishers for 2 minutes, to check a new environment |
 | `*-q2` | | QoS 2 versions of `smoke-1k`, `basic-p2p-1k`, `basic-fanout-1-1k` (QoS 2 publishers and subscribers) and `emqx-kafka-100k` (see [QoS 2](#qos-2)) |
 
