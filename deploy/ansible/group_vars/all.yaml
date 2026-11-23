@@ -15,9 +15,6 @@ prometheus_image: prom/prometheus:v2.54.1
 grafana_image: grafana/grafana:11.2.0
 
 mqtt_port: { zilla: 7183, emqx: 1883 }
-# Zilla engine workers. Not left to the default (one per vCPU): Zilla 2.7.2-rc1 fails to start with exactly
-# 32 workers ("affinity mask must specify at least one bit"), which is the default on a 32-vCPU c6i.8xlarge.
-zilla_workers: 31
 # "no" keeps a crashed broker down so the run shows it; set "unless-stopped" for soak tests
 broker_restart: "no"
 

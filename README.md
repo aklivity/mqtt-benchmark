@@ -116,8 +116,7 @@ pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark
 
 Zilla's config (`deploy/ansible/templates/zilla.yaml.j2`) has no metrics; its only telemetry is the stdout log
 exporter, which reports engine start and stop, client connections and errors. Everything above is measured from the
-clients, Kafka and the hosts. Zilla runs with 31 engine workers (`zilla_workers`): with exactly 32, the default on a
-32-vCPU host, Zilla 2.7.2-rc1 fails to start.
+clients, Kafka and the hosts. Zilla runs with its default number of engine workers, one per vCPU.
 
 EMQX (`deploy/ansible/templates/emqx.hocon.j2`) has one rule, `SELECT * FROM "device/#"`, feeding a Kafka producer
 action that writes to `mqtt-devices` with the MQTT topic as key and the payload as value, the same records Zilla
