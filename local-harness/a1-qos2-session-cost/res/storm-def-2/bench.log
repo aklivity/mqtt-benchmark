@@ -1,0 +1,54 @@
+Start with 4 workers, addrs pool size: 1 and req interval: 40 ms 
+
+1s connect_succ total=92 rate=91.82/sec
+2s connect_succ total=190 rate=97.71/sec
+3s connect_succ total=288 rate=98.29/sec
+4s connect_succ total=384 rate=95.90/sec
+5s connect_succ total=484 rate=100.10/sec
+6s connect_succ total=580 rate=96.00/sec
+7s connect_succ total=679 rate=99.00/sec
+8s connect_succ total=776 rate=97.00/sec
+9s connect_succ total=872 rate=96.00/sec
+10s connect_succ total=972 rate=100.00/sec
+11s connect_succ total=1068 rate=96.00/sec
+12s connect_succ total=1168 rate=100.00/sec
+13s connect_succ total=1264 rate=96.00/sec
+14s connect_succ total=1360 rate=96.00/sec
+15s connect_succ total=1460 rate=100.00/sec
+16s connect_succ total=1556 rate=96.00/sec
+17s connect_succ total=1656 rate=100.00/sec
+18s connect_succ total=1752 rate=96.00/sec
+19s connect_succ total=1848 rate=96.00/sec
+20s connect_succ total=1948 rate=100.00/sec
+21s connect_succ total=2044 rate=96.00/sec
+22s connect_succ total=2140 rate=96.00/sec
+23s connect_succ total=2240 rate=100.00/sec
+24s connect_succ total=2336 rate=96.00/sec
+25s connect_succ total=2432 rate=96.00/sec
+26s connect_succ total=2532 rate=100.00/sec
+27s connect_succ total=2628 rate=96.00/sec
+28s connect_succ total=2728 rate=100.00/sec
+29s connect_succ total=2824 rate=96.00/sec
+30s connect_succ total=2920 rate=96.00/sec
+31s connect_succ total=3020 rate=100.00/sec
+32s connect_succ total=3116 rate=96.00/sec
+33s connect_succ total=3213 rate=97.00/sec
+34s connect_succ total=3312 rate=99.00/sec
+35s connect_succ total=3408 rate=96.00/sec
+36s connect_succ total=3508 rate=100.00/sec
+37s connect_succ total=3604 rate=96.00/sec
+38s connect_succ total=3704 rate=100.00/sec
+39s connect_succ total=3800 rate=96.00/sec
+40s connect_succ total=3896 rate=96.00/sec
+41s connect_succ total=3995 rate=99.00/sec
+42s connect_succ total=4092 rate=97.00/sec
+43s connect_succ total=4188 rate=96.00/sec
+44s connect_succ total=4288 rate=100.00/sec
+45s connect_succ total=4384 rate=96.00/sec
+46s connect_succ total=4483 rate=99.00/sec
+47s connect_succ total=4580 rate=97.00/sec
+48s connect_succ total=4676 rate=96.00/sec
+49s connect_succ total=4776 rate=100.00/sec
+50s connect_succ total=4872 rate=96.00/sec
+51s connect_succ total=4970 rate=98.00/sec
+52s connect_succ total=5000 rate=30.00/sec

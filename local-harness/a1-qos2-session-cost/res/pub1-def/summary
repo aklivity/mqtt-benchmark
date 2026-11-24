@@ -1,0 +1,6 @@
+base mqtt-sessions=0 mqtt-devices=0 mqtt-messages=0 mqtt-retained=0 
+winstart mqtt-sessions=15000 mqtt-devices=217935 mqtt-messages=0 mqtt-retained=0 
+winend mqtt-sessions=15000 mqtt-devices=871434 mqtt-messages=0 mqtt-retained=0  window=130s
+OCI runtime exec failed: exec failed: unable to start container process: exec: "jcmd": executable file not found in $PATH
+end mqtt-sessions=15054 mqtt-devices=925231 mqtt-messages=0 mqtt-retained=0 
+elapsed 266s

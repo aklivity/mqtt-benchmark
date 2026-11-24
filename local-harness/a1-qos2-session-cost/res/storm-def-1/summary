@@ -1,0 +1,3 @@
+base mqtt-sessions=0 mqtt-devices=0 mqtt-messages=0 mqtt-retained=0 
+end mqtt-sessions=35000 mqtt-devices=0 mqtt-messages=0 mqtt-retained=0 
+elapsed 134s
