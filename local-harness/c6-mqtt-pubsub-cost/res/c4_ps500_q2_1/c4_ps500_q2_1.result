@@ -1,0 +1,5 @@
+label=c4_ps500_q2_1 mode=pubsub flag=true qos=2 clients=500 window=63.6s
+kafka_records=31783 rate=500/s
+worker_cpu: user=15.95s sys=6.73s total=22.68s (35.7% of cpu)
+process_cpu=26.63s (41.9%)
+worker_us_per_record=713.6

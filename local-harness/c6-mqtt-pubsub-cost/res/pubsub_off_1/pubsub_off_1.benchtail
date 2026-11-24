@@ -1,0 +1,5 @@
+1m38s pub total=62514 rate=1300.00/sec
+1m38s pub_overrun total=8973 rate=534.00/sec
+1m39s pub total=64362 rate=1848.00/sec
+2m0s recv total=38094 rate=332.00/sec
+2m1s recv total=39363 rate=1269.00/sec

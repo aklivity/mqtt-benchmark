@@ -1,0 +1,5 @@
+label=c4_ps3125_q2_2 mode=pubsub flag=true qos=2 clients=3125 window=63.8s
+kafka_records=51587 rate=809/s
+worker_cpu: user=46.12s sys=5.90s total=52.02s (81.5% of cpu)
+process_cpu=59.65s (93.5%)
+worker_us_per_record=1008.4

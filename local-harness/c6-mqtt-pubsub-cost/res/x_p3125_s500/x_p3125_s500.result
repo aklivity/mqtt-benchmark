@@ -1,0 +1,5 @@
+label=x_p3125_s500 mode=pubsub flag=true qos=1 clients=3125 window=63.4s
+kafka_records=195489 rate=3086/s
+worker_cpu: user=36.92s sys=8.36s total=45.28s (71.5% of cpu)
+process_cpu=52.40s (82.7%)
+worker_us_per_record=231.6

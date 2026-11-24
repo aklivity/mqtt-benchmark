@@ -1,0 +1,50 @@
+---
+name: bench
+stores:
+  memory0:
+    type: memory
+bindings:
+  tcp_server:
+    type: tcp
+    kind: server
+    options:
+      host: 0.0.0.0
+      port: 7183
+    exit: mqtt_server
+  mqtt_server:
+    type: mqtt
+    kind: server
+    options:
+      store: memory0
+    exit: mqtt_kafka
+  mqtt_kafka:
+    type: mqtt-kafka
+    kind: proxy
+    options:
+      topics:
+        sessions: mqtt-sessions
+        messages: mqtt-messages
+        retained: mqtt-retained
+    exit: kafka_cache_client
+  kafka_cache_client:
+    type: kafka
+    kind: cache_client
+    exit: kafka_cache_server
+  kafka_cache_server:
+    type: kafka
+    kind: cache_server
+    options:
+      bootstrap:
+        - mqtt-messages
+        - mqtt-retained
+    exit: kafka_client
+  kafka_client:
+    type: kafka
+    kind: client
+    options:
+      servers:
+        - localhost:9092
+    exit: tcp_client
+  tcp_client:
+    type: tcp
+    kind: client
