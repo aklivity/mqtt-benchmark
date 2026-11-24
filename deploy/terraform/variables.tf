@@ -26,7 +26,7 @@ variable "arch" {
   default     = "amd64"
 }
 
-# EMQ ran EMQX and Kafka on Alibaba Cloud c6.8xlarge (32 vCPU, 64 GB, Intel). c6i.8xlarge is the AWS equivalent.
+# c6i.8xlarge: 32 vCPU, 64 GB, Intel.
 variable "broker_instance_type" {
   type    = string
   default = "c6i.8xlarge"
@@ -43,7 +43,7 @@ variable "kafka_data_gb" {
   default     = 1000
 }
 
-# EMQ doesn't say how many load generators it used. One client IP can open about 64K connections to one
+# One client IP can open about 64K connections to one
 # broker address and port, so 100K connections need at least 2 hosts (50K each). If client CPU goes above
 # about 70% during a run (Prometheus, role="client"), add hosts so the load generators don't skew the results.
 variable "client_count" {

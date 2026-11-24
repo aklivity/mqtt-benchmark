@@ -155,7 +155,7 @@ def emqx_action(label):
         return None
 
 
-# EMQX only: its Kafka action's own counters over the window, as EMQ compared them with the Kafka offsets
+# EMQX only: its Kafka action's own counters over the window, to compare with the Kafka offsets
 a0, a1 = emqx_action('t0'), emqx_action('t1')
 if a0 and a1:
     summary['emqx_kafka_action'] = {
