@@ -73,7 +73,8 @@ port 22, run everything through a controller instance in the VPC instead: see
    ```
    Redeploying switches brokers on the same hosts: it removes both broker containers and starts the chosen one.
    Other variables to pass with `-e`: the topic partition counts (`mqtt_devices_partitions` and
-   three more), `zilla_diagnostics=true` and `zilla_image_loaded=true`; see `deploy/ansible/group_vars/all.yaml`.
+   three more), `zilla_diagnostics=true`, `zilla_image_loaded=true` and `zilla_java_options` (JVM options for Zilla, such as a
+   `-D` system property); see `deploy/ansible/group_vars/all.yaml`.
 3. **Check the environment** with the small scenario and the exact delivery check:
    ```bash
    bin/run-scenario.sh scenarios/smoke-1k.env

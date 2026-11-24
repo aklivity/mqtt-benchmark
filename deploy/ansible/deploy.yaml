@@ -164,9 +164,11 @@
               " ~ ("-XX:StartFlightRecording=disk=true,maxsize=1g,filename=/var/log/zilla/zilla.jfr,settings=profile"
               if zilla_jfr | bool else "") ~ "'"
               if zilla_diagnostics | bool else '' }}
+            java_options_args: >-
+              {{ "-e JAVA_OPTIONS='" ~ zilla_java_options ~ "'" if zilla_java_options | length > 0 else '' }}
           ansible.builtin.shell: |
             docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
-              -v /etc/zilla:/etc/zilla:ro {{ diagnostics_args }} \
+              -v /etc/zilla:/etc/zilla:ro {{ diagnostics_args }} {{ java_options_args }} \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
               {{ zilla_image }} start -e -v
