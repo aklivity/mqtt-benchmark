@@ -8,5 +8,10 @@
 set -euo pipefail
 . "$(dirname "$0")/common.sh"
 "$AWS_BIN/push-bundle.sh"
+# printf ' %q' with no arguments still prints an empty quoted argument, which ansible-playbook rejects
+EXTRA=""
+if [ "$#" -gt 0 ]; then
+  EXTRA=$(printf ' %q' "$@")
+fi
 ssm --timeout "${SSM_TIMEOUT:-7200}" \
-  "cd $SRC/deploy/ansible && ansible-playbook deploy.yaml -i ../inventory-private.ini --private-key $KEY$(printf ' %q' "$@")"
+  "cd $SRC/deploy/ansible && ansible-playbook deploy.yaml -i ../inventory-private.ini --private-key $KEY$EXTRA"
