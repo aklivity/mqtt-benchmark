@@ -1,0 +1,390 @@
+Start with 2 workers, addrs pool size: 1 and req interval: 6 ms 
+
+1s pub total=5 rate=4.99/sec
+1s pub_succ total=5 rate=4.99/sec
+1s connect_succ total=5 rate=4.99/sec
+2s pub total=95 rate=90.00/sec
+2s pub_succ total=95 rate=90.00/sec
+2s connect_succ total=90 rate=85.00/sec
+3s pub total=221 rate=126.00/sec
+3s pub_succ total=221 rate=126.00/sec
+3s connect_succ total=126 rate=36.00/sec
+4s pub total=452 rate=231.00/sec
+4s pub_succ total=452 rate=231.00/sec
+4s connect_succ total=329 rate=203.00/sec
+5s pub total=983 rate=531.00/sec
+5s pub_succ total=983 rate=531.00/sec
+5s connect_succ total=457 rate=128.00/sec
+6s pub total=1556 rate=573.00/sec
+6s pub_succ total=1556 rate=573.00/sec
+6s connect_succ total=611 rate=154.00/sec
+7s pub total=2292 rate=736.00/sec
+7s pub_succ total=2292 rate=736.00/sec
+7s connect_succ total=766 rate=155.00/sec
+8s pub total=3222 rate=930.00/sec
+8s pub_succ total=3232 rate=940.00/sec
+8s connect_succ total=926 rate=160.00/sec
+9s pub total=4311 rate=1089.00/sec
+9s pub_succ total=4311 rate=1079.00/sec
+9s connect_succ total=1078 rate=152.00/sec
+10s pub total=5478 rate=1167.00/sec
+10s pub_succ total=5478 rate=1167.00/sec
+10s connect_succ total=1218 rate=140.00/sec
+11s pub total=6904 rate=1426.00/sec
+11s pub_succ total=6904 rate=1426.00/sec
+11s connect_succ total=1353 rate=135.00/sec
+12s pub total=8354 rate=1450.00/sec
+12s pub_succ total=8354 rate=1450.00/sec
+12s connect_succ total=1504 rate=151.00/sec
+13s pub total=10065 rate=1711.00/sec
+13s pub_succ total=10065 rate=1711.00/sec
+13s connect_succ total=1655 rate=151.00/sec
+14s pub total=11440 rate=1375.00/sec
+14s pub_succ total=11440 rate=1375.00/sec
+14s connect_succ total=1769 rate=114.00/sec
+15s pub total=13703 rate=2263.00/sec
+15s pub_succ total=13703 rate=2263.00/sec
+15s connect_succ total=1885 rate=116.00/sec
+16s pub total=15695 rate=1992.00/sec
+16s pub_succ total=15695 rate=1992.00/sec
+16s connect_succ total=2016 rate=131.00/sec
+17s pub total=17802 rate=2107.00/sec
+17s pub_succ total=17802 rate=2107.00/sec
+17s connect_succ total=2140 rate=124.00/sec
+18s pub total=20134 rate=2332.00/sec
+18s pub_succ total=20146 rate=2344.00/sec
+18s connect_succ total=2270 rate=130.00/sec
+19s pub total=22528 rate=2394.00/sec
+19s pub_succ total=22528 rate=2382.00/sec
+19s connect_succ total=2402 rate=132.00/sec
+20s pub total=25006 rate=2478.00/sec
+20s pub_succ total=25006 rate=2478.00/sec
+20s connect_succ total=2531 rate=129.00/sec
+21s pub total=27711 rate=2705.00/sec
+21s pub_succ total=27711 rate=2705.00/sec
+21s connect_succ total=2658 rate=127.00/sec
+22s pub total=30460 rate=2749.00/sec
+22s pub_succ total=30475 rate=2764.00/sec
+22s connect_succ total=2781 rate=123.00/sec
+23s pub total=33470 rate=3010.00/sec
+23s pub_succ total=33471 rate=2996.00/sec
+23s connect_succ total=2916 rate=135.00/sec
+24s pub total=36442 rate=2972.00/sec
+24s pub_succ total=36442 rate=2971.00/sec
+24s connect_succ total=3050 rate=134.00/sec
+25s pub total=39576 rate=3134.00/sec
+25s pub_succ total=39610 rate=3168.00/sec
+25s connect_succ total=3185 rate=135.00/sec
+26s pub total=42876 rate=3300.00/sec
+26s pub_succ total=42876 rate=3266.00/sec
+26s connect_succ total=3350 rate=165.00/sec
+27s pub total=46377 rate=3501.00/sec
+27s pub_succ total=46377 rate=3501.00/sec
+27s connect_succ total=3490 rate=139.86/sec
+28s pub total=50128 rate=3751.00/sec
+28s pub_succ total=50128 rate=3751.00/sec
+28s connect_succ total=3628 rate=138.14/sec
+29s pub total=53847 rate=3719.00/sec
+29s pub_succ total=53847 rate=3719.00/sec
+29s connect_succ total=3764 rate=136.00/sec
+30s pub total=57253 rate=3406.00/sec
+30s pub_succ total=57253 rate=3406.00/sec
+30s connect_succ total=3905 rate=141.00/sec
+31s pub total=61845 rate=4592.00/sec
+31s pub_succ total=61845 rate=4592.00/sec
+31s connect_succ total=4098 rate=193.00/sec
+32s pub total=66047 rate=4202.00/sec
+32s pub_succ total=66047 rate=4202.00/sec
+32s connect_succ total=4325 rate=227.00/sec
+33s pub total=70779 rate=4732.00/sec
+33s pub_succ total=70779 rate=4732.00/sec
+33s connect_succ total=4524 rate=199.00/sec
+34s pub total=75540 rate=4761.00/sec
+34s pub_succ total=75540 rate=4761.00/sec
+34s connect_succ total=4758 rate=234.00/sec
+35s pub total=80533 rate=4993.00/sec
+35s pub_succ total=80533 rate=4993.00/sec
+35s connect_succ total=5037 rate=279.00/sec
+36s pub total=84128 rate=3595.00/sec
+36s pub_succ total=84128 rate=3595.00/sec
+36s connect_succ total=5136 rate=99.00/sec
+37s connect_succ total=5150 rate=14.00/sec
+38s pub total=88397 rate=2134.50/sec
+38s pub_overrun total=3792 rate=99.78/sec
+38s pub_succ total=88443 rate=2156.42/sec
+38s connect_succ total=5155 rate=4.99/sec
+39s pub total=90373 rate=1976.00/sec
+39s pub_overrun total=5742 rate=1951.95/sec
+39s pub_succ total=90373 rate=1931.93/sec
+39s connect_succ total=5160 rate=5.01/sec
+40s pub total=93019 rate=2646.00/sec
+40s pub_overrun total=8388 rate=2646.00/sec
+40s pub_succ total=93019 rate=2646.00/sec
+40s connect_succ total=5169 rate=9.01/sec
+41s pub total=95374 rate=2355.00/sec
+41s pub_overrun total=10743 rate=2355.00/sec
+41s pub_succ total=95374 rate=2355.00/sec
+41s connect_succ total=5176 rate=7.00/sec
+42s pub total=97959 rate=2585.00/sec
+42s pub_overrun total=13328 rate=2585.00/sec
+42s pub_succ total=97959 rate=2585.00/sec
+42s connect_succ total=5183 rate=7.00/sec
+43s pub total=103335 rate=5376.00/sec
+43s pub_overrun total=18761 rate=5427.57/sec
+43s pub_succ total=103671 rate=5677.93/sec
+43s connect_succ total=5200 rate=16.90/sec
+44s pub total=113751 rate=10416.00/sec
+44s pub_overrun total=29080 rate=10329.33/sec
+44s pub_succ total=113751 rate=10140.85/sec
+44s connect_succ total=5230 rate=30.18/sec
+45s pub total=127191 rate=13440.00/sec
+45s pub_overrun total=40830 rate=11750.00/sec
+45s pub_succ total=127191 rate=13440.00/sec
+45s connect_succ total=5270 rate=40.00/sec
+46s pub total=137720 rate=10529.00/sec
+46s pub_overrun total=42580 rate=1750.00/sec
+46s pub_succ total=137731 rate=10540.00/sec
+46s connect_succ total=5393 rate=123.00/sec
+47s pub total=143413 rate=5693.00/sec
+47s pub_succ total=143413 rate=5682.00/sec
+47s connect_succ total=5630 rate=237.00/sec
+48s pub total=146866 rate=3453.00/sec
+48s pub_succ total=146866 rate=3453.00/sec
+48s connect_succ total=5814 rate=184.00/sec
+49s pub total=154897 rate=8031.00/sec
+49s pub_succ total=154925 rate=8059.00/sec
+49s connect_succ total=6019 rate=205.00/sec
+50s pub total=159582 rate=4685.00/sec
+50s pub_succ total=159582 rate=4657.00/sec
+50s connect_succ total=6147 rate=128.00/sec
+51s pub total=166723 rate=7141.00/sec
+51s pub_succ total=166723 rate=7141.00/sec
+51s connect_succ total=6317 rate=169.83/sec
+52s pub total=173300 rate=6577.00/sec
+52s pub_succ total=173300 rate=6577.00/sec
+52s connect_succ total=6405 rate=88.09/sec
+53s pub total=180679 rate=7379.00/sec
+53s pub_succ total=180703 rate=7403.00/sec
+53s connect_succ total=6599 rate=194.00/sec
+54s pub total=183878 rate=3199.00/sec
+54s pub_succ total=183878 rate=3175.00/sec
+54s connect_succ total=6677 rate=78.00/sec
+55s pub total=194212 rate=10334.00/sec
+55s pub_overrun total=42641 rate=6.78/sec
+55s pub_succ total=194224 rate=10346.00/sec
+55s connect_succ total=6844 rate=167.00/sec
+56s pub total=201050 rate=6838.00/sec
+56s pub_succ total=201050 rate=6826.00/sec
+56s connect_succ total=7121 rate=277.00/sec
+57s pub total=208663 rate=7613.00/sec
+57s pub_succ total=208663 rate=7613.00/sec
+57s connect_succ total=7311 rate=190.00/sec
+58s pub total=216170 rate=7507.00/sec
+58s pub_succ total=216170 rate=7507.00/sec
+58s connect_succ total=7539 rate=228.00/sec
+59s pub total=219326 rate=3156.00/sec
+59s pub_succ total=219326 rate=3156.00/sec
+59s connect_succ total=7690 rate=151.00/sec
+1m0s pub total=231313 rate=11987.00/sec
+1m0s pub_overrun total=43411 rate=154.00/sec
+1m0s pub_succ total=231313 rate=11987.00/sec
+1m0s connect_succ total=7773 rate=83.00/sec
+1m1s pub total=239691 rate=8378.00/sec
+1m1s pub_succ total=239691 rate=8378.00/sec
+1m1s connect_succ total=8000 rate=227.00/sec
+1m2s pub total=247681 rate=7990.00/sec
+1m2s pub_succ total=247689 rate=7998.00/sec
+1m3s pub total=255691 rate=8010.00/sec
+1m3s pub_succ total=255691 rate=8002.00/sec
+1m4s pub total=259655 rate=3964.00/sec
+1m4s pub_succ total=259655 rate=3964.00/sec
+1m5s pub total=266387 rate=6698.51/sec
+1m5s pub_overrun total=46409 rate=596.97/sec
+1m5s pub_succ total=267243 rate=7424.66/sec
+1m6s pub total=279691 rate=13370.85/sec
+1m6s pub_overrun total=46718 rate=315.95/sec
+1m6s pub_succ total=279692 rate=12729.04/sec
+1m7s pub total=287691 rate=8000.00/sec
+1m7s pub_succ total=287691 rate=7999.00/sec
+1m8s pub total=295691 rate=8000.00/sec
+1m8s pub_succ total=295691 rate=8000.00/sec
+1m9s pub total=303583 rate=7892.00/sec
+1m9s pub_succ total=303583 rate=7892.00/sec
+1m10s pub total=304875 rate=1292.00/sec
+1m10s pub_succ total=304875 rate=1292.00/sec
+1m11s pub total=319691 rate=14816.00/sec
+1m11s pub_overrun total=46938 rate=44.00/sec
+1m11s pub_succ total=319691 rate=14816.00/sec
+1m12s pub total=327691 rate=8000.00/sec
+1m12s pub_succ total=327691 rate=8000.00/sec
+1m13s pub total=335691 rate=8000.00/sec
+1m13s pub_succ total=335691 rate=8000.00/sec
+1m14s pub total=343211 rate=7520.00/sec
+1m14s pub_succ total=343211 rate=7520.00/sec
+1m15s pub total=348579 rate=5368.00/sec
+1m15s pub_succ total=348579 rate=5368.00/sec
+1m16s pub total=359691 rate=11112.00/sec
+1m16s pub_succ total=359691 rate=11112.00/sec
+1m17s pub total=367691 rate=8000.00/sec
+1m17s pub_succ total=367691 rate=8000.00/sec
+1m18s pub total=375691 rate=8000.00/sec
+1m18s pub_succ total=375692 rate=8001.00/sec
+1m19s pub total=382965 rate=7274.00/sec
+1m19s pub_succ total=382965 rate=7273.00/sec
+1m20s pub total=391691 rate=8726.00/sec
+1m20s pub_succ total=391691 rate=8726.00/sec
+1m21s pub total=396330 rate=4639.00/sec
+1m21s pub_succ total=396330 rate=4639.00/sec
+1m22s pub total=407689 rate=11359.00/sec
+1m22s pub_overrun total=47025 rate=7.91/sec
+1m22s pub_succ total=407691 rate=11361.00/sec
+1m23s pub total=415691 rate=8002.00/sec
+1m23s pub_succ total=415691 rate=8000.00/sec
+1m24s pub total=423674 rate=7983.00/sec
+1m24s pub_succ total=423674 rate=7983.00/sec
+1m25s pub total=431691 rate=8017.00/sec
+1m25s pub_succ total=431691 rate=8017.00/sec
+1m26s pub total=439646 rate=7955.00/sec
+1m26s pub_succ total=439646 rate=7955.00/sec
+1m27s pub total=447684 rate=8038.00/sec
+1m27s pub_succ total=447694 rate=8039.96/sec
+1m28s pub total=455609 rate=7925.00/sec
+1m28s pub_succ total=455613 rate=7926.93/sec
+1m29s pub total=463691 rate=8082.00/sec
+1m29s pub_succ total=463691 rate=8078.00/sec
+1m30s pub total=470658 rate=6967.00/sec
+1m30s pub_succ total=470658 rate=6967.00/sec
+1m31s pub total=479691 rate=9033.00/sec
+1m31s pub_succ total=479693 rate=9035.00/sec
+1m32s pub total=487691 rate=8000.00/sec
+1m32s pub_succ total=487691 rate=7998.00/sec
+1m33s pub total=495691 rate=8000.00/sec
+1m33s pub_succ total=495691 rate=8000.00/sec
+1m34s pub total=503691 rate=8000.00/sec
+1m34s pub_succ total=503691 rate=8000.00/sec
+1m35s pub total=511691 rate=8000.00/sec
+1m35s pub_succ total=511691 rate=8000.00/sec
+1m36s pub total=519691 rate=8000.00/sec
+1m36s pub_succ total=519691 rate=8000.00/sec
+1m37s pub total=526211 rate=6520.00/sec
+1m37s pub_succ total=526211 rate=6520.00/sec
+1m38s pub total=535691 rate=9480.00/sec
+1m38s pub_succ total=535691 rate=9480.00/sec
+1m39s pub total=543691 rate=8000.00/sec
+1m39s pub_succ total=543692 rate=8001.00/sec
+1m40s pub total=551691 rate=8000.00/sec
+1m40s pub_succ total=551691 rate=7999.00/sec
+1m41s pub total=558052 rate=6361.00/sec
+1m41s pub_succ total=558194 rate=6496.50/sec
+1m42s pub total=567691 rate=9639.00/sec
+1m42s pub_succ total=567691 rate=9506.51/sec
+1m43s pub total=575691 rate=8000.00/sec
+1m43s pub_succ total=575695 rate=8004.00/sec
+1m44s pub total=583691 rate=8000.00/sec
+1m44s pub_succ total=583691 rate=7996.00/sec
+1m45s pub total=591691 rate=8000.00/sec
+1m45s pub_succ total=591691 rate=8000.00/sec
+1m46s pub total=598917 rate=7226.00/sec
+1m46s pub_succ total=598917 rate=7226.00/sec
+1m47s pub total=606009 rate=7092.00/sec
+1m47s pub_succ total=606009 rate=7092.00/sec
+1m48s pub total=611136 rate=5127.00/sec
+1m48s pub_succ total=611136 rate=5127.00/sec
+1m49s pub total=623691 rate=12555.00/sec
+1m49s pub_succ total=623691 rate=12555.00/sec
+1m50s pub total=631691 rate=8000.00/sec
+1m50s pub_succ total=631691 rate=8000.00/sec
+1m51s pub total=639691 rate=8000.00/sec
+1m51s pub_succ total=639691 rate=8000.00/sec
+1m52s pub total=647691 rate=8000.00/sec
+1m52s pub_succ total=647691 rate=8000.00/sec
+1m53s pub total=651646 rate=3955.00/sec
+1m53s pub_succ total=651646 rate=3955.00/sec
+1m54s pub total=663691 rate=12045.00/sec
+1m54s pub_succ total=663691 rate=12045.00/sec
+1m55s pub total=671691 rate=8000.00/sec
+1m55s pub_succ total=671691 rate=8000.00/sec
+1m56s pub total=679691 rate=8000.00/sec
+1m56s pub_succ total=679691 rate=8000.00/sec
+1m57s pub total=686793 rate=7102.00/sec
+1m57s pub_succ total=686793 rate=7102.00/sec
+1m58s pub total=695691 rate=8898.00/sec
+1m58s pub_succ total=695691 rate=8898.00/sec
+1m59s pub total=703215 rate=7524.00/sec
+1m59s pub_succ total=703215 rate=7524.00/sec
+2m0s pub total=711691 rate=8476.00/sec
+2m0s pub_succ total=711691 rate=8476.00/sec
+2m1s pub total=719691 rate=8000.00/sec
+2m1s pub_succ total=719691 rate=8000.00/sec
+2m2s pub total=727691 rate=8000.00/sec
+2m2s pub_succ total=727691 rate=8000.00/sec
+2m3s pub total=734899 rate=7208.00/sec
+2m3s pub_succ total=734899 rate=7208.00/sec
+2m4s pub total=739281 rate=4382.00/sec
+2m4s pub_succ total=739281 rate=4382.00/sec
+2m5s pub total=751691 rate=12410.00/sec
+2m5s pub_overrun total=47420 rate=9.19/sec
+2m5s pub_succ total=751691 rate=12410.00/sec
+2m6s pub total=758934 rate=7243.00/sec
+2m6s pub_succ total=758934 rate=7243.00/sec
+2m7s pub total=767691 rate=8757.00/sec
+2m7s pub_succ total=767691 rate=8757.00/sec
+2m8s pub total=775475 rate=7784.00/sec
+2m8s pub_succ total=775475 rate=7784.00/sec
+2m9s pub total=783486 rate=8011.00/sec
+2m9s pub_succ total=783493 rate=8018.00/sec
+2m10s pub total=791691 rate=8205.00/sec
+2m10s pub_succ total=791691 rate=8198.00/sec
+2m11s pub total=799691 rate=8000.00/sec
+2m11s pub_succ total=799691 rate=8000.00/sec
+2m12s pub total=807691 rate=8000.00/sec
+2m12s pub_succ total=807691 rate=8000.00/sec
+2m13s pub total=815691 rate=8000.00/sec
+2m13s pub_succ total=815691 rate=8000.00/sec
+2m14s pub total=823691 rate=8000.00/sec
+2m14s pub_succ total=823691 rate=8000.00/sec
+2m15s pub total=828094 rate=4403.00/sec
+2m15s pub_succ total=828094 rate=4403.00/sec
+2m16s pub total=839691 rate=11597.00/sec
+2m16s pub_overrun total=47429 rate=0.82/sec
+2m16s pub_succ total=839691 rate=11597.00/sec
+2m17s pub total=847691 rate=8000.00/sec
+2m17s pub_succ total=847691 rate=8000.00/sec
+2m18s pub total=855691 rate=8000.00/sec
+2m18s pub_succ total=855691 rate=8000.00/sec
+2m19s pub total=863460 rate=7769.00/sec
+2m19s pub_succ total=863460 rate=7769.00/sec
+2m20s pub total=868516 rate=5056.00/sec
+2m20s pub_succ total=868516 rate=5056.00/sec
+2m21s pub total=879691 rate=11175.00/sec
+2m21s pub_succ total=879691 rate=11175.00/sec
+2m22s pub total=887691 rate=8000.00/sec
+2m22s pub_succ total=887691 rate=8000.00/sec
+2m23s pub total=894062 rate=6371.00/sec
+2m23s pub_succ total=894062 rate=6371.00/sec
+2m24s pub total=903691 rate=9629.00/sec
+2m24s pub_succ total=903691 rate=9629.00/sec
+2m25s pub total=910012 rate=6321.00/sec
+2m25s pub_succ total=910012 rate=6321.00/sec
+2m26s pub total=917957 rate=7945.00/sec
+2m26s pub_overrun total=47973 rate=54.40/sec
+2m26s pub_succ total=917957 rate=7945.00/sec
+2m27s pub total=927662 rate=9705.00/sec
+2m27s pub_succ total=927671 rate=9714.00/sec
+2m28s pub total=935632 rate=7970.00/sec
+2m28s pub_succ total=935647 rate=7976.00/sec
+2m29s pub total=943686 rate=8054.00/sec
+2m29s pub_succ total=943686 rate=8039.00/sec
+2m30s pub total=950617 rate=6931.00/sec
+2m30s pub_succ total=950617 rate=6910.27/sec
+2m31s pub total=959640 rate=9023.00/sec
+2m31s pub_overrun total=47999 rate=5.20/sec
+2m31s pub_succ total=959640 rate=9050.15/sec
+2m32s pub total=967683 rate=8043.00/sec
+2m32s pub_succ total=967689 rate=8049.00/sec
+2m33s pub total=974899 rate=7216.00/sec
+2m33s pub_succ total=974899 rate=7210.00/sec
+2m34s pub total=983691 rate=8792.00/sec
+2m34s pub_succ total=983691 rate=8792.00/sec
+2m35s pub total=991687 rate=7996.00/sec
+2m35s pub_succ total=991687 rate=7996.00/sec

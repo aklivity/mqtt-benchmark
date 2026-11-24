@@ -1,0 +1,69 @@
+samples 8268
+TOP 25 self
+ 12.5% sun.nio.ch.SocketDispatcher.write0(FileDescriptor, long, int)
+  6.9% jdk.internal.foreign.AbstractMemorySegmentImpl.checkEnclosingLayout(long, MemoryLayout, boolean)
+  4.1% org.agrona.collections.Int2ObjectHashMap.getMapped(int)
+  3.8% sun.nio.ch.SocketDispatcher.read0(FileDescriptor, long, int)
+  3.3% jdk.internal.foreign.AbstractMemorySegmentImpl.checkBounds(long, long)
+  3.2% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaChecksum.gfTwoMatrixTimes(long[], long)
+  2.9% jdk.internal.foreign.AbstractMemorySegmentImpl.get(ValueLayout$OfShort, long)
+  2.3% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadInitial(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+  2.2% io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheFile.readBytes(int, Flyweight$Visitor)
+  1.9% jdk.internal.foreign.AbstractMemorySegmentImpl.get(ValueLayout$OfInt, long)
+  1.9% io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.write(int, DirectBufferEx, int, int)
+  1.7% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaMergedFactory.doWindow(MessageConsumer, long, long, long, long, long, int, int, long, long, long, int, int)
+  1.6% sun.nio.ch.EPoll.wait(int, long, int, int)
+  1.6% io.aklivity.zilla.runtime.binding.kafka.internal.types.KafkaKeyFW.length()
+  1.5% io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.claimCapacity(AtomicBuffer, int)
+  1.5% sun.nio.ch.UnixFileDispatcherImpl.write0(FileDescriptor, long, int)
+  1.4% jdk.internal.foreign.AbstractMemorySegmentImpl.isAlignedForElement(long, MemoryLayout)
+  1.4% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.types.MqttKafkaSessionOffsetsFW$Builder.entriesItem(Consumer)
+  1.2% jdk.internal.misc.Unsafe.checkOffset(Object, long)
+  1.1% io.aklivity.zilla.runtime.engine.binding.function.MessageConsumer.lambda$andThen$0(MessageConsumer, int, DirectBufferEx, int, int)
+  1.0% sun.nio.ch.SocketDispatcher.read(FileDescriptor, long, int)
+  1.0% org.agrona.collections.Long2ObjectHashMap.getMapped(long)
+  0.9% io.aklivity.zilla.runtime.binding.kafka.internal.types.Varint32FW.length0()
+  0.9% io.aklivity.zilla.runtime.binding.mqtt.internal.types.Flyweight$Builder.build()
+  0.8% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaMergedFactory$KafkaMergedStream.onMergedInitialData(DataFW)
+COMPONENT (by leafmost zilla/agrona frame)
+ 28.6% kafka binding (client/cache streams)
+ 19.6% tcp binding
+ 17.5% mqtt-kafka binding
+ 13.1% engine worker loop/ring buffers
+  9.0% kafka cache (server/client side)
+  7.4% agrona
+  4.9% mqtt binding
+INCLUSIVE
+100.0% agrona
+ 99.7% engine
+ 20.8% kafka cache
+ 20.4% tcp
+ 20.2% mqtt-kafka
+ 11.9% kafka client
+  6.4% mqtt
+TOP inclusive zilla methods
+ 99.7% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.doWork()
+ 91.7% io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.readEx(MessageHandlerEx, int)
+ 91.6% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleRead(int, MutableDirectBufferEx, int, int)
+ 64.8% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadInitial(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+ 26.1% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadReply(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+ 12.9% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.onMqttMessage(int, DirectBufferEx, int, int)
+ 12.7% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.onMqttData(DataFW)
+ 12.5% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.onMqttDataPublished(DataFW)
+  9.6% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpServerFactory$TcpServer.onAppMessage(int, DirectBufferEx, int, int)
+  9.0% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishMetadata$KafkaSessionOffsetsHelper.encode(List)
+  9.0% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.types.MqttKafkaSessionOffsetsFW$Builder.entriesItem(Consumer)
+  8.2% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpServerFactory$TcpServer.onAppData(DataFW)
+  8.2% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpServerFactory$TcpServer.doNetWrite(DirectBufferEx, int, int, ByteBuffer, long)
+  7.6% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.doCommitOffsetIncomplete(long, long, String, int, int, MqttKafkaPublishFactory$KafkaProxy)
+  7.3% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout.onServerFanoutMessage(int, DirectBufferEx, int, int)
+  7.2% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout.onServerFanoutReplyData(DataFW)
+  7.0% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceStream.onClientMessage(int, DirectBufferEx, int, int)
+  6.9% io.aklivity.zilla.runtime.engine.internal.poller.Poller.doWork()
+  6.5% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaMergedFactory$KafkaMergedStream.onMergedMessage(int, DirectBufferEx, int, int)
+  6.0% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpClientFactory$TcpClient.onAppMessage(int, DirectBufferEx, int, int)
+  5.9% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.types.Flyweight$Builder.build()
+  5.6% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.types.Array32FW$Builder.item(Consumer)
+  5.6% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaClientProduceFactory$KafkaProduceStream$KafkaProduceClient.onNetwork(int, DirectBufferEx, int, int)
+  5.5% io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheFile.readBytes(int, Flyweight$Visitor)
+  5.4% io.aklivity.zilla.runtime.binding.kafka.internal.types.Flyweight$Builder.build()

@@ -1,0 +1,12 @@
+q1-3125 qos=1 pubs=3125 window=60.003878736s msgs_kafka=211514 sessions_recs=0 rate=3525.005/s worker_cpu=60.629% proc_cpu=63.662% us_per_msg=171.9980
+2m25s pub total=316973 rate=3125.00/sec 2m25s pub_succ total=316973 rate=3125.00/sec 2m26s pub total=320098 rate=3125.00/sec 2m26s pub_succ total=320098 rate=3125.00/sec 
+q1-2000 qos=1 pubs=2000 window=60.003224163s msgs_kafka=133826 sessions_recs=0 rate=2230.313/s worker_cpu=47.247% proc_cpu=50.130% us_per_msg=211.8422
+2m29s pub total=199427 rate=2009.00/sec 2m29s pub_succ total=199427 rate=2009.00/sec 2m30s pub total=201430 rate=2003.00/sec 2m30s pub_succ total=201430 rate=2003.00/sec 
+q1-5000 qos=1 pubs=5000 window=60.003193603s msgs_kafka=264992 sessions_recs=0 rate=4416.298/s worker_cpu=78.179% proc_cpu=82.428% us_per_msg=177.0242
+4m58s pub total=924224 rate=1968.00/sec 4m58s pub_succ total=924224 rate=1968.00/sec 4m59s pub total=930256 rate=6032.00/sec 4m59s pub_succ total=930256 rate=6032.00/sec 
+client(4945): connect error - connack_timeout
+1m20s connect_fail total=1000 rate=10.01/sec
+q1-8000 qos=1 pubs=8000 cpu_window=60.009261308s offsets_window=66.828s msgs_kafka=311427 sessions_recs=0 kafka_rate=4660.061/s worker_cpu=79.121% proc_cpu=83.320% us_per_msg=169.7855
+5m2s pub_succ total=1035981 rate=3745.27/sec 5m3s pub total=1036917 rate=936.00/sec 5m3s pub_overrun total=154423 rate=25.50/sec 5m3s pub_succ total=1036917 rate=940.70/sec 
+client(6021): connect error - connack_timeout
+1m15s connect_fail total=3321 rate=41.00/sec

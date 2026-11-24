@@ -1,0 +1,69 @@
+samples 5133
+TOP 25 self
+ 20.0% sun.nio.ch.SocketDispatcher.write0(FileDescriptor, long, int)
+  5.8% sun.nio.ch.EPoll.wait(int, long, int, int)
+  4.3% org.agrona.collections.Int2ObjectHashMap.getMapped(int)
+  4.1% jdk.internal.foreign.AbstractMemorySegmentImpl.checkEnclosingLayout(long, MemoryLayout, boolean)
+  3.9% sun.nio.ch.SocketDispatcher.read0(FileDescriptor, long, int)
+  3.5% java.lang.Thread.yield0()
+  2.8% jdk.internal.foreign.AbstractMemorySegmentImpl.checkBounds(long, long)
+  2.7% io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.claimCapacity(AtomicBuffer, int)
+  2.4% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadInitial(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+  1.6% io.aklivity.zilla.runtime.binding.kafka.internal.types.KafkaKeyFW.length()
+  1.4% sun.nio.ch.UnixFileDispatcherImpl.write0(FileDescriptor, long, int)
+  1.4% io.aklivity.zilla.runtime.binding.kafka.internal.types.Flyweight$Builder.build()
+  1.4% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.doWork()
+  1.4% io.aklivity.zilla.runtime.binding.kafka.internal.types.Varint32FW.length0()
+  1.4% io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.write(int, DirectBufferEx, int, int)
+  1.1% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaMergedFactory$KafkaMergedStream.doMergedInitialWindow(long, long)
+  1.1% jdk.internal.foreign.AbstractMemorySegmentImpl.get(ValueLayout$OfShort, long)
+  1.0% sun.nio.ch.SelectorImpl.begin(boolean)
+  1.0% jdk.internal.foreign.AbstractMemorySegmentImpl.get(ValueLayout$OfInt, long)
+  0.9% jdk.internal.misc.Unsafe.checkOffset(Object, long)
+  0.8% io.aklivity.zilla.runtime.engine.internal.stream.Target.handleWrite(int, DirectBufferEx, int, int)
+  0.7% sun.nio.ch.SocketDispatcher.read(FileDescriptor, long, int)
+  0.7% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleRead(int, MutableDirectBufferEx, int, int)
+  0.7% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadReply(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+  0.7% jdk.internal.foreign.AbstractMemorySegmentImpl.isAlignedForElement(long, long)
+COMPONENT (by leafmost zilla/agrona frame)
+ 27.3% tcp binding
+ 25.9% kafka binding (client/cache streams)
+ 20.4% engine worker loop/ring buffers
+  9.0% agrona
+  8.8% kafka cache (server/client side)
+  5.3% mqtt-kafka binding
+  3.3% mqtt binding
+INCLUSIVE
+100.0% agrona
+ 96.4% engine
+ 28.2% tcp
+ 18.0% kafka cache
+ 14.6% kafka client
+  5.9% mqtt-kafka
+  4.3% mqtt
+TOP inclusive zilla methods
+ 96.4% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.doWork()
+ 80.4% io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.readEx(MessageHandlerEx, int)
+ 80.3% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleRead(int, MutableDirectBufferEx, int, int)
+ 58.9% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadInitial(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+ 20.7% io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadReply(long, long, long, long, long, int, int, MutableDirectBufferEx, int, int)
+ 16.1% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpClientFactory$TcpClient.onAppMessage(int, DirectBufferEx, int, int)
+ 15.4% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpClientFactory$TcpClient.onAppData(DataFW)
+ 15.2% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpClientFactory$TcpClient.doNetWrite(DirectBufferEx, int, int, ByteBuffer, long)
+ 13.9% io.aklivity.zilla.runtime.engine.internal.poller.Poller.doWork()
+  8.5% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceStream.onClientMessage(int, DirectBufferEx, int, int)
+  6.7% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpServerFactory$TcpServer.onAppMessage(int, DirectBufferEx, int, int)
+  6.2% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpServerFactory$TcpServer.onAppData(DataFW)
+  6.2% io.aklivity.zilla.runtime.binding.tcp.internal.stream.TcpServerFactory$TcpServer.doNetWrite(DirectBufferEx, int, int, ByteBuffer, long)
+  6.1% io.aklivity.zilla.runtime.binding.kafka.internal.types.Flyweight$Builder.build()
+  5.4% io.aklivity.zilla.runtime.engine.internal.poller.PollerKeyImpl.handleSelect(SelectionKey)
+  5.4% io.aklivity.zilla.runtime.engine.internal.poller.Poller.handleSelect(SelectionKey)
+  5.4% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaClientFetchFactory$KafkaFetchStream$KafkaFetchClient.onNetwork(int, DirectBufferEx, int, int)
+  5.2% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceStream.onClientInitialData(DataFW)
+  5.0% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaClientProduceFactory$KafkaProduceStream$KafkaProduceClient.onNetwork(int, DirectBufferEx, int, int)
+  4.9% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.onMqttMessage(int, DirectBufferEx, int, int)
+  4.8% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan.onClientInitialData(KafkaCacheClientProduceFactory$KafkaCacheClientProduceStream, DataFW)
+  4.6% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.onMqttData(DataFW)
+  4.3% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaMergedFactory$KafkaMergedStream.onMergedMessage(int, DirectBufferEx, int, int)
+  4.3% io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaClientFetchFactory$KafkaFetchStream$KafkaFetchClient.onNetworkData(DataFW)
+  4.3% io.aklivity.zilla.runtime.binding.mqtt.kafka.internal.stream.MqttKafkaPublishFactory$MqttPublishProxy.onMqttDataPublished(DataFW)

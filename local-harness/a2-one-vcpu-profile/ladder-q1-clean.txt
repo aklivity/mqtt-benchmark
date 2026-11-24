@@ -1,0 +1,6 @@
+c1-2000 qos=1 pubs=2000 cpu_window=60.006571973s offsets_window=66.090s msgs_kafka=131499 sessions_recs=0 kafka_rate=1989.676/s worker_cpu=41.978% proc_cpu=44.861% us_per_msg=210.9826
+1m53s pub total=203495 rate=2335.00/sec 1m53s pub_succ total=203495 rate=2335.00/sec 1m54s pub total=205495 rate=2000.00/sec 1m54s pub_succ total=205495 rate=2000.00/sec 
+c1-5000 qos=1 pubs=5000 cpu_window=60.005760000s offsets_window=66.674s msgs_kafka=333769 sessions_recs=0 kafka_rate=5005.969/s worker_cpu=60.410% proc_cpu=63.577% us_per_msg=120.6776
+2m19s pub total=573846 rate=5000.00/sec 2m19s pub_succ total=573846 rate=5000.00/sec 2m20s pub total=577880 rate=4034.00/sec 2m20s pub_succ total=577880 rate=4034.00/sec 
+c1-8000 qos=1 pubs=8000 cpu_window=60.009515110s offsets_window=66.891s msgs_kafka=532627 sessions_recs=0 kafka_rate=7962.492/s worker_cpu=84.219% proc_cpu=87.919% us_per_msg=105.7708
+2m34s pub total=983691 rate=8792.00/sec 2m34s pub_succ total=983691 rate=8792.00/sec 2m35s pub total=991687 rate=7996.00/sec 2m35s pub_succ total=991687 rate=7996.00/sec 
