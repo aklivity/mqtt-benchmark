@@ -29,7 +29,7 @@ resource "aws_vpc" "bench" {
 
 resource "aws_internet_gateway" "bench" { vpc_id = aws_vpc.bench.id }
 
-# One subnet in one availability zone, as in the EMQ test (all hosts in one VPC subnet)
+# One subnet in one availability zone (all hosts in one VPC subnet)
 resource "aws_subnet" "bench" {
   vpc_id                  = aws_vpc.bench.id
   cidr_block              = "10.0.0.0/24"

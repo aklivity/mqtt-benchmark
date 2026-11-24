@@ -17,7 +17,7 @@ report per published run and keep it next to the run's `results/<run-id>/` direc
 
 ## Scenario
 
-`scenarios/<name>.env`, copied from `results/<run-id>/scenario.env`. State any change from EMQ's published scenario.
+`scenarios/<name>.env`, copied from `results/<run-id>/scenario.env`. State any change from the scenario file in this repo.
 
 ## Software
 
@@ -45,7 +45,7 @@ Region, availability zone, placement group, and kernel settings (`deploy/ansible
 - How load was generated and split across hosts
 - Warm-up and measurement window
 - How each metric was measured (publish response time: `bin/puback-probe.py` on N probe connections, etc.)
-- Differences from EMQ's test (load tool, cloud, Kafka version, what publish response time includes)
+- Load tool, cloud, Kafka version, and what publish response time includes
 
 ## Raw data
 
