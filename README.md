@@ -30,8 +30,8 @@ and `QOS=2 bin/verify-delivery.sh` checks exactly-once delivery into Kafka. The 
 defines no QoS 2 case, so there are no published numbers to compare with.
 
 - **Zilla version.** Zilla up to 2.7.2-rc1 stops its engine on the first QoS 2 PUBLISH
-  ([aklivity/zilla#3303](https://github.com/aklivity/zilla/issues/3303)). Deploy a build that includes the fix
-  ([aklivity/zilla#3309](https://github.com/aklivity/zilla/pull/3309)) with `-e zilla_image=<image>`.
+  ([aklivity/zilla#3303](https://github.com/aklivity/zilla/issues/3303)). The fix
+  ([aklivity/zilla#3309](https://github.com/aklivity/zilla/pull/3309)) is in 2.8.0-rc8, the default `zilla_image`.
 - **One exchange in flight per connection.** The scenarios keep `INFLIGHT=1`: each client finishes PUBCOMP before
   its next PUBLISH. With several QoS 2 PUBLISHes in flight on one connection, Zilla's mqtt-kafka proxy stops its
   engine (noted in aklivity/zilla#3309), so the delivery check and the probe also keep one exchange in flight.
