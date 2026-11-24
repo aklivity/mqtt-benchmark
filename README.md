@@ -152,4 +152,3 @@ docs/                 disclosure report template
 - Grafana dashboards (Prometheus is wired up as the data source; dashboards still need to be built)
 - TLS variant of the scenario
 - The Open MQTT Benchmark Suite's Enterprise Set (1M connections, 50K:50K point-to-point and others)
-- Shared subscriptions, until Zilla's mqtt-kafka proxy supports them
