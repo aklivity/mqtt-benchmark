@@ -20,7 +20,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SCENARIO=${1:?usage: bin/run-scenario.sh scenarios/<name>.env}
-# defaults, overridden by the scenario file
 MODE=pubsub; SUBSCRIBERS=0; SUB_CONN_RATE=500; SUB_TOPIC=''; SUB_QOS=1; PLACEMENT=split; DELIVERIES_PER_MSG=1
 PUBLISHERS=0; PUB_CONN_RATE=500; PROBE_CONNECTIONS=0; INFLIGHT=1; KAFKA_TOPIC=mqtt-devices
 MQTT_VERSION=4; KEEPALIVE_S=300; CLEAN_SESSION=true; WARMUP_S=60; DURATION_S=1800
@@ -33,7 +32,6 @@ PUB_API=8080; SUB_API=8081
 RUN_ID="$NAME-$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="results/$RUN_ID"; mkdir -p "$OUT/clients" "$OUT/metrics"
 
-# --- inventory and helpers -------------------------------------------------------------------------------
 hosts() {   # hosts <group> <field: ansible_host|private_ip>
   awk -v g="[$1]" -v f="$2" '/^\[/{in_g=($0==g); next} in_g && NF {for (i=2;i<=NF;i++) {split($i,kv,"="); if (kv[1]==f) print kv[2]}}' "$INVENTORY"
 }
@@ -93,7 +91,6 @@ bench() {  # bench <host index> <name> <api port> <args...>
   on "${CLIENTS[$k]}" "docker run -d --name $name --network host --ulimit nofile=1048576:1048576 $BENCH_IMAGE $* \
     $COMMON --prometheus --restapi $port" >/dev/null; }
 
-# --- metadata --------------------------------------------------------------------------------------------
 log "run $RUN_ID ($MODE) on $N client hosts"
 cp "$SCENARIO" "$OUT/scenario.env"
 {
@@ -109,7 +106,6 @@ else on "$BROKER_PUB" "cat /etc/emqx/base.hocon" > "$OUT/emqx.hocon"; fi
 log "broker: $BROKER on $BROKER_IP:$MQTT_PORT"
 for h in "${CLIENTS[@]}"; do on "$h" "docker rm -f bench-pub bench-sub bench-conn >/dev/null 2>&1 || true"; done
 
-# --- start clients ---------------------------------------------------------------------------------------
 CONNECTED=0; SUBSCRIBED=0
 if [ "$MODE" = conn ]; then
   for k in "${!CLIENTS[@]}"; do
@@ -149,7 +145,6 @@ fi
 
 log "warm-up ${WARMUP_S}s"; sleep "$WARMUP_S"
 
-# --- measure ---------------------------------------------------------------------------------------------
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
   on "${CLIENTS[0]}" "nohup python3 /opt/mqtt-benchmark/puback-probe.py $BROKER_IP $MQTT_PORT $PROBE_CONNECTIONS $DURATION_S $RUN_ID $PAYLOAD_BYTES $QOS \
     < /dev/null > /tmp/probe-$RUN_ID.json 2>/tmp/probe-$RUN_ID.err &"
@@ -169,7 +164,6 @@ BCPU=$(cpu broker); BMEM=$(mem broker); KCPU=$(cpu kafka)
 # connections the broker holds, counted by the kernel (no broker metrics needed)
 BCONN=$(on "$BROKER_PUB" "ss -Htn state established '( sport = :$MQTT_PORT )' | wc -l")
 
-# --- stop and collect ------------------------------------------------------------------------------------
 for k in "${!CLIENTS[@]}"; do
   for c in bench-pub bench-sub bench-conn; do
     on "${CLIENTS[$k]}" "docker logs $c" > "$OUT/clients/$c-$k.log" 2>&1 || rm -f "$OUT/clients/$c-$k.log"

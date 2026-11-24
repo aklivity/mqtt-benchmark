@@ -100,7 +100,6 @@
       retries: 30
       delay: 2
       changed_when: false
-    # Zilla maps MQTT 5 shared subscriptions onto Kafka share groups (KIP-932), which Kafka 4.1 ships disabled
     - name: Enable share groups
       ansible.builtin.command: >
         docker exec kafka /opt/kafka/bin/kafka-features.sh --bootstrap-server localhost:9092
