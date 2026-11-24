@@ -9,7 +9,7 @@ terraform {
 provider "aws" {
   region = var.region
   default_tags {
-    tags = { Project = "mqtt-benchmark", Owner = var.owner }
+    tags = { Project = var.name_prefix, Owner = var.owner }
   }
 }
 
@@ -24,7 +24,7 @@ data "aws_ssm_parameter" "ubuntu_ami" {
 resource "aws_vpc" "bench" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
-  tags                 = { Name = "mqtt-benchmark" }
+  tags                 = { Name = var.name_prefix }
 }
 
 resource "aws_internet_gateway" "bench" { vpc_id = aws_vpc.bench.id }
@@ -52,7 +52,7 @@ resource "aws_route_table_association" "bench" {
 
 resource "aws_security_group" "bench" {
   vpc_id = aws_vpc.bench.id
-  name   = "mqtt-benchmark"
+  name   = var.name_prefix
 
   ingress {
     description = "all traffic between benchmark hosts"
@@ -90,12 +90,12 @@ resource "aws_security_group" "bench" {
 }
 
 resource "aws_placement_group" "bench" {
-  name     = "mqtt-benchmark"
+  name     = var.name_prefix
   strategy = "cluster"
 }
 
 resource "aws_key_pair" "bench" {
-  key_name   = "mqtt-benchmark"
+  key_name   = var.name_prefix
   public_key = file(pathexpand(var.public_key_path))
 }
 
@@ -134,7 +134,7 @@ resource "aws_instance" "broker" {
     iops        = 16000
     throughput  = 1000
   }
-  tags = { Name = "mqtt-benchmark-broker" }
+  tags = { Name = "${var.name_prefix}-broker" }
   lifecycle {
     ignore_changes = [ami]
   }
@@ -163,7 +163,7 @@ resource "aws_instance" "kafka" {
     iops        = 16000
     throughput  = 1000
   }
-  tags = { Name = "mqtt-benchmark-kafka" }
+  tags = { Name = "${var.name_prefix}-kafka" }
   lifecycle {
     ignore_changes = [ami]
   }
@@ -185,7 +185,7 @@ resource "aws_instance" "client" {
     volume_size = 30
     volume_type = "gp3"
   }
-  tags = { Name = "mqtt-benchmark-client-${count.index}" }
+  tags = { Name = "${var.name_prefix}-client-${count.index}" }
   lifecycle {
     ignore_changes = [ami]
   }
@@ -205,7 +205,7 @@ resource "aws_instance" "monitor" {
     volume_size = 50
     volume_type = "gp3"
   }
-  tags = { Name = "mqtt-benchmark-monitor" }
+  tags = { Name = "${var.name_prefix}-monitor" }
   lifecycle {
     ignore_changes = [ami]
   }

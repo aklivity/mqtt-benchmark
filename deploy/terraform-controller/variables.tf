@@ -4,6 +4,16 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "name_prefix" {
+  description = "Prefix of every named resource (VPC, security group, placement group, key pair, instances), so several deployments can share an AWS account and region"
+  type        = string
+  default     = "mqtt-benchmark"
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{0,39}$", var.name_prefix))
+    error_message = "name_prefix must start with a lowercase letter and contain only lowercase letters, digits and hyphens (at most 40 characters)."
+  }
+}
+
 variable "owner" {
   description = "Value for the Owner tag on every resource, so stray resources can be traced"
   type        = string

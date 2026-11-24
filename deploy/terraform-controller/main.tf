@@ -11,7 +11,7 @@ terraform {
 provider "aws" {
   region = var.region
   default_tags {
-    tags = { Project = "mqtt-benchmark", Owner = var.owner }
+    tags = { Project = var.name_prefix, Owner = var.owner }
   }
 }
 
@@ -49,7 +49,7 @@ resource "aws_s3_bucket_public_access_block" "exchange" {
 }
 
 resource "aws_iam_role" "controller" {
-  name = "mqtt-benchmark-ssm"
+  name = "${var.name_prefix}-ssm"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -86,7 +86,7 @@ resource "aws_iam_role_policy" "exchange" {
 }
 
 resource "aws_iam_instance_profile" "controller" {
-  name = "mqtt-benchmark-ssm"
+  name = "${var.name_prefix}-ssm"
   role = aws_iam_role.controller.name
 }
 
@@ -113,7 +113,7 @@ resource "aws_instance" "controller" {
     volume_size = 30
     volume_type = "gp3"
   }
-  tags = { Name = "mqtt-benchmark-controller" }
+  tags = { Name = "${var.name_prefix}-controller" }
   lifecycle {
     ignore_changes = [ami]
   }

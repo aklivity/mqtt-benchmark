@@ -1,5 +1,7 @@
 # Copy to terraform.tfvars (git-ignored) and fill in.
 owner           = "your-name"
+# Prefix of every named resource; use a unique one when several deployments share the AWS account and region
+# name_prefix   = "mqtt-benchmark"
 operator_cidrs  = ["203.0.113.7/32"]   # your public IP, for SSH, Grafana and Prometheus; without SSH: ["127.0.0.1/32"]
 public_key_path = "~/.ssh/mqtt-benchmark.pub"
 region          = "us-east-1"

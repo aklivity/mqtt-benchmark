@@ -1,5 +1,6 @@
 # Copy to terraform.tfvars (git-ignored) and fill in. Apply with credentials that may create IAM roles.
 owner                = "your-name"
+# name_prefix         = "mqtt-benchmark"   # names the IAM role and profile (account-wide): use a unique one per deployment
 region               = "us-east-1"
 bucket_name          = "mqtt-benchmark-your-name-1234"      # globally unique
 

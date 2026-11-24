@@ -58,7 +58,10 @@ Credentials, three sets (they may be the same ones):
    ```bash
    cd deploy/terraform-controller && terraform init && terraform apply
    ```
-   It creates the S3 bucket (public access blocked), the role `mqtt-benchmark-ssm` (SSM agent permissions plus
+   Every named resource carries the `name_prefix` variable (default `mqtt-benchmark`) in both Terraform modules: set a
+   unique one in each `terraform.tfvars` when several deployments share the AWS account and region (the IAM role and
+   instance profile names are account-wide).
+   It creates the S3 bucket (public access blocked), the role `<name_prefix>-ssm` (default `mqtt-benchmark-ssm`; SSM agent permissions plus
    get/put/list/delete on that bucket only) with its instance profile, and one `t3.medium` in the benchmark subnet.
    Its first-boot script installs Ansible, the AWS CLI and `jq`, and puts the key and an `ssh_config` that skips host
    key checks inside the VPC on the controller.
