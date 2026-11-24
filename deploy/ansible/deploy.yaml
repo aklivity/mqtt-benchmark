@@ -161,7 +161,8 @@
             diagnostics_args: >-
               {{ "-v /var/log/zilla:/var/log/zilla
               -e JAVA_TOOL_OPTIONS='-Xlog:gc*:file=/var/log/zilla/gc.log:time,uptime,level,tags
-              -XX:StartFlightRecording=disk=true,maxsize=1g,filename=/var/log/zilla/zilla.jfr,settings=profile'"
+              " ~ ("-XX:StartFlightRecording=disk=true,maxsize=1g,filename=/var/log/zilla/zilla.jfr,settings=profile"
+              if zilla_jfr | bool else "") ~ "'"
               if zilla_diagnostics | bool else '' }}
           ansible.builtin.shell: |
             docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \

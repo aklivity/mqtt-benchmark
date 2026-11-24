@@ -20,6 +20,8 @@ zilla_image_loaded: false
 # true: GC log and a continuous Flight Recorder recording of Zilla under /var/log/zilla on the broker host
 # (bin/run-scenario.sh with DIAG=1 collects them)
 zilla_diagnostics: false
+# false: with zilla_diagnostics, record only the GC log. For images whose runtime has no jdk.jfr module
+zilla_jfr: true
 # "no" keeps a crashed broker down so the run shows it; set "unless-stopped" for soak tests
 broker_restart: "no"
 
