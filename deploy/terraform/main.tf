@@ -89,7 +89,6 @@ resource "aws_security_group" "bench" {
   }
 }
 
-# Keep the broker, Kafka and the load generators close together on the network
 resource "aws_placement_group" "bench" {
   name     = "mqtt-benchmark"
   strategy = "cluster"

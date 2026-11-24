@@ -87,6 +87,7 @@
           -e KAFKA_LOG_DIRS=/var/lib/kafka/data \
           -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
+          -e KAFKA_SHARE_COORDINATOR_STATE_TOPIC_REPLICATION_FACTOR=1 -e KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR=1 \
           -e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 \
           -e KAFKA_NUM_NETWORK_THREADS=8 -e KAFKA_NUM_IO_THREADS=16 \
           -e KAFKA_AUTO_CREATE_TOPICS_ENABLE=false \
@@ -98,6 +99,11 @@
       until: kafka_ready.rc == 0
       retries: 30
       delay: 2
+      changed_when: false
+    - name: Enable share groups
+      ansible.builtin.command: >
+        docker exec kafka /opt/kafka/bin/kafka-features.sh --bootstrap-server localhost:9092
+        upgrade --feature share.version=1
       changed_when: false
     - name: Create topics
       ansible.builtin.command: >
@@ -147,7 +153,7 @@
               -v /etc/zilla:/etc/zilla:ro \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
-              {{ zilla_image }} start -e -w {{ zilla_workers }}
+              {{ zilla_image }} start -e -v
         # rc 0: ENGINE_STARTED logged; rc 2: the container exited (stop retrying and show its log); rc 1: not yet
         - name: Wait for ENGINE_STARTED
           ansible.builtin.shell: |

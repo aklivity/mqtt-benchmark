@@ -16,7 +16,7 @@ with the same clients, Kafka and hosts.
 | `basic-conn-10k` | [Open MQTT Benchmark Suite](https://github.com/emqx/mqttbs), Basic Set | 10,000 connections within 100 s, held for 30 minutes |
 | `basic-fanout-1-1k` | Basic Set | 1 publisher, 1,000 subscribers on one topic, 1 msg/s in, 1,000 msg/s out, QoS 1, 16 B |
 | `basic-p2p-1k` | Basic Set | 1,000 publisher/subscriber pairs, one topic per pair, 1,000 msg/s in and out, QoS 1, 16 B |
-| `basic-sharedsub-1k-5` | Basic Set | 1,000 publishers, 5 subscribers in one shared subscription group, MQTT 5, QoS 1, 16 B. Needs shared subscription support in Zilla's mqtt-kafka proxy, which isn't available yet. |
+| `basic-sharedsub-1k-5` | Basic Set | 1,000 publishers, 5 subscribers in one shared subscription group, MQTT 5, QoS 1, 16 B. Through Zilla, the group is a Kafka share group (Kafka has share groups enabled and the mqtt-kafka binding has a store). |
 | `smoke-1k` | | 1,000 publishers for 2 minutes, to check a new environment |
 | `*-q2` | | QoS 2 versions of `smoke-1k`, `basic-p2p-1k`, `basic-fanout-1-1k` (QoS 2 publishers and subscribers) and `emqx-kafka-100k` (see [QoS 2](#qos-2)) |
 
@@ -116,8 +116,7 @@ pair at `~/.ssh/mqtt-benchmark` (`ssh-keygen -t ed25519 -f ~/.ssh/mqtt-benchmark
 
 Zilla's config (`deploy/ansible/templates/zilla.yaml.j2`) has no metrics; its only telemetry is the stdout log
 exporter, which reports engine start and stop, client connections and errors. Everything above is measured from the
-clients, Kafka and the hosts. Zilla runs with 31 engine workers (`zilla_workers`): with exactly 32, the default on a
-32-vCPU host, Zilla 2.7.2-rc1 fails to start.
+clients, Kafka and the hosts. Zilla runs with its default number of engine workers, one per vCPU.
 
 EMQX (`deploy/ansible/templates/emqx.hocon.j2`) has one rule, `SELECT * FROM "device/#"`, feeding a Kafka producer
 action that writes to `mqtt-devices` with the MQTT topic as key and the payload as value, the same records Zilla
