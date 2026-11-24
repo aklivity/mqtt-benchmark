@@ -6,7 +6,7 @@ operator_cidrs  = ["203.0.113.7/32"]   # your public IP, for SSH, Grafana and Pr
 public_key_path = "~/.ssh/mqtt-benchmark.pub"
 region          = "us-east-1"
 
-# Every instance terminates itself after this long (default 300); keep it above the longest run plus deploy time
+# Every instance terminates itself after this many minutes (default 0: off); keep it above the longest run plus deploy time
 # max_lifetime_minutes = 300
 
 # Defaults: 32 vCPU / 64 GB for the broker and for Kafka. Override to experiment:

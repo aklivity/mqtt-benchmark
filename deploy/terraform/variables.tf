@@ -35,12 +35,12 @@ variable "public_key_path" {
 }
 
 variable "max_lifetime_minutes" {
-  description = "Every instance shuts itself down, and so terminates, this many minutes after it boots. Keep it above the longest run plus deploy time."
+  description = "Every instance shuts itself down, and so terminates, this many minutes after it boots: a guard against forgotten environments. 0 (the default) disables it. Keep it above the longest run plus deploy time."
   type        = number
-  default     = 300
+  default     = 0
   validation {
-    condition     = var.max_lifetime_minutes >= 1 && floor(var.max_lifetime_minutes) == var.max_lifetime_minutes
-    error_message = "max_lifetime_minutes must be a whole number of minutes, at least 1."
+    condition     = var.max_lifetime_minutes >= 0 && floor(var.max_lifetime_minutes) == var.max_lifetime_minutes
+    error_message = "max_lifetime_minutes must be a whole number of minutes, 0 to disable the guard."
   }
 }
 

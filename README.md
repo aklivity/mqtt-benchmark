@@ -62,8 +62,8 @@ port 22, run everything through a controller instance in the VPC instead: see
    cd deploy/terraform && terraform init && terraform apply
    ```
    This writes `deploy/inventory.ini` (and `deploy/inventory-private.ini`, with private addresses, for the controller)
-   and prints the Grafana and Prometheus URLs. Every instance terminates itself `max_lifetime_minutes` (default 300)
-   after it boots, as a guard against forgotten environments: raise it for longer sessions.
+   and prints the Grafana and Prometheus URLs. Set `max_lifetime_minutes` (default 0: off) to make every instance terminate
+   itself that long after it boots, as a guard against forgotten environments.
 2. **Deploy.** Installs Docker, tunes the kernel, and starts Kafka (with the topics), the broker, node_exporter,
    Prometheus and Grafana. The broker is Zilla unless you pass `-e broker=emqx`; the images are set in
    `deploy/ansible/group_vars/all.yaml`.

@@ -106,12 +106,10 @@ locals {
     vpc_security_group_ids = [aws_security_group.bench.id]
     key_name               = aws_key_pair.bench.key_name
   }
-  # Hard stop for forgotten environments: a shutdown from inside the instance terminates it (see
-  # instance_initiated_shutdown_behavior on every instance), whatever happens to the operator's session.
-  shutdown_guard = <<-EOT
-    #!/bin/bash
-    shutdown -h +${var.max_lifetime_minutes}
-  EOT
+  # Opt-in hard stop for forgotten environments (max_lifetime_minutes > 0): a shutdown from inside the instance
+  # terminates it, whatever happens to the operator's session. Left null, the instances behave as without the guard.
+  shutdown_guard    = var.max_lifetime_minutes > 0 ? "#!/bin/bash\nshutdown -h +${var.max_lifetime_minutes}\n" : null
+  shutdown_behavior = var.max_lifetime_minutes > 0 ? "terminate" : null
 }
 
 resource "aws_instance" "broker" {
@@ -122,7 +120,7 @@ resource "aws_instance" "broker" {
   key_name               = local.common.key_name
   placement_group        = aws_placement_group.bench.id
 
-  instance_initiated_shutdown_behavior = "terminate"
+  instance_initiated_shutdown_behavior = local.shutdown_behavior
   user_data                            = local.shutdown_guard
 
   # The broker host (Zilla or EMQX). Zilla caches the Kafka topics it bootstraps (including mqtt-devices) under
@@ -148,7 +146,7 @@ resource "aws_instance" "kafka" {
   key_name               = local.common.key_name
   placement_group        = aws_placement_group.bench.id
 
-  instance_initiated_shutdown_behavior = "terminate"
+  instance_initiated_shutdown_behavior = local.shutdown_behavior
   user_data                            = local.shutdown_guard
 
   root_block_device {
@@ -178,7 +176,7 @@ resource "aws_instance" "client" {
   key_name               = local.common.key_name
   placement_group        = aws_placement_group.bench.id
 
-  instance_initiated_shutdown_behavior = "terminate"
+  instance_initiated_shutdown_behavior = local.shutdown_behavior
   user_data                            = local.shutdown_guard
 
   root_block_device {
@@ -198,7 +196,7 @@ resource "aws_instance" "monitor" {
   vpc_security_group_ids = local.common.vpc_security_group_ids
   key_name               = local.common.key_name
 
-  instance_initiated_shutdown_behavior = "terminate"
+  instance_initiated_shutdown_behavior = local.shutdown_behavior
   user_data                            = local.shutdown_guard
 
   root_block_device {

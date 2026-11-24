@@ -46,7 +46,8 @@ Credentials, three sets (they may be the same ones):
 
 1. **Provision the benchmark hosts.** In `deploy/terraform/terraform.tfvars` pass a harmless placeholder as
    `operator_cidrs` (`["127.0.0.1/32"]`): the hosts are then reachable only from inside the VPC. Set `public_key_path`
-   to the key above, and `max_lifetime_minutes` if 300 (5 hours) is too short or too long.
+   to the key above, and set `max_lifetime_minutes` (for example 300, 5 hours; the default 0 leaves the guard off) so
+   forgotten hosts terminate themselves.
    ```bash
    cd deploy/terraform && terraform init && terraform apply
    terraform output network      # vpc_id, subnet_id, security_group_id
@@ -134,10 +135,12 @@ Every diagnostic is best effort: a failure is logged in `run.log` and does not c
 
 ## What auto-terminates
 
-Every instance, the controller included, shuts itself down `max_lifetime_minutes` after it boots, and shutdown
-terminates it (`instance_initiated_shutdown_behavior = "terminate"`); root and data volumes go with it. This is a
-guard against forgotten environments: set the value above the longest run plus deploy time, and remember that hosts
-created earlier stop earlier. If the controller is the one that goes first, you lose the way to drive the hosts.
+The controller shuts itself down `max_lifetime_minutes` (default 300) after it boots, and so does every benchmark
+host when `max_lifetime_minutes` in `deploy/terraform` is above 0 (the default 0 turns the guard off there, as in the
+SSH flow). Shutdown terminates the instance (`instance_initiated_shutdown_behavior = "terminate"`); root and data
+volumes go with it. This is a guard against forgotten environments: set the value above the longest run plus deploy
+time, and remember that hosts created earlier stop earlier. If the controller is the one that goes first, you lose the
+way to drive the hosts.
 
 Not auto-terminated, and removed only by `terraform destroy`: the VPC, subnet, security group, placement group and key
 pair, the bucket and its contents, the IAM role and instance profile. Instances that already terminated are fine for
