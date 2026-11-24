@@ -7,7 +7,7 @@ region          = "us-east-1"
 # Every instance terminates itself after this long (default 300); keep it above the longest run plus deploy time
 # max_lifetime_minutes = 300
 
-# Defaults match EMQ's setup (32 vCPU / 64 GB for the broker and for Kafka). Override to experiment:
+# Defaults: 32 vCPU / 64 GB for the broker and for Kafka. Override to experiment:
 # broker_instance_type = "c6i.8xlarge"
 # kafka_instance_type  = "c6i.8xlarge"
 # client_count          = 2

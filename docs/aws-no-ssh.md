@@ -79,7 +79,7 @@ Credentials, three sets (they may be the same ones):
    bin/aws/run-scenario.sh scenarios/smoke-1k.env
    bin/aws/verify-delivery.sh                 # QOS=2 bin/aws/verify-delivery.sh
    bin/aws/deploy.sh                          # empty Kafka and broker again before a full-size run
-   DIAG=1 bin/aws/run-scenario.sh scenarios/emqx-kafka-100k.env
+   DIAG=1 bin/aws/run-scenario.sh scenarios/mqtt-kafka-100k.env
    ```
    Results arrive in the local `results/<run-id>/`, as in the SSH flow. While a run is going, watch it with
    `bin/aws/ssm-run.py 'tail -n 20 /opt/mqtt-benchmark-src/results/*/run.log'`.

@@ -20,8 +20,7 @@
 
 Either way the caller then counts the records in Kafka: every completed message must be there exactly once.
 
-One exchange at a time per connection is deliberate: with several QoS 2 PUBLISHes in flight on one connection
-(for example mosquitto_pub -l), Zilla's mqtt-kafka proxy stops its engine (noted in aklivity/zilla#3309).
+One exchange at a time per connection, as in the QoS 2 scenarios (INFLIGHT=1).
 """
 import socket, struct, sys, threading, time
 

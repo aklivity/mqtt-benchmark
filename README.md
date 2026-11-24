@@ -2,23 +2,21 @@
 
 MQTT benchmarks for [Zilla](https://github.com/aklivity/zilla)'s MQTT-to-Kafka proxy (`mqtt-kafka`).
 
-It reproduces EMQ's published
-[EMQX-to-Kafka benchmark](https://www.emqx.com/en/blog/mqtt-performance-benchmark-testing-emqx-kafka-integration)
-and the Basic Set of the [Open MQTT Benchmark Suite](https://github.com/emqx/mqttbs) with Zilla, using the same
-scenarios and equivalent machines on AWS. The same setup can also run EMQX with a Kafka rule, as a baseline measured
-with the same clients, Kafka and hosts.
+It runs an MQTT-to-Kafka throughput scenario and the Basic Set of the
+[Open MQTT Benchmark Suite](https://github.com/emqx/mqttbs) with Zilla on AWS. The same setup can also run EMQX with a
+Kafka rule, as a baseline measured with the same clients, Kafka and hosts.
 
 ## Scenarios
 
 | Scenario | Source | What it does |
 |---|---|---|
-| `emqx-kafka-100k` | [EMQX-to-Kafka benchmark](https://www.emqx.com/en/blog/mqtt-performance-benchmark-testing-emqx-kafka-integration) | 100,000 publishers connecting at 5,000/s, one topic each, 1 msg/s each (100,000 msg/s), QoS 1, 1 KB, all written to one Kafka topic with 16 partitions |
+| `mqtt-kafka-100k` | | 100,000 publishers connecting at 5,000/s, one topic each, 1 msg/s each (100,000 msg/s), QoS 1, 1 KB, all written to one Kafka topic with 16 partitions |
 | `basic-conn-10k` | [Open MQTT Benchmark Suite](https://github.com/emqx/mqttbs), Basic Set | 10,000 connections within 100 s, held for 30 minutes |
 | `basic-fanout-1-1k` | Basic Set | 1 publisher, 1,000 subscribers on one topic, 1 msg/s in, 1,000 msg/s out, QoS 1, 16 B |
 | `basic-p2p-1k` | Basic Set | 1,000 publisher/subscriber pairs, one topic per pair, 1,000 msg/s in and out, QoS 1, 16 B |
 | `basic-sharedsub-1k-5` | Basic Set | 1,000 publishers, 5 subscribers in one shared subscription group, MQTT 5, QoS 1, 16 B. Through Zilla, the group is a Kafka share group (Kafka has share groups enabled and the mqtt server binding has a store). |
 | `smoke-1k` | | 1,000 publishers for 2 minutes, to check a new environment |
-| `*-q2` | | QoS 2 versions of `smoke-1k`, `basic-p2p-1k`, `basic-fanout-1-1k` (QoS 2 publishers and subscribers) and `emqx-kafka-100k` (see [QoS 2](#qos-2)) |
+| `*-q2` | | QoS 2 versions of `smoke-1k`, `basic-p2p-1k`, `basic-fanout-1-1k` (QoS 2 publishers and subscribers) and `mqtt-kafka-100k` (see [QoS 2](#qos-2)) |
 
 All scenarios use MQTT 3.1.1 (except shared subscriptions, which need MQTT 5), keep alive 300 s and clean session,
 as the suite specifies. Subscribers connect and subscribe before any publisher connects. The Basic Set scenarios run
@@ -28,26 +26,22 @@ cases, so those use 500/s. Through Zilla, every message is written to Kafka and 
 ### QoS 2
 
 The `*-q2` scenarios run the same load with every publish a full QoS 2 exchange (PUBLISH, PUBREC, PUBREL, PUBCOMP),
-and `QOS=2 bin/verify-delivery.sh` checks exactly-once delivery into Kafka. Neither EMQ's benchmark nor the Open MQTT
-Benchmark Suite's Basic Set defines a QoS 2 case, so there are no published numbers to compare with.
+and `QOS=2 bin/verify-delivery.sh` checks exactly-once delivery into Kafka. The Open MQTT Benchmark Suite's Basic Set
+defines no QoS 2 case, so there are no published numbers to compare with.
 
-- **Zilla version.** Zilla up to 2.7.2-rc1 stops its engine on the first QoS 2 PUBLISH
-  ([aklivity/zilla#3303](https://github.com/aklivity/zilla/issues/3303)). Deploy a build that includes the fix
-  ([aklivity/zilla#3309](https://github.com/aklivity/zilla/pull/3309)) with `-e zilla_image=<image>`.
-- **One exchange in flight per connection.** The scenarios keep `INFLIGHT=1`: each client finishes PUBCOMP before
-  its next PUBLISH. With several QoS 2 PUBLISHes in flight on one connection, Zilla's mqtt-kafka proxy stops its
-  engine (noted in aklivity/zilla#3309), so the delivery check and the probe also keep one exchange in flight.
+Each client keeps one QoS 2 exchange in flight (`INFLIGHT=1`): it finishes PUBCOMP before its next PUBLISH. The
+delivery check and the probe do the same.
 
 ## Infrastructure
 
-EMQ ran on Alibaba Cloud. This repo provisions the AWS equivalent with Terraform:
+This repo provisions the hosts on AWS with Terraform:
 
-| Role | Count | Default instance | EMQ's setup |
-|---|---|---|---|
-| Broker (Zilla or EMQX) | 1 | c6i.8xlarge (32 vCPU, 64 GiB), 500 GB gp3 (Zilla's Kafka cache) | EMQX 5.1.0 on c6.8xlarge (32 vCPU, 64 GB) |
-| Kafka | 1 | c6i.8xlarge, 1 TB gp3 data volume; `mqtt-devices` keeps 15 minutes | Kafka 2.6.0 on c6.8xlarge |
-| Load generators | 2 | c6i.2xlarge, emqtt-bench | XMeter (count not published) |
-| Monitoring | 1 | t3.medium, Prometheus and Grafana | n/a |
+| Role | Count | Default instance |
+|---|---|---|
+| Broker (Zilla or EMQX) | 1 | c6i.8xlarge (32 vCPU, 64 GiB), 500 GB gp3 (Zilla's Kafka cache) |
+| Kafka | 1 | c6i.8xlarge, 1 TB gp3 data volume; `mqtt-devices` keeps 15 minutes |
+| Load generators | 2 | c6i.2xlarge, emqtt-bench |
+| Monitoring | 1 | t3.medium, Prometheus and Grafana |
 
 All hosts run Ubuntu 22.04 in one subnet and one cluster placement group, with the kernel tuning in
 `deploy/ansible/files/99-mqtt-benchmark.conf`. One client IP can open about 64K connections to a single broker
@@ -94,7 +88,7 @@ port 22, run everything through a controller instance in the VPC instead: see
    broker is deployed (and its MQTT port: Zilla 7183, EMQX 1883) from the broker host.
    ```bash
    (cd deploy/ansible && ansible-playbook deploy.yaml)
-   bin/run-scenario.sh scenarios/emqx-kafka-100k.env
+   bin/run-scenario.sh scenarios/mqtt-kafka-100k.env
    ```
    Do the same for each `scenarios/basic-*.env`, redeploying between runs. `DIAG=1 bin/run-scenario.sh ...` also saves
    per-thread CPU, class histograms and the like of the broker (see the script's header). Results go to `results/<run-id>/`:
@@ -119,7 +113,7 @@ port 22, run everything through a controller instance in the VPC instead: see
 | CPU and memory | node_exporter on the broker and Kafka hosts, averaged over the window in Prometheus |
 | Delivery | `bin/verify-delivery.sh`: 20,000 numbered QoS 1 messages; PUBACK count = Kafka records with those keys, no duplicates. `QOS=2`: 20,000 numbered QoS 2 messages (PUBCOMP count = Kafka records, no duplicates), plus 60 QoS 2 exchanges interrupted by a dropped connection after PUBREC, before PUBREC or after PUBREL and resumed on reconnect (`bin/qos2-delivery.py`), each of which must be in Kafka exactly once. It scans the whole topic, so run it after a fresh deploy or the smoke scenario, not after a full-size run. |
 | Stability | Broker container restarts; Zilla `AgentTerminationException` lines, or EMQX log lines at error level or above |
-| EMQX Kafka action (EMQX only) | EMQX's own `matched`, `success`, `failed` and `dropped` counters for the Kafka action over the window, read from its REST API, as EMQ compared them with the Kafka offsets |
+| EMQX Kafka action (EMQX only) | EMQX's own `matched`, `success`, `failed` and `dropped` counters for the Kafka action over the window, read from its REST API, to compare with the Kafka offsets |
 
 Zilla's config (`deploy/ansible/templates/zilla.yaml.j2`) has no metrics; its only telemetry is the stdout log
 exporter, which reports engine start and stop, client connections and errors. Everything above is measured from the
@@ -129,21 +123,19 @@ EMQX (`deploy/ansible/templates/emqx.hocon.j2`) has one rule, `SELECT * FROM "de
 action that writes to `mqtt-devices` with the MQTT topic as key and the payload as value, the same records Zilla
 writes. Its partition strategy is `key_dispatch`, like Zilla's; every other Kafka setting is EMQX's default (async,
 memory buffer, `max_inflight` 10, `required_acks` `all_isr`). EMQX runs 6.3.3 under its free single-node Community
-License: Enterprise 5.1.0, the version in EMQ's test, ships a trial license limited to 100 connections.
+License.
 
-## Differences from EMQ's test
+## What to state with published results
 
-State these with any published result:
-
-- **Load tool:** emqtt-bench 0.6.3 instead of XMeter.
-- **Cloud:** AWS c6i instances instead of Alibaba Cloud c6.
-- **Kafka:** 4.1.1 instead of 2.6.0.
-- **EMQX:** 6.3.3 instead of 5.1.0 (see above), for the EMQX baseline.
+- **Load tool:** emqtt-bench 0.6.3.
+- **Cloud:** AWS c6i instances.
+- **Kafka:** 4.1.1.
+- **EMQX:** 6.3.3 (see above), for the EMQX baseline.
 - **Publish response time means different things for the two brokers.** Zilla sends the QoS 1 PUBACK only after
   Kafka has acknowledged the message, so the PUBACK means the message is in Kafka. EMQX's rule writes to Kafka
   asynchronously (the default `query_mode`), so its PUBACK doesn't wait for Kafka; compare EMQX's message rate into
   Kafka and its action's `dropped`/`failed` counters, not only its publish response time.
-- **Things EMQ didn't publish,** which we choose here: test duration (30 minutes, as in the Open MQTT Benchmark
+- **Choices made here:** test duration (30 minutes, as in the Open MQTT Benchmark
   Suite), Kafka producer settings, load generator sizing, disks.
 
 Use [docs/disclosure-report-template.md](docs/disclosure-report-template.md) for every published result.
@@ -169,4 +161,3 @@ docs/                 disclosure report template, running without SSH
 - Grafana dashboards (Prometheus is wired up as the data source; dashboards still need to be built)
 - TLS variant of the scenario
 - The Open MQTT Benchmark Suite's Enterprise Set (1M connections, 50K:50K point-to-point and others)
-- Shared subscriptions, until Zilla's mqtt-kafka proxy supports them

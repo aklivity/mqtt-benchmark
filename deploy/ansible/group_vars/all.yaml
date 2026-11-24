@@ -2,10 +2,9 @@
 broker: zilla
 
 # Versions under test. Pin a release tag or an image digest for any result you publish.
-# EMQX 6.x ships a free single-node Community License (10M sessions) that includes the Kafka integration. The
-# version in EMQ's benchmark, Enterprise 5.1.0, ships a trial license limited to 100 connections.
+# EMQX 6.x ships a free single-node Community License (10M sessions) that includes the Kafka integration.
 emqx_image: emqx/emqx:6.3.3@sha256:54778dba62a5cbcb03ca381c9bceb3d8a87cab9e3da155ed3607d994454df900
-zilla_image: ghcr.io/aklivity/zilla:2.8.0-rc7@sha256:824c7552eaa12437bd460f9dea5c15259930b24f0f043903d076556993f2648c
+zilla_image: ghcr.io/aklivity/zilla:2.8.0-rc8@sha256:93e97f6987c5a30b91f28398ae52e079183ab4db3b6ae9c34997d78c76e0bf4a
 kafka_image: apache/kafka:4.1.1
 bench_image: emqx/emqtt-bench:0.6.3
 mosquitto_image: eclipse-mosquitto:2.0
