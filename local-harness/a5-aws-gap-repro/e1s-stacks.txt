@@ -1,0 +1,12 @@
+	at io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout.findAndMarkAncestor(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheServerFetchFa
+	at io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout.findAncestor(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheServerFetchFactory.j
+	at io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout$$Lambda/0x00000000296398c8.apply(io.aklivity.zilla.runtime.binding.kafka/Unknown So
+--
+	at io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout.findAndMarkAncestor(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheServerFetchFa
+	at io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout.findAncestor(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheServerFetchFactory.j
+	at io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheServerFetchFactory$KafkaCacheServerFetchFanout$$Lambda/0x00000000296398c8.apply(io.aklivity.zilla.runtime.binding.kafka/Unknown So
+--
+	at io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheIndexFile$SortedByValue.sortByKey(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheIndexFile.java:699)
+	at io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheIndexFile$SortedByValue.sortByKey(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheIndexFile.java:637)
+	at io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheFile$HashScan.freeze(io.aklivity.zilla.runtime.binding.kafka/KafkaCacheFile.java:477)
+--

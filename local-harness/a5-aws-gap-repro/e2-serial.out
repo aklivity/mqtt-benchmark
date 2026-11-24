@@ -1,0 +1,18 @@
+zilla port ready after 7.031650515 s
+IDLE total=0 worker_cpu_pct=1.6 rss_mb=327 DefNew total 314624K, used 174471K [0x0000000080000000, 0x0000000095560000, 0x00000000aaaa0000);Tenured total 699072K, used 14299K [0x00000000aaaa0000, 0x00000000d5550000, 0x0000000100000000);
+pub CONNACK complete: 38.226977289 s  last: 37s connect_succ total=3125 rate=74.00/sec
+RESULT label=e2-serial-idle0 pubs=3125 idle=0 qos=1 conack_s=38.226977289 worker_cpu_pct=44.4 records=102894 rate=3126 us_per_msg=142 rss_mb=3575
+idle total=5000: ramp took 27.370023394 s ; 25s connect_succ total=5000 rate=546.00/sec
+IDLE total=5000 worker_cpu_pct=2.0 rss_mb=3840 DefNew total 314624K, used 48670K [0x0000000080000000, 0x0000000095560000, 0x00000000aaaa0000);Tenured total 699072K, used 346703K [0x00000000aaaa0000, 0x00000000d5550000, 0x0000000100000000);
+pub CONNACK complete: 13.621043767 s  last: 12s connect_succ total=3125 rate=284.00/sec
+RESULT label=e2-serial-idle5000 pubs=3125 idle=0 qos=1 conack_s=13.621043767 worker_cpu_pct=53.2 records=105913 rate=3125 us_per_msg=170 rss_mb=4651
+idle total=10000: ramp took 24.360678844 s ; 23s connect_succ total=5000 rate=1123.00/sec
+IDLE total=10000 worker_cpu_pct=4.3 rss_mb=4861 DefNew total 314624K, used 117896K [0x0000000080000000, 0x0000000095560000, 0x00000000aaaa0000);Tenured total 699072K, used 679630K [0x00000000aaaa0000, 0x00000000d5550000, 0x0000000100000000);
+pub CONNACK complete: 12.533953388 s  last: 11s connect_succ total=3125 rate=281.00/sec
+RESULT label=e2-serial-idle10000 pubs=3125 idle=0 qos=1 conack_s=12.533953388 worker_cpu_pct=51.6 records=103956 rate=3123 us_per_msg=165 rss_mb=5727
+idle total=15000: ramp took 21.321831089 s ; 19s connect_succ total=5000 rate=624.00/sec
+IDLE total=15000 worker_cpu_pct=5.4 rss_mb=5861 DefNew total 314624K, used 124001K [0x0000000080000000, 0x0000000095560000, 0x00000000aaaa0000);Tenured total 1048256K, used 1048235K [0x00000000aaaa0000, 0x00000000eaa50000, 0x0000000100000000);
+pub CONNACK complete: 12.499967482 s  last: 11s connect_succ total=3125 rate=282.00/sec
+RESULT label=e2-serial-idle15000 pubs=3125 idle=0 qos=1 conack_s=12.499967482 worker_cpu_pct=60.0 records=104212 rate=3126 us_per_msg=192 rss_mb=6616
+GC pauses:
+count 27 max 505.067ms p50 Threshold) p99 391.378ms

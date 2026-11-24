@@ -1,0 +1,8 @@
+zilla port ready after 6.532187708 s
+IDLE total=0 worker_cpu_pct=1.7 rss_mb=330 DefNew total 314624K, used 175498K [0x0000000080000000, 0x0000000095560000, 0x00000000aaaa0000);Tenured total 699072K, used 14303K [0x00000000aaaa0000, 0x00000000d5550000, 0x0000000100000000);
+pub CONNACK complete: 27.866123645 s  last: 26s connect_succ total=3125 rate=57.00/sec
+RESULT label=e2-serial-idle0 pubs=3125 idle=0 qos=1 conack_s=27.866123645 worker_cpu_pct=55.2 records=104643 rate=3156 us_per_msg=175 rss_mb=3491
+idle total=5000: ramp took 502.469552789 s ; 
+IDLE total=5000 worker_cpu_pct=1.6 rss_mb=3561 DefNew total 314624K, used 49378K [0x0000000080000000, 0x0000000095560000, 0x00000000aaaa0000);Tenured total 699072K, used 206633K [0x00000000aaaa0000, 0x00000000d5550000, 0x0000000100000000);
+pub CONNACK complete: 13.468931212 s  last: 12s connect_succ total=3125 rate=128.00/sec
+RESULT label=e2-serial-idle5000 pubs=3125 idle=0 qos=1 conack_s=13.468931212 worker_cpu_pct=46.3 records=104374 rate=3140 us_per_msg=147 rss_mb=4344

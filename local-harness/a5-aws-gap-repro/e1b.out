@@ -1,0 +1,48 @@
+=== run 1 Tue Nov 24 10:16:09 UTC 2026
+zilla port ready after 6.027546259 s
+pub CONNACK complete: 44.326046601 s  last: 40s connect_succ total=3125 rate=80.00/sec
+RESULT label=e1b-r1 pubs=3125 idle=0 qos=1 conack_s=44.326046601 worker_cpu_pct=51.5 records=107511 rate=3124 us_per_msg=165 rss_mb=4014
+LG 1m25s pub_succ total=191761 rate=3124.00/sec|1m26s pub_succ total=194889 rate=3128.00/sec|1m27s pub_succ total=198014 rate=3125.00/sec|1m28s pub_succ total=201139 rate=3125.00/sec|
+mqtt-sessions end offsets: 28232
+mqtt-messages end offsets: 496330
+584	/tmp/logs
+=== run 2 Tue Nov 24 10:18:05 UTC 2026
+zilla port ready after 7.038086413 s
+pub CONNACK complete: 35.554552493 s  last: 31s connect_succ total=3125 rate=199.00/sec
+RESULT label=e1b-r2 pubs=3125 idle=0 qos=1 conack_s=35.554552493 worker_cpu_pct=45.8 records=103840 rate=3126 us_per_msg=146 rss_mb=4160
+LG 1m15s pub_succ total=160862 rate=3125.00/sec|1m16s pub_succ total=163987 rate=3125.00/sec|1m17s pub_succ total=167107 rate=3120.00/sec|1m18s pub_succ total=170232 rate=3125.00/sec|
+mqtt-sessions end offsets: 47036
+mqtt-messages end offsets: 668858
+789	/tmp/logs
+=== run 3 Tue Nov 24 10:19:54 UTC 2026
+zilla port ready after 6.025767157 s
+pub CONNACK complete: 55.135237700 s  last: 50s connect_succ total=3125 rate=105.00/sec
+RESULT label=e1b-r3 pubs=3125 idle=0 qos=1 conack_s=55.135237700 worker_cpu_pct=46.6 records=104108 rate=3124 us_per_msg=149 rss_mb=4463
+LG 1m34s pub_succ total=185518 rate=3124.00/sec|1m35s pub_succ total=188622 rate=3104.00/sec|1m36s pub_succ total=191767 rate=3145.00/sec|1m37s pub_succ total=194894 rate=3127.00/sec|
+mqtt-sessions end offsets: 68189
+mqtt-messages end offsets: 865034
+1021	/tmp/logs
+=== run 4 Tue Nov 24 10:22:01 UTC 2026
+zilla port ready after 6.528830593 s
+pub CONNACK complete: 46.484567386 s  last: 42s connect_succ total=3125 rate=148.00/sec
+RESULT label=e1b-r4 pubs=3125 idle=0 qos=1 conack_s=46.484567386 worker_cpu_pct=58.5 records=109391 rate=3230 us_per_msg=181 rss_mb=4609
+LG 1m25s pub_succ total=158644 rate=3105.00/sec|1m26s pub_succ total=161786 rate=3142.00/sec|1m27s pub_succ total=164914 rate=3128.00/sec|1m28s pub_succ total=168038 rate=3124.00/sec|
+mqtt-sessions end offsets: 94376
+mqtt-messages end offsets: 1035350
+1223	/tmp/logs
+=== run 5 Tue Nov 24 10:23:59 UTC 2026
+zilla port ready after 6.530574384 s
+pub CONNACK complete: 47.493222261 s  last: 43s connect_succ total=3125 rate=354.00/sec
+RESULT label=e1b-r5 pubs=3125 idle=0 qos=1 conack_s=47.493222261 worker_cpu_pct=46.0 records=104487 rate=3125 us_per_msg=147 rss_mb=4790
+LG 1m27s pub_succ total=159783 rate=3120.00/sec|1m28s pub_succ total=162910 rate=3127.00/sec|1m29s pub_succ total=166038 rate=3128.00/sec|1m30s pub_succ total=169163 rate=3125.00/sec|
+mqtt-sessions end offsets: 125524
+mqtt-messages end offsets: 1204687
+1425	/tmp/logs
+=== run 6 Tue Nov 24 10:25:59 UTC 2026
+zilla port ready after 6.028843608 s
+pub CONNACK complete: 64.989507278 s  last: 1m0s connect_succ total=3125 rate=45.05/sec
+RESULT label=e1b-r6 pubs=3125 idle=0 qos=1 conack_s=64.989507278 worker_cpu_pct=62.1 records=105721 rate=3125 us_per_msg=199 rss_mb=5222
+LG 1m45s pub_succ total=186029 rate=3125.00/sec|1m46s pub_succ total=189154 rate=3125.00/sec|1m47s pub_succ total=192270 rate=3116.00/sec|1m48s pub_succ total=195402 rate=3132.00/sec|
+mqtt-sessions end offsets: 161043
+mqtt-messages end offsets: 1402850
+1659	/tmp/logs

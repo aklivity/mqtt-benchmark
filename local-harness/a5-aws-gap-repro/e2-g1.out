@@ -1,0 +1,10 @@
+zilla port ready after 8.035657479 s
+IDLE total=0 worker_cpu_pct=1.6 rss_mb=362 garbage-first heap total reserved 2097152K, committed 1048576K, used 164480K [0x0000000080000000, 0x0000000100000000);
+pub CONNACK complete: 33.077532993 s  last: 31s connect_succ total=3125 rate=301.30/sec
+RESULT label=e2-g1-idle0 pubs=3125 idle=0 qos=1 conack_s=33.077532993 worker_cpu_pct=52.1 records=105535 rate=3116 us_per_msg=167 rss_mb=3995
+idle total=15000: ramp took 500.140848188 s ; 1m6s connect_succ total=14403 rate=309.00/sec
+IDLE total=15000 worker_cpu_pct=8.3 rss_mb=4256 garbage-first heap total reserved 2097152K, committed 1048576K, used 811520K [0x0000000080000000, 0x0000000100000000);
+pub CONNACK complete: 13.543327372 s  last: 12s connect_succ total=3125 rate=144.00/sec
+RESULT label=e2-g1-idle15000 pubs=3125 idle=0 qos=1 conack_s=13.543327372 worker_cpu_pct=59.4 records=105087 rate=3126 us_per_msg=190 rss_mb=4962
+GC pauses:
+count 46 max 421.369ms p50 Threshold) p99 231.947ms

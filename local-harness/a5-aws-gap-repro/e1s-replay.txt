@@ -1,0 +1,8 @@
+mqtt-sessions records: 100000
+mqtt-messages records: 0
+port ready: 6.345704997 s
+worker busy (>10% cpu) until t=26s after port-ready; worker total cpu-s=14.15 rss_mb=1679
+mqtt-sessions records: 250000
+mqtt-messages records: 0
+port ready: 6.047904405 s
+worker busy (>10% cpu) until t=68s after port-ready; worker total cpu-s=51.61 rss_mb=3149
