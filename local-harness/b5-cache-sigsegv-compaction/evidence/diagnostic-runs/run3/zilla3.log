@@ -1,0 +1,114 @@
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=42571 -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes=
+Picked up _JAVA_OPTIONS: -XX:+UnlockDiagnosticVMOptions -XX:DisableIntrinsic=_base64_encodeBlock,_base64_decodeBlock
+---
+name: zilla-mqtt-kafka-proxy
+stores:
+  memory0:
+    type: memory
+bindings:
+  north_tcp_server:
+    type: tcp
+    kind: server
+    options:
+      host: 0.0.0.0
+      port:
+        - 7183
+    routes:
+      - when:
+          - port: 7183
+        exit: north_mqtt_server
+  north_mqtt_server:
+    type: mqtt
+    kind: server
+    options:
+      store: memory0
+    exit: north_mqtt_kafka_mapping
+  north_mqtt_kafka_mapping:
+    type: mqtt-kafka
+    kind: proxy
+    options:
+      topics:
+        sessions: mqtt-sessions
+        messages: mqtt-messages
+        retained: mqtt-retained
+      clients:
+        - place/{identity}/#
+    routes:
+      - when:
+          - publish:
+              - topic: place/+/device/#
+              - topic: device/#
+          - subscribe:
+              - topic: place/+/device/#
+              - topic: device/#
+        with:
+          messages: mqtt-devices
+        exit: north_kafka_cache_client
+    exit: north_kafka_cache_client
+  north_kafka_cache_client:
+    type: kafka
+    kind: cache_client
+    exit: south_kafka_cache_server
+  south_kafka_cache_server:
+    type: kafka
+    kind: cache_server
+    options:
+      bootstrap:
+        - mqtt-messages
+        - mqtt-retained
+        - mqtt-devices
+    exit: south_kafka_client
+  south_kafka_client:
+    type: kafka
+    kind: client
+    options:
+      servers:
+        -  localhost:9092
+    exit: south_tcp_client
+  south_tcp_client:
+    type: tcp
+    kind: client
+
+---
+name: sys
+bindings:
+  http_client:
+    type: http
+    kind: client
+    routes:
+      - exit: tls_client
+        when:
+          -             headers:
+              ":scheme": https
+      - exit: tcp_client
+        when:
+          -             headers:
+              ":scheme": http
+  tcp_client:
+    type: tcp
+    kind: client
+  tls_client:
+    type: tls
+    kind: client
+    exit: tcp_client
+
+DIAG-START failed java.lang.IndexOutOfBoundsException: offset=1806 is beyond maxLimit=1805
+DIAG [KafkaCacheSegment] mqtt-messages[0] @ 0 +1 pos=1491 logCap=1073739542 deltaCap=0 deltaPos=0 entryOffset$=0 flags=0 sizeof=97 limit=1588 keyLen=0 dirtyBytes=0.8541103816403922 hex=000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f30b426cbd1, pid=6352, tid=6368
+#
+# JRE version: OpenJDK Runtime Environment (25.0.5.1+2) (build 25.0.5.1+2-1-24.04.1-Ubuntu)
+# Java VM: OpenJDK 64-Bit Server VM (25.0.5.1+2-1-24.04.1-Ubuntu, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, serial gc, linux-amd64)
+# Problematic frame:
+# J 5256 c2 io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx.getInt(I)I io.aklivity.zilla.runtime.common.agrona (62 bytes) @ 0x00007f30b426cbd1 [0x00007f30b426cb80+0x0000000000000051]
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# An error report file with more information is saved as:
+# /tmp/zl/hs_err_pid6352.log
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-25
+#

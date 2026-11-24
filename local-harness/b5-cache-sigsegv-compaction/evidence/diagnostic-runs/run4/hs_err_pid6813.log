@@ -1,0 +1,2134 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f5284242f51, pid=6813, tid=6828
+#
+# JRE version: OpenJDK Runtime Environment (25.0.5.1+2) (build 25.0.5.1+2-1-24.04.1-Ubuntu)
+# Java VM: OpenJDK 64-Bit Server VM (25.0.5.1+2-1-24.04.1-Ubuntu, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, serial gc, linux-amd64)
+# Problematic frame:
+# J 5107 c2 io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx.getInt(I)I io.aklivity.zilla.runtime.common.agrona (62 bytes) @ 0x00007f5284242f51 [0x00007f5284242f00+0x0000000000000051]
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-25
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=REDACTED -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes= -XX:ErrorFile=/tmp/zl/hs_err_pid%p.log -Dzilla.engine.directory=/tmp/zl/dir -Dzilla.engine.config.url=file:/tmp/zl/zilla.yaml --add-opens=java.base/sun.nio.ch=org.agrona --add-opens=java.base/java.nio=org.agrona --add-opens=java.base/jdk.internal.misc=org.agrona --add-exports=java.base/jdk.internal.misc=org.agrona --enable-native-access=ALL-UNNAMED,io.aklivity.zilla.runtime.common.agrona --module-path=/tmp/zl/mods -Djdk.module.main=io.aklivity.zilla.runtime.command -XX:+UnlockDiagnosticVMOptions -XX:DisableIntrinsic=_base64_encodeBlock,_base64_decodeBlock io.aklivity.zilla.runtime.command/io.aklivity.zilla.runtime.command.internal.ZillaMain start -w 1 -c /tmp/zl/zilla.yaml -v
+
+Host: Intel(R) Xeon(R) Processor @ 2.30GHz, 4 cores, 13G, Ubuntu 24.04.5 LTS
+Time: Tue Nov 24 16:22:22 2026 UTC elapsed time: 148.904729 seconds (0d 0h 2m 28s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f5294913e40):  JavaThread "engine/worker#0"        [_thread_in_Java, id=6828, stack(0x00007f527c0be000,0x00007f527c1be000) (1024K)]
+
+Stack: [0x00007f527c0be000,0x00007f527c1be000],  sp=0x00007f527c1bc250,  free space=1016k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J 5107 c2 io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx.getInt(I)I io.aklivity.zilla.runtime.common.agrona (62 bytes) @ 0x00007f5284242f51 [0x00007f5284242f00+0x0000000000000051]
+j  io.aklivity.zilla.runtime.binding.kafka.internal.types.cache.KafkaCacheDeltaFW.length()I+10 io.aklivity.zilla.runtime.binding.kafka
+j  io.aklivity.zilla.runtime.binding.kafka.internal.types.cache.KafkaCacheDeltaFW.wrap(Lio/aklivity/zilla/runtime/common/agrona/buffer/DirectBufferEx;II)Lio/aklivity/zilla/runtime/binding/kafka/internal/types/cache/KafkaCacheDeltaFW;+20 io.aklivity.zilla.runtime.binding.kafka
+j  io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartition$Node$$Lambda+0x00000000906af030.visit(Lio/aklivity/zilla/runtime/common/agrona/buffer/DirectBufferEx;II)Ljava/lang/Object;+7 io.aklivity.zilla.runtime.binding.kafka
+J 7679 c2 io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheFile.readBytes(ILio/aklivity/zilla/runtime/binding/kafka/internal/types/Flyweight$Visitor;)Ljava/lang/Object; io.aklivity.zilla.runtime.binding.kafka (16 bytes) @ 0x00007f528432add4 [0x00007f528432ad80+0x0000000000000054]
+j  io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartition$Node.clean(J)V+737 io.aklivity.zilla.runtime.binding.kafka
+J 12329 c1 io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan.onClientFanInitialSignalSegmentCompact(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V io.aklivity.zilla.runtime.binding.kafka (65 bytes) @ 0x00007f527d69591c [0x00007f527d695480+0x000000000000049c]
+J 11932 c1 io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan.onClientFanInitialSignal(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V io.aklivity.zilla.runtime.binding.kafka (46 bytes) @ 0x00007f527d68c8bc [0x00007f527d68c500+0x00000000000003bc]
+J 14544 c2 io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan.onClientFanMessage(ILio/aklivity/zilla/runtime/common/agrona/buffer/DirectBufferEx;II)V io.aklivity.zilla.runtime.binding.kafka (258 bytes) @ 0x00007f5284998f3c [0x00007f5284998b00+0x000000000000043c]
+J 12242 c2 io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan$$Lambda+0x0000000090639968.accept(ILio/aklivity/zilla/runtime/common/agrona/buffer/DirectBufferEx;II)V io.aklivity.zilla.runtime.binding.kafka (13 bytes) @ 0x00007f528470503c [0x00007f5284705000+0x000000000000003c]
+J 13808 c2 io.aklivity.zilla.runtime.engine.internal.registry.EngineWorker.handleReadInitial(JJJJJIILio/aklivity/zilla/runtime/common/agrona/buffer/MutableDirectBufferEx;II)V io.aklivity.zilla.runtime.engine (577 bytes) @ 0x00007f52848157fc [0x00007f5284815600+0x00000000000001fc]
+J 8439 c2 io.aklivity.zilla.runtime.common.agrona.concurrent.ManyToOneRingBuffer.readEx(Lio/aklivity/zilla/runtime/common/agrona/concurrent/MessageHandlerEx;I)I io.aklivity.zilla.runtime.common.agrona (210 bytes) @ 0x00007f528442a500 [0x00007f528442a080+0x0000000000000480]
+J 8243 c2 org.agrona.concurrent.AgentRunner.doWork(Lorg/agrona/concurrent/IdleStrategy;Lorg/agrona/concurrent/Agent;)V org.agrona@2.4.0 (118 bytes) @ 0x00007f52843c7e24 [0x00007f52843c7a00+0x0000000000000424]
+J 14281% c2 org.agrona.concurrent.AgentRunner.workLoop(Lorg/agrona/concurrent/IdleStrategy;Lorg/agrona/concurrent/Agent;)V org.agrona@2.4.0 (17 bytes) @ 0x00007f52848fe578 [0x00007f52848fe500+0x0000000000000078]
+j  org.agrona.concurrent.AgentRunner.run()V+63 org.agrona@2.4.0
+j  java.lang.Thread.runWith(Ljava/lang/Object;Ljava/lang/Runnable;)V+5 java.base@25.0.5.1
+j  java.lang.Thread.run()V+19 java.base@25.0.5.1
+v  ~StubRoutines::call_stub 0x00007f5283b38fa6
+V  [libjvm.so+0xa04850]  JavaCalls::call_helper(JavaValue*, methodHandle const&, JavaCallArguments*, JavaThread*)+0x2b0
+V  [libjvm.so+0xa0605f]  JavaCalls::call_virtual(JavaValue*, Handle, Klass*, Symbol*, Symbol*, JavaThread*)+0x1bf
+V  [libjvm.so+0xaf6160]  thread_entry(JavaThread*, JavaThread*)+0x90
+V  [libjvm.so+0xa1da26]  JavaThread::thread_main_inner()+0x1e6
+V  [libjvm.so+0x11a2157]  Thread::call_run()+0xa7
+V  [libjvm.so+0xe349e6]  thread_native_entry(Thread*)+0xd6
+C  [libc.so.6+0x9cb64]
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000000
+
+Registers:
+RAX=0x00007f52745b70c0, RBX=0x00007f52745b70c0, RCX=0xfffffffffffffff5, RDX=0x0000000000000000
+RSP=0x00007f527c1bc250, RBP=0x0000000000000000, RSI=0x000000072d415c98, RDI=0x00007f52949148c0
+R8 =0x0000000000000004, R9 =0x0000000000000006, R10=0x0000000000000000, R11=0x00007f5284242f10
+R12=0x0000000000000000, R13=0x00007f527c1bc2a0, R14=0x0000000090093838, R15=0x00007f5294913e40
+RIP=0x00007f5284242f51, EFLAGS=0x0000000000010293, CSGSFS=0x002b000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+XMM[0]=0x0000000000000000 0x0000000000000000
+XMM[1]=0x0000000000000000 0x0000000000000003
+XMM[2]=0x00007f5283b50179 0x00007f527c1bc2a0
+XMM[3]=0x0000000000000000 0x00007f5283b3fa08
+XMM[4]=0x00007f527c1bc2f8 0x00007f0000000000
+XMM[5]=0x0000000000000000 0x00007f5294913e40
+XMM[6]=0x371bbe8e501fdd8b 0x201fcc7c53b80005
+XMM[7]=0x884bdff983a6cfc9 0xfbf43547aa574f99
+XMM[8]=0xf2289f64f1a0f47d 0x0de3723af249712f
+XMM[9]=0x88ca1c0488ca1c04 0x88ca1c041d1f6193
+XMM[10]=0x0000000000000000 0x000000009455458f
+XMM[11]=0x0d60053c0d60053c 0x0d60053c2a7f66cf
+XMM[12]=0x0000000000000000 0x000000001d1f6193
+XMM[13]=0x0000000000000000 0x8033bb4200000000
+XMM[14]=0x0000000000000000 0x8040de6e00000000
+XMM[15]=0x0000000000000000 0x8040de6e00000000
+  MXCSR=0x00001fa2
+
+
+Register to memory mapping:
+
+RAX={method} {0x00007f52745b70c0} 'getInt' '(I)I' in 'io/aklivity/zilla/runtime/common/agrona/buffer/UnsafeBufferEx'
+RBX={method} {0x00007f52745b70c0} 'getInt' '(I)I' in 'io/aklivity/zilla/runtime/common/agrona/buffer/UnsafeBufferEx'
+RCX=0xfffffffffffffff5 is an unknown value
+RDX=0x0 is null
+RSP=0x00007f527c1bc250 is pointing into the stack for thread: 0x00007f5294913e40
+RBP=0x0 is null
+RSI=0x000000072d415c98 is an oop: io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx 
+{0x000000072d415c98} - klass: 'io/aklivity/zilla/runtime/common/agrona/buffer/UnsafeBufferEx' - flags: 
+
+ - ---- fields (total size 6 words):
+ - private 'capacity' 'I' @12  0 (0x00000000)
+ - private 'addressOffset' 'J' @16  0 (0x0000000000000000)
+ - private 'wrapAdjustment' 'I' @24  0 (0x00000000)
+ - private 'isNative' 'Z' @28  true (0x01)
+ - private 'segment' 'Ljava/lang/foreign/MemorySegment;' @32  a 'jdk/internal/foreign/NativeMemorySegmentImpl'{0x000000072d415d30} (0xe5a82ba6)
+ - private 'byteArray' '[B' @36  null (0x00000000)
+ - private 'byteBuffer' 'Ljava/nio/ByteBuffer;' @40  a 'java/nio/DirectByteBuffer'{0x000000072d415c58} (0xe5a82b8b)
+ - private 'byteBufferView' 'Ljava/nio/ByteBuffer;' @44  a 'java/nio/DirectByteBuffer'{0x000000072d415cc8} (0xe5a82b99)
+RDI=0x00007f52949148c0 points into unknown readable memory: 0x000000008f17f158 | 58 f1 17 8f 00 00 00 00
+R8 =0x0000000000000004 is an unknown value
+R9 =0x0000000000000006 is an unknown value
+R10=0x0 is null
+R11=0x00007f5284242f10 is at entry_point+14 in (nmethod*)0x00007f5284242e08
+Compiled method (c2) 148990 5107       4       io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt (62 bytes)
+ total in heap  [0x00007f5284242e08,0x00007f5284243180] = 888
+ main code      [0x00007f5284242f00,0x00007f5284243140] = 576
+ stub code      [0x00007f5284243140,0x00007f5284243158] = 24
+ oops           [0x00007f5284243158,0x00007f5284243180] = 40
+ mutable data [0x00007f525407e3c0,0x00007f525407e5b8] = 504
+ relocation     [0x00007f525407e3c0,0x00007f525407e408] = 72
+ metadata       [0x00007f525407e408,0x00007f525407e5b8] = 432
+ immutable data [0x00007f525407e020,0x00007f525407e3b8] = 920
+ dependencies   [0x00007f525407e020,0x00007f525407e0b8] = 152
+ nul chk table  [0x00007f525407e0b8,0x00007f525407e0d8] = 32
+ scopes pcs     [0x00007f525407e0d8,0x00007f525407e198] = 192
+ scopes data    [0x00007f525407e198,0x00007f525407e3b8] = 544
+0x00007f5284242f10:   89 84 24 00 c0 fe ff 55 48 83 ec 40 41 81 7f 20
+0x00007f5284242f20:   03 00 00 00 0f 85 0c 02 00 00 44 0f b6 56 1c 45
+0x00007f5284242f30:   85 d2 74 30 48 63 ea 48 03 6e 10 49 ba fc ff ff
+0x00007f5284242f40:   ff ff ff ff 7f 49 3b ea 0f 83 97 00 00 00 4c 8b
+0x00007f5284242f50:   d5 41 8b 02 48 83 c4 40 5d 
+--------------------------------------------------------------------------------
+  0x00007f5284242f10:   mov    %eax,-0x14000(%rsp)
+  0x00007f5284242f17:   push   %rbp
+  0x00007f5284242f18:   sub    $0x40,%rsp
+  0x00007f5284242f1c:   cmpl   $0x3,0x20(%r15)
+  0x00007f5284242f24:   jne    0x00007f5284243136
+  0x00007f5284242f2a:   movzbl 0x1c(%rsi),%r10d
+  0x00007f5284242f2f:   test   %r10d,%r10d
+  0x00007f5284242f32:   je     0x00007f5284242f64
+  0x00007f5284242f34:   movslq %edx,%rbp
+  0x00007f5284242f37:   add    0x10(%rsi),%rbp
+  0x00007f5284242f3b:   movabs $0x7ffffffffffffffc,%r10
+  0x00007f5284242f45:   cmp    %r10,%rbp
+  0x00007f5284242f48:   jae    0x00007f5284242fe5
+  0x00007f5284242f4e:   mov    %rbp,%r10
+  0x00007f5284242f51:   mov    (%r10),%eax
+  0x00007f5284242f54:   add    $0x40,%rsp
+  0x00007f5284242f58:   pop    %rbp
+--------------------------------------------------------------------------------
+R12=0x0 is null
+R13=0x00007f527c1bc2a0 is pointing into the stack for thread: 0x00007f5294913e40
+R14=0x0000000090093838 is pointing into metadata
+R15=0x00007f5294913e40 is a thread
+
+Top of Stack: (sp=0x00007f527c1bc250)
+0x00007f527c1bc250:   00007f527c1bc308 00007f5294913e40   ...|R...@>..R...
+0x00007f527c1bc260:   00007f527c1bc280 00007f529a7fc397   ...|R.......R...
+0x00007f527c1bc270:   00000000000000b9 0000000000000000   ................
+0x00007f527c1bc280:   00007f527c1bc2f8 00007f5283b501b1   ...|R.......R...
+0x00007f527c1bc290:   00007f527c1bc2f8 00007f5283b4077e   ...|R...~...R...
+0x00007f527c1bc2a0:   0000000000000000 000000072d415c98   .........\A-....
+0x00007f527c1bc2b0:   fffffffffffffff7 00007f5275252fba   ........./%uR...
+0x00007f527c1bc2c0:   0000000000000002 00007f5275253940   ........@9%uR...
+0x00007f527c1bc2d0:   0000000000000000 0000000771f31850   ........P..q....
+0x00007f527c1bc2e0:   00007f5275252fd8 fffffffffffffff5   ./%uR...........
+0x00007f527c1bc2f0:   00007f527c1bc308 00007f527c1bc378   ...|R...x..|R...
+0x00007f527c1bc300:   00007f5283b40280 000000077deb6270   ....R...pb.}....
+0x00007f527c1bc310:   0000000000000004 0000000000000004   ................
+0x00007f527c1bc320:   000000072d415c98 000000077e69bca8   .\A-......i~....
+0x00007f527c1bc330:   fffffffffffffff7 00007f5275253144   ........D1%uR...
+0x00007f527c1bc340:   0000000000000005 00007f5275253940   ........@9%uR...
+0x00007f527c1bc350:   0000000000000000 0000000771f31850   ........P..q....
+0x00007f527c1bc360:   00007f52752531a0 fffffffffffffff2   .1%uR...........
+0x00007f527c1bc370:   00007f527c1bc388 00007f527c1bc3f0   ...|R......|R...
+0x00007f527c1bc380:   00007f5283b402d2 0000000000000000   ....R...........
+0x00007f527c1bc390:   0000000000000000 000000072d415c98   .........\A-....
+0x00007f527c1bc3a0:   000000077deb6270 fffffffffffffff7   pb.}............
+0x00007f527c1bc3b0:   00007f52771a9517 0000000000000005   ...wR...........
+0x00007f527c1bc3c0:   00007f52771a95e0 0000000000000000   ...wR...........
+0x00007f527c1bc3d0:   000000072d737028 00007f52771a9520   (ps-.... ..wR...
+0x00007f527c1bc3e0:   fffffffffffffff3 00007f527c1bc420   ........ ..|R...
+0x00007f527c1bc3f0:   00007f527c1bc4a8 00007f528432add4   ...|R.....2.R...
+0x00007f527c1bc400:   00007f5200000000 00007f5200000000   ....R.......R...
+0x00007f527c1bc410:   000000072d415c98 000000072d7373c0   .\A-.....ss-....
+0x00007f527c1bc420:   00000000000000ba 0000000000000000   ................
+0x00007f527c1bc430:   00007f527c1bc4a8 00007f5283b402d2   ...|R.......R...
+0x00007f527c1bc440:   00007f5283b402d2 000000072d7373c0   ....R....ss-....
+
+Instructions: (pc=0x00007f5284242f51)
+  0x00007f5284242e51:   00 00 00 00 00 00 00 c0 70 5b 74 52 7f 00 00 00
+  0x00007f5284242e61:   00 00 00 00 00 00 00 20 e0 07 54 52 7f 00 00 c0
+  0x00007f5284242e71:   e5 07 54 52 7f 00 00 00 00 00 00 00 00 00 00 00
+  0x00007f5284242e81:   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x00007f5284242e91:   00 00 00 00 00 00 00 00 2f 24 84 52 7f 00 00 02
+  0x00007f5284242ea1:   00 10 00 ff ff ff ff 98 03 00 00 50 00 00 00 38
+  0x00007f5284242eb1:   03 00 00 38 03 00 00 3d 03 00 00 ff ff ff ff ff
+  0x00007f5284242ec1:   ff 00 00 28 00 b0 01 98 00 b8 00 b8 00 00 00 78
+  0x00007f5284242ed1:   01 00 00 98 03 00 00 30 00 00 00 f3 13 00 00 04
+  0x00007f5284242ee1:   02 06 00 11 00 00 00 00 00 00 00 00 00 00 00 00
+  0x00007f5284242ef1:   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 66
+  0x00007f5284242f01:   90 44 8b 56 08 44 3b 50 08 0f 85 d0 33 94 ff 89
+  0x00007f5284242f11:   84 24 00 c0 fe ff 55 48 83 ec 40 41 81 7f 20 03
+  0x00007f5284242f21:   00 00 00 0f 85 0c 02 00 00 44 0f b6 56 1c 45 85
+  0x00007f5284242f31:   d2 74 30 48 63 ea 48 03 6e 10 49 ba fc ff ff ff
+  0x00007f5284242f41:   ff ff ff 7f 49 3b ea 0f 83 97 00 00 00 4c 8b d5
+=>0x00007f5284242f51:   41 8b 02 48 83 c4 40 5d 49 3b 67 28 0f 87 bd 01
+  0x00007f5284242f61:   00 00 c3 03 56 18 44 8b 56 20 4c 63 c2 47 8b 5c
+  0x00007f5284242f71:   d4 08 41 81 fb e0 55 03 01 0f 85 a0 00 00 00 4f
+  0x00007f5284242f81:   8d 1c d4 48 c7 c5 fd ff ff ff 49 03 6b 10 48 85
+  0x00007f5284242f91:   ed 0f 8c a4 00 00 00 4c 3b c5 73 5b 45 8b 53 1c
+  0x00007f5284242fa1:   41 8b 5b 18 4c 63 ca 47 8b 44 d4 08 41 81 f8 c0
+  0x00007f5284242fb1:   35 17 00 0f 85 ea 00 00 00 4d 03 4b 20 49 c1 e2
+  0x00007f5284242fc1:   03 41 8b 6c dc 18 85 ed 0f 85 95 00 00 00 41 8b
+  0x00007f5284242fd1:   6c dc 0c 85 ed 0f 8c a8 00 00 00 43 8b 04 0a e9
+  0x00007f5284242fe1:   6f ff ff ff be e4 ff ff ff 90 e8 70 0d 97 ff 0f
+  0x00007f5284242ff1:   1f 84 00 e8 01 00 00 be e4 ff ff ff 4c 89 5c 24
+  0x00007f5284243001:   10 4c 89 44 24 18 4c 89 44 24 20 4c 89 5c 24 28
+  0x00007f5284243011:   66 90 e8 48 0d 97 ff 0f 1f 84 00 10 02 00 01 be
+  0x00007f5284243021:   de ff ff ff 41 8b ea 4c 89 04 24 66 66 90 e8 2c
+  0x00007f5284243031:   0d 97 ff 0f 1f 84 00 2c 02 00 02 be cc ff ff ff
+  0x00007f5284243041:   4c 89 5c 24 10 4c 89 44 24 18 4c 89 44 24 20 4c
+
+
+Stack slot to memory mapping:
+
+stack at sp + 0 slots: 0x00007f527c1bc308 is pointing into the stack for thread: 0x00007f5294913e40
+stack at sp + 1 slots: 0x00007f5294913e40 is a thread
+stack at sp + 2 slots: 0x00007f527c1bc280 is pointing into the stack for thread: 0x00007f5294913e40
+stack at sp + 3 slots: 0x00007f529a7fc397: <offset 0x00000000009fc397> in /usr/lib/jvm/java-25-openjdk-amd64/lib/server/libjvm.so at 0x00007f5299e00000
+stack at sp + 4 slots: 0x00000000000000b9 is an unknown value
+stack at sp + 5 slots: 0x0 is null
+stack at sp + 6 slots: 0x00007f527c1bc2f8 is pointing into the stack for thread: 0x00007f5294913e40
+stack at sp + 7 slots: 0x00007f5283b501b1 is at code_begin+145 in an Interpreter codelet
+invokeinterface  185 invokeinterface  [0x00007f5283b50120, 0x00007f5283b50c88]  2920 bytes
+
+Lock stack of current Java thread (top to bottom):
+
+
+Compiled method (c2) 149030 5107       4       io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt (62 bytes)
+ total in heap  [0x00007f5284242e08,0x00007f5284243180] = 888
+ main code      [0x00007f5284242f00,0x00007f5284243140] = 576
+ stub code      [0x00007f5284243140,0x00007f5284243158] = 24
+ oops           [0x00007f5284243158,0x00007f5284243180] = 40
+ mutable data [0x00007f525407e3c0,0x00007f525407e5b8] = 504
+ relocation     [0x00007f525407e3c0,0x00007f525407e408] = 72
+ metadata       [0x00007f525407e408,0x00007f525407e5b8] = 432
+ immutable data [0x00007f525407e020,0x00007f525407e3b8] = 920
+ dependencies   [0x00007f525407e020,0x00007f525407e0b8] = 152
+ nul chk table  [0x00007f525407e0b8,0x00007f525407e0d8] = 32
+ scopes pcs     [0x00007f525407e0d8,0x00007f525407e198] = 192
+ scopes data    [0x00007f525407e198,0x00007f525407e3b8] = 544
+
+[Disassembly]
+--------------------------------------------------------------------------------
+[Constant Pool (empty)]
+
+--------------------------------------------------------------------------------
+
+[Instructions begin]
+  0x00007f5284242f00:   xchg   %ax,%ax
+[Entry Point]
+  # {method} {0x00007f52745b70c0} 'getInt' '(I)I' in 'io/aklivity/zilla/runtime/common/agrona/buffer/UnsafeBufferEx'
+  # this:     rsi:rsi   = 'io/aklivity/zilla/runtime/common/agrona/buffer/UnsafeBufferEx'
+  # parm0:    rdx       = int
+  #           [sp+0x50]  (sp of caller)
+  0x00007f5284242f02:   mov    0x8(%rsi),%r10d
+  0x00007f5284242f06:   cmp    0x8(%rax),%r10d
+  0x00007f5284242f0a:   jne    0x00007f5283b862e0           ;   {runtime_call Shared Runtime ic_miss_blob}
+[Verified Entry Point]
+  0x00007f5284242f10:   mov    %eax,-0x14000(%rsp)
+  0x00007f5284242f17:   push   %rbp
+  0x00007f5284242f18:   sub    $0x40,%rsp
+  0x00007f5284242f1c:   cmpl   $0x3,0x20(%r15)
+  0x00007f5284242f24:   jne    0x00007f5284243136
+  0x00007f5284242f2a:   movzbl 0x1c(%rsi),%r10d
+  0x00007f5284242f2f:   test   %r10d,%r10d
+  0x00007f5284242f32:   je     0x00007f5284242f64
+  0x00007f5284242f34:   movslq %edx,%rbp
+  0x00007f5284242f37:   add    0x10(%rsi),%rbp
+  0x00007f5284242f3b:   movabs $0x7ffffffffffffffc,%r10
+  0x00007f5284242f45:   cmp    %r10,%rbp
+  0x00007f5284242f48:   jae    0x00007f5284242fe5
+  0x00007f5284242f4e:   mov    %rbp,%r10
+  0x00007f5284242f51:   mov    (%r10),%eax
+  0x00007f5284242f54:   add    $0x40,%rsp
+  0x00007f5284242f58:   pop    %rbp
+  0x00007f5284242f59:   cmp    0x28(%r15),%rsp              ;   {poll_return}
+  0x00007f5284242f5d:   ja     0x00007f5284243120
+  0x00007f5284242f63:   retq   
+  0x00007f5284242f64:   add    0x18(%rsi),%edx
+  0x00007f5284242f67:   mov    0x20(%rsi),%r10d
+  0x00007f5284242f6b:   movslq %edx,%r8
+  0x00007f5284242f6e:   mov    0x8(%r12,%r10,8),%r11d       ; implicit exception: dispatches to 0x00007f52842430c8
+  0x00007f5284242f73:   cmp    $0x10355e0,%r11d             ;   {metadata('jdk/internal/foreign/HeapMemorySegmentImpl$OfByte')}
+  0x00007f5284242f7a:   jne    0x00007f5284243020
+  0x00007f5284242f80:   lea    (%r12,%r10,8),%r11
+  0x00007f5284242f84:   mov    $0xfffffffffffffffd,%rbp
+  0x00007f5284242f8b:   add    0x10(%r11),%rbp
+  0x00007f5284242f8f:   test   %rbp,%rbp
+  0x00007f5284242f92:   jl     0x00007f528424303c
+  0x00007f5284242f98:   cmp    %rbp,%r8
+  0x00007f5284242f9b:   jae    0x00007f5284242ff8
+  0x00007f5284242f9d:   mov    0x1c(%r11),%r10d
+  0x00007f5284242fa1:   mov    0x18(%r11),%ebx
+  0x00007f5284242fa5:   movslq %edx,%r9
+  0x00007f5284242fa8:   mov    0x8(%r12,%r10,8),%r8d        ; implicit exception: dispatches to 0x00007f52842430fc
+  0x00007f5284242fad:   cmp    $0x1735c0,%r8d               ;   {metadata({type array byte})}
+  0x00007f5284242fb4:   jne    0x00007f52842430a4
+  0x00007f5284242fba:   add    0x20(%r11),%r9
+  0x00007f5284242fbe:   shl    $0x3,%r10
+  0x00007f5284242fc2:   mov    0x18(%r12,%rbx,8),%ebp       ; implicit exception: dispatches to 0x00007f52842430e0
+  0x00007f5284242fc7:   test   %ebp,%ebp
+  0x00007f5284242fc9:   jne    0x00007f5284243064
+  0x00007f5284242fcf:   mov    0xc(%r12,%rbx,8),%ebp
+  0x00007f5284242fd4:   test   %ebp,%ebp
+  0x00007f5284242fd6:   jl     0x00007f5284243084
+  0x00007f5284242fdc:   mov    (%r10,%r9,1),%eax
+  0x00007f5284242fe0:   jmpq   0x00007f5284242f54
+  0x00007f5284242fe5:   mov    $0xffffffe4,%esi
+  0x00007f5284242fea:   nop
+  0x00007f5284242feb:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {}
+                                                            ;*invokestatic checkIndex {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkBounds@16 (line 403)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkAccess@9 (line 357)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkEnclosingLayout@10 (line 362)
+                                                            ; - java.lang.invoke.SegmentVarHandle::checkSegment@18 (line 92)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@11 (line 59)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@36 (line 587)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f5284242ff0:   nopl   0x1e8(%rax,%rax,1)           ;   {post_call_nop}
+  0x00007f5284242ff8:   mov    $0xffffffe4,%esi
+  0x00007f5284242ffd:   mov    %r11,0x10(%rsp)
+  0x00007f5284243002:   mov    %r8,0x18(%rsp)
+  0x00007f5284243007:   mov    %r8,0x20(%rsp)
+  0x00007f528424300c:   mov    %r11,0x28(%rsp)
+  0x00007f5284243011:   xchg   %ax,%ax
+  0x00007f5284243013:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {[16]=Oop [40]=Oop }
+                                                            ;*invokestatic checkIndex {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkBounds@16 (line 403)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkAccess@9 (line 357)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkEnclosingLayout@10 (line 362)
+                                                            ; - java.lang.invoke.SegmentVarHandle::checkSegment@18 (line 92)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@11 (line 59)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f5284243018:   nopl   0x1000210(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f5284243020:   mov    $0xffffffde,%esi
+  0x00007f5284243025:   mov    %r10d,%ebp
+  0x00007f5284243028:   mov    %r8,(%rsp)
+  0x00007f528424302c:   data16 xchg %ax,%ax
+  0x00007f528424302f:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {rbp=NarrowOop }
+                                                            ;*invokeinterface get {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f5284243034:   nopl   0x200022c(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f528424303c:   mov    $0xffffffcc,%esi
+  0x00007f5284243041:   mov    %r11,0x10(%rsp)
+  0x00007f5284243046:   mov    %r8,0x18(%rsp)
+  0x00007f528424304b:   mov    %r8,0x20(%rsp)
+  0x00007f5284243050:   mov    %r11,0x28(%rsp)
+  0x00007f5284243055:   xchg   %ax,%ax
+  0x00007f5284243057:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {[16]=Oop [40]=Oop }
+                                                            ;*invokestatic checkIndex {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkBounds@16 (line 403)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkAccess@9 (line 357)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::checkEnclosingLayout@10 (line 362)
+                                                            ; - java.lang.invoke.SegmentVarHandle::checkSegment@18 (line 92)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@11 (line 59)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f528424305c:   nopl   0x3000254(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f5284243064:   mov    $0xffffff45,%esi
+  0x00007f5284243069:   mov    %r10,0x8(%rsp)
+  0x00007f528424306e:   mov    %r9,0x10(%rsp)
+  0x00007f5284243073:   mov    %ebx,0x4(%rsp)
+  0x00007f5284243077:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {rbp=NarrowOop [4]=NarrowOop [8]=Oop }
+                                                            ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) jdk.internal.foreign.MemorySessionImpl::checkValidStateRaw@4 (line 200)
+                                                            ; - jdk.internal.misc.ScopedMemoryAccess::getIntUnalignedInternal@5 (line 3169)
+                                                            ; - jdk.internal.misc.ScopedMemoryAccess::getIntUnaligned@6 (line 3159)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@42 (line 60)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f528424307c:   nopl   0x4000274(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f5284243084:   mov    $0xffffff45,%esi
+  0x00007f5284243089:   mov    %ebx,(%rsp)
+  0x00007f528424308c:   mov    %r10,0x8(%rsp)
+  0x00007f5284243091:   mov    %r9,0x10(%rsp)
+  0x00007f5284243096:   nop
+  0x00007f5284243097:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {[0]=NarrowOop [8]=Oop }
+                                                            ;*ifge {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) jdk.internal.foreign.MemorySessionImpl::checkValidStateRaw@25 (line 203)
+                                                            ; - jdk.internal.misc.ScopedMemoryAccess::getIntUnalignedInternal@5 (line 3169)
+                                                            ; - jdk.internal.misc.ScopedMemoryAccess::getIntUnaligned@6 (line 3159)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@42 (line 60)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f528424309c:   nopl   0x5000294(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f52842430a4:   mov    $0xffffffde,%esi
+  0x00007f52842430a9:   mov    %r9,%rbp
+  0x00007f52842430ac:   mov    %r11,(%rsp)
+  0x00007f52842430b0:   mov    %ebx,0x8(%rsp)
+  0x00007f52842430b4:   mov    %r10d,0xc(%rsp)
+  0x00007f52842430b9:   xchg   %ax,%ax
+  0x00007f52842430bb:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {[0]=Oop [8]=NarrowOop [12]=NarrowOop }
+                                                            ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - jdk.internal.foreign.HeapMemorySegmentImpl$OfByte::unsafeGetBase@7 (line 114)
+                                                            ; - jdk.internal.foreign.HeapMemorySegmentImpl$OfByte::unsafeGetBase@1 (line 101)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@26 (line 61)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f52842430c0:   nopl   0x60002b8(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f52842430c8:   mov    $0xfffffff6,%esi
+  0x00007f52842430cd:   mov    %r8,%rbp
+  0x00007f52842430d0:   data16 xchg %ax,%ax
+  0x00007f52842430d3:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {}
+                                                            ;*invokeinterface get {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f52842430d8:   nopl   0x70002d0(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f52842430e0:   mov    $0xffffff54,%esi
+  0x00007f52842430e5:   mov    %r10,%rbp
+  0x00007f52842430e8:   mov    %r9,(%rsp)
+  0x00007f52842430ec:   data16 xchg %ax,%ax
+  0x00007f52842430ef:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {rbp=Oop }
+                                                            ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) jdk.internal.misc.ScopedMemoryAccess::getIntUnalignedInternal@1 (line 3168)
+                                                            ; - jdk.internal.misc.ScopedMemoryAccess::getIntUnaligned@6 (line 3159)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@42 (line 60)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f52842430f4:   nopl   0x80002ec(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f52842430fc:   mov    $0xffffff45,%esi
+  0x00007f5284243101:   mov    %r9,%rbp
+  0x00007f5284243104:   mov    %r11,(%rsp)
+  0x00007f5284243108:   mov    %ebx,0x8(%rsp)
+  0x00007f528424310c:   mov    %r10d,0x10(%rsp)
+  0x00007f5284243111:   xchg   %ax,%ax
+  0x00007f5284243113:   callq  0x00007f5283bb3d60           ; ImmutableOopMap {[0]=Oop [8]=NarrowOop [16]=NarrowOop }
+                                                            ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) java.util.Objects::requireNonNull@1 (line 219)
+                                                            ; - jdk.internal.foreign.HeapMemorySegmentImpl$OfByte::unsafeGetBase@4 (line 114)
+                                                            ; - jdk.internal.foreign.HeapMemorySegmentImpl$OfByte::unsafeGetBase@1 (line 101)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@26 (line 61)
+                                                            ; - java.lang.invoke.VarHandleSegmentAsInts::get@10 (line 53)
+                                                            ; - java.lang.invoke.VarHandleGuards::guard_LJ_I@49 (line 251)
+                                                            ; - jdk.internal.foreign.AbstractMemorySegmentImpl::get@8 (line 742)
+                                                            ; - io.aklivity.zilla.runtime.common.agrona.buffer.UnsafeBufferEx::getInt@56 (line 589)
+                                                            ;   {runtime_call UncommonTrapBlob}
+  0x00007f5284243118:   nopl   0x9000310(%rax,%rax,1)       ;   {post_call_nop}
+  0x00007f5284243120:   movabs $0x7f5284242f59,%r10         ;   {internal_word}
+  0x00007f528424312a:   mov    %r10,0x538(%r15)
+  0x00007f5284243131:   jmpq   0x00007f5283b89860           ;   {runtime_call SafepointBlob}
+  0x00007f5284243136:   callq  Stub::method_entry_barrier   ;   {runtime_call Stub::method_entry_barrier}
+  0x00007f528424313b:   jmpq   0x00007f5284242f2a
+[Exception Handler]
+  0x00007f5284243140:   jmpq   0x00007f5283bb4060           ;   {runtime_call ExceptionBlob}
+[Deopt Handler Code]
+  0x00007f5284243145:   callq  0x00007f528424314a
+  0x00007f528424314a:   subq   $0x5,(%rsp)
+  0x00007f528424314f:   jmpq   0x00007f5283b87fe0           ;   {runtime_call DeoptimizationBlob}
+  0x00007f5284243154:   hlt    
+  0x00007f5284243155:   hlt    
+  0x00007f5284243156:   hlt    
+  0x00007f5284243157:   hlt    
+--------------------------------------------------------------------------------
+[/Disassembly]
+
+
+Compiled method (c2) 149031 7679       4       io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheFile::readBytes (16 bytes)
+ total in heap  [0x00007f528432ac88,0x00007f528432ae40] = 440
+ main code      [0x00007f528432ad80,0x00007f528432ae20] = 160
+ stub code      [0x00007f528432ae20,0x00007f528432ae38] = 24
+ oops           [0x00007f528432ae38,0x00007f528432ae40] = 8
+ mutable data [0x00007f525469fb40,0x00007f525469fb68] = 40
+ relocation     [0x00007f525469fb40,0x00007f525469fb60] = 32
+ metadata       [0x00007f525469fb60,0x00007f525469fb68] = 8
+ immutable data [0x00007f525469fad0,0x00007f525469fb30] = 96
+ dependencies   [0x00007f525469fad0,0x00007f525469fad8] = 8
+ handler table  [0x00007f525469fad8,0x00007f525469faf0] = 24
+ scopes pcs     [0x00007f525469faf0,0x00007f525469fb20] = 48
+ scopes data    [0x00007f525469fb20,0x00007f525469fb30] = 16
+
+[Disassembly]
+--------------------------------------------------------------------------------
+[Constant Pool (empty)]
+
+--------------------------------------------------------------------------------
+
+[Instructions begin]
+  0x00007f528432ad80:   xchg   %ax,%ax
+[Entry Point]
+  # {method} {0x00007f5276abebd8} 'readBytes' '(ILio/aklivity/zilla/runtime/binding/kafka/internal/types/Flyweight$Visitor;)Ljava/lang/Object;' in 'io/aklivity/zilla/runtime/binding/kafka/internal/cache/KafkaCacheFile'
+  # this:     rsi:rsi   = 'io/aklivity/zilla/runtime/binding/kafka/internal/cache/KafkaCacheFile'
+  # parm0:    rdx       = int
+  # parm1:    rcx:rcx   = 'io/aklivity/zilla/runtime/binding/kafka/internal/types/Flyweight$Visitor'
+  #           [sp+0x20]  (sp of caller)
+  0x00007f528432ad82:   mov    0x8(%rsi),%r10d
+  0x00007f528432ad86:   cmp    0x8(%rax),%r10d
+  0x00007f528432ad8a:   jne    0x00007f5283b862e0           ;   {runtime_call Shared Runtime ic_miss_blob}
+[Verified Entry Point]
+  0x00007f528432ad90:   mov    %eax,-0x14000(%rsp)
+  0x00007f528432ad97:   push   %rbp
+  0x00007f528432ad98:   sub    $0x10,%rsp
+  0x00007f528432ad9c:   cmpl   $0x3,0x20(%r15)
+  0x00007f528432ada4:   jne    0x00007f528432ae0f
+  0x00007f528432adaa:   mov    %edx,%r11d
+  0x00007f528432adad:   mov    0x10(%rsi),%r8d
+  0x00007f528432adb1:   mov    0x28(%rsi),%r9d
+  0x00007f528432adb5:   mov    %r9,%rdx
+  0x00007f528432adb8:   shl    $0x3,%rdx
+  0x00007f528432adbc:   mov    %rcx,%rsi
+  0x00007f528432adbf:   mov    %r11d,%ecx
+  0x00007f528432adc2:   data16 xchg %ax,%ax
+  0x00007f528432adc5:   movabs $0x7f525469fbd0,%rax
+  0x00007f528432adcf:   callq  0x00007f5283c539e8           ; ImmutableOopMap {}
+                                                            ;*invokeinterface visit {reexecute=0 rethrow=0 return_oop=1}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCacheFile::readBytes@10 (line 147)
+                                                            ;   {virtual_call}
+  0x00007f528432add4:   nopl   0x14c(%rax,%rax,1)           ;   {post_call_nop}
+  0x00007f528432addc:   add    $0x10,%rsp
+  0x00007f528432ade0:   pop    %rbp
+  0x00007f528432ade1:   cmp    0x28(%r15),%rsp              ;   {poll_return}
+  0x00007f528432ade5:   ja     0x00007f528432adf9
+  0x00007f528432adeb:   retq   
+  0x00007f528432adec:   mov    %rax,%rsi
+  0x00007f528432adef:   add    $0x10,%rsp
+  0x00007f528432adf3:   pop    %rbp
+  0x00007f528432adf4:   jmpq   0x00007f5283bb9d60           ;   {runtime_call C2 Runtime rethrow}
+  0x00007f528432adf9:   movabs $0x7f528432ade1,%r10         ;   {internal_word}
+  0x00007f528432ae03:   mov    %r10,0x538(%r15)
+  0x00007f528432ae0a:   jmpq   0x00007f5283b89860           ;   {runtime_call SafepointBlob}
+  0x00007f528432ae0f:   callq  Stub::method_entry_barrier   ;   {runtime_call Stub::method_entry_barrier}
+  0x00007f528432ae14:   jmpq   0x00007f528432adaa
+  0x00007f528432ae19:   hlt    
+  0x00007f528432ae1a:   hlt    
+  0x00007f528432ae1b:   hlt    
+  0x00007f528432ae1c:   hlt    
+  0x00007f528432ae1d:   hlt    
+  0x00007f528432ae1e:   hlt    
+  0x00007f528432ae1f:   hlt    
+[Exception Handler]
+  0x00007f528432ae20:   jmpq   0x00007f5283bb4060           ;   {runtime_call ExceptionBlob}
+[Deopt Handler Code]
+  0x00007f528432ae25:   callq  0x00007f528432ae2a
+  0x00007f528432ae2a:   subq   $0x5,(%rsp)
+  0x00007f528432ae2f:   jmpq   0x00007f5283b87fe0           ;   {runtime_call DeoptimizationBlob}
+  0x00007f528432ae34:   hlt    
+  0x00007f528432ae35:   hlt    
+  0x00007f528432ae36:   hlt    
+  0x00007f528432ae37:   hlt    
+--------------------------------------------------------------------------------
+[/Disassembly]
+
+
+Compiled method (c1) 149032 12329       3       io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact (65 bytes)
+ total in heap  [0x00007f527d695388,0x00007f527d695b68] = 2016
+ main code      [0x00007f527d695480,0x00007f527d695b20] = 1696
+ stub code      [0x00007f527d695b20,0x00007f527d695b60] = 64
+ oops           [0x00007f527d695b60,0x00007f527d695b68] = 8
+ mutable data [0x00007f525830cfd0,0x00007f525830d088] = 184
+ relocation     [0x00007f525830cfd0,0x00007f525830d048] = 120
+ metadata       [0x00007f525830d048,0x00007f525830d088] = 64
+ immutable data [0x00007f525830cdd0,0x00007f525830cfc0] = 496
+ dependencies   [0x00007f525830cdd0,0x00007f525830cde8] = 24
+ nul chk table  [0x00007f525830cde8,0x00007f525830ce28] = 64
+ scopes pcs     [0x00007f525830ce28,0x00007f525830cf18] = 240
+ scopes data    [0x00007f525830cf18,0x00007f525830cfc0] = 168
+
+[Disassembly]
+--------------------------------------------------------------------------------
+[Constant Pool (empty)]
+
+--------------------------------------------------------------------------------
+
+[Instructions begin]
+  0x00007f527d695480:   data16 data16 nopw 0x0(%rax,%rax,1)
+  0x00007f527d69548b:   data16 data16 xchg %ax,%ax
+  0x00007f527d69548f:   data16 xchg %ax,%ax
+[Entry Point]
+  # {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan'
+  # this:     rsi:rsi   = 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan'
+  # parm0:    rdx:rdx   = 'io/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW'
+  #           [sp+0x70]  (sp of caller)
+  0x00007f527d695492:   mov    0x8(%rsi),%r10d
+  0x00007f527d695496:   cmp    0x8(%rax),%r10d
+  0x00007f527d69549a:   jne    0x00007f5283b862e0           ;   {runtime_call Shared Runtime ic_miss_blob}
+[Verified Entry Point]
+  0x00007f527d6954a0:   mov    %eax,-0x14000(%rsp)
+  0x00007f527d6954a7:   push   %rbp
+  0x00007f527d6954a8:   sub    $0x60,%rsp
+  0x00007f527d6954ac:   cmpl   $0x3,0x20(%r15)
+  0x00007f527d6954b4:   je     0x00007f527d6954bb
+  0x00007f527d6954b6:   callq  Stub::method_entry_barrier   ;   {runtime_call Stub::method_entry_barrier}
+  0x00007f527d6954bb:   mov    %rsi,0x38(%rsp)
+  0x00007f527d6954c0:   movabs $0x7f52770a4878,%rdi         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d6954ca:   mov    0x90(%rdi),%ebx
+  0x00007f527d6954d0:   add    $0x2,%ebx
+  0x00007f527d6954d3:   mov    %ebx,0x90(%rdi)
+  0x00007f527d6954d9:   and    $0x7fe,%ebx
+  0x00007f527d6954df:   test   %ebx,%ebx
+  0x00007f527d6954e1:   je     0x00007f527d695a3a
+  0x00007f527d6954e7:   mov    0xe0(%rsi),%edi
+  0x00007f527d6954ed:   shl    $0x3,%rdi
+  0x00007f527d6954f1:   mov    0x90(%rdi),%edi              ; implicit exception: dispatches to 0x00007f527d695a5b
+  0x00007f527d6954f7:   shl    $0x3,%rdi
+  0x00007f527d6954fb:   cmp    (%rdi),%rax                  ; implicit exception: dispatches to 0x00007f527d695a60
+  0x00007f527d6954fe:   movabs $0x7f52770a4878,%rbx         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695508:   addq   $0x1,0xe8(%rbx)
+  0x00007f527d695510:   movabs $0x7f52765873d8,%rdi         ;   {metadata(method data for {method} {0x000000008f3b3800} 'millis' '()J' in 'java/time/Clock$SystemClock')}
+  0x00007f527d69551a:   mov    0x90(%rdi),%ebx
+  0x00007f527d695520:   add    $0x2,%ebx
+  0x00007f527d695523:   mov    %ebx,0x90(%rdi)
+  0x00007f527d695529:   and    $0x1ffffe,%ebx
+  0x00007f527d69552f:   test   %ebx,%ebx
+  0x00007f527d695531:   je     0x00007f527d695a65
+  0x00007f527d695537:   movabs $0x7f52765873d8,%rdi         ;   {metadata(method data for {method} {0x000000008f3b3800} 'millis' '()J' in 'java/time/Clock$SystemClock')}
+  0x00007f527d695541:   addq   $0x1,0xd8(%rdi)
+  0x00007f527d695549:   callq  0x00007f529ac40420           ;   {runtime_call os::javaTimeMillis()}
+  0x00007f527d69554e:   nopl   0x0(%rax,%rax,1)             ;   {post_call_nop}
+  0x00007f527d695556:   mov    %rax,0x48(%rsp)
+  0x00007f527d69555b:   mov    0x38(%rsp),%rsi
+  0x00007f527d695560:   mov    0xb0(%rsi),%edx
+  0x00007f527d695566:   shl    $0x3,%rdx
+  0x00007f527d69556a:   cmp    (%rdx),%rax                  ; implicit exception: dispatches to 0x00007f527d695a86
+  0x00007f527d69556d:   mov    %rdx,%rdi
+  0x00007f527d695570:   movabs $0x7f52770a4878,%rbx         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d69557a:   mov    0x8(%rdi),%edi
+  0x00007f527d69557d:   mov    $0x8f000000,%r10d
+  0x00007f527d695583:   add    %r10,%rdi
+  0x00007f527d695586:   cmp    0x110(%rbx),%rdi
+  0x00007f527d69558d:   jne    0x00007f527d69559c
+  0x00007f527d69558f:   addq   $0x1,0x118(%rbx)
+  0x00007f527d695597:   jmpq   0x00007f527d6955fc
+  0x00007f527d69559c:   cmp    0x120(%rbx),%rdi
+  0x00007f527d6955a3:   jne    0x00007f527d6955b2
+  0x00007f527d6955a5:   addq   $0x1,0x128(%rbx)
+  0x00007f527d6955ad:   jmpq   0x00007f527d6955fc
+  0x00007f527d6955b2:   cmpq   $0x0,0x110(%rbx)
+  0x00007f527d6955ba:   jne    0x00007f527d6955d3
+  0x00007f527d6955bc:   mov    %rdi,0x110(%rbx)
+  0x00007f527d6955c3:   movq   $0x1,0x118(%rbx)
+  0x00007f527d6955ce:   jmpq   0x00007f527d6955fc
+  0x00007f527d6955d3:   cmpq   $0x0,0x120(%rbx)
+  0x00007f527d6955db:   jne    0x00007f527d6955f4
+  0x00007f527d6955dd:   mov    %rdi,0x120(%rbx)
+  0x00007f527d6955e4:   movq   $0x1,0x128(%rbx)
+  0x00007f527d6955ef:   jmpq   0x00007f527d6955fc
+  0x00007f527d6955f4:   addq   $0x1,0x108(%rbx)
+  0x00007f527d6955fc:   mov    0x7c(%rdx),%edx
+  0x00007f527d6955ff:   shl    $0x3,%rdx
+  0x00007f527d695603:   cmp    (%rdx),%rax                  ; implicit exception: dispatches to 0x00007f527d695a8b
+  0x00007f527d695606:   mov    %rdx,%rdi
+  0x00007f527d695609:   movabs $0x7f52770a4878,%rbx         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695613:   mov    0x8(%rdi),%edi
+  0x00007f527d695616:   mov    $0x8f000000,%r10d
+  0x00007f527d69561c:   add    %r10,%rdi
+  0x00007f527d69561f:   cmp    0x140(%rbx),%rdi
+  0x00007f527d695626:   jne    0x00007f527d695635
+  0x00007f527d695628:   addq   $0x1,0x148(%rbx)
+  0x00007f527d695630:   jmpq   0x00007f527d695695
+  0x00007f527d695635:   cmp    0x150(%rbx),%rdi
+  0x00007f527d69563c:   jne    0x00007f527d69564b
+  0x00007f527d69563e:   addq   $0x1,0x158(%rbx)
+  0x00007f527d695646:   jmpq   0x00007f527d695695
+  0x00007f527d69564b:   cmpq   $0x0,0x140(%rbx)
+  0x00007f527d695653:   jne    0x00007f527d69566c
+  0x00007f527d695655:   mov    %rdi,0x140(%rbx)
+  0x00007f527d69565c:   movq   $0x1,0x148(%rbx)
+  0x00007f527d695667:   jmpq   0x00007f527d695695
+  0x00007f527d69566c:   cmpq   $0x0,0x150(%rbx)
+  0x00007f527d695674:   jne    0x00007f527d69568d
+  0x00007f527d695676:   mov    %rdi,0x150(%rbx)
+  0x00007f527d69567d:   movq   $0x1,0x158(%rbx)
+  0x00007f527d695688:   jmpq   0x00007f527d695695
+  0x00007f527d69568d:   addq   $0x1,0x138(%rbx)
+  0x00007f527d695695:   mov    0x14(%rdx),%edx
+  0x00007f527d695698:   shl    $0x3,%rdx
+  0x00007f527d69569c:   nopl   0x0(%rax)
+  0x00007f527d6956a0:   cmp    (%rdx),%rax                  ; implicit exception: dispatches to 0x00007f527d695a90
+  0x00007f527d6956a3:   mov    %rdx,%rdi
+  0x00007f527d6956a6:   movabs $0x7f52770a4878,%rbx         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d6956b0:   mov    0x8(%rdi),%edi
+  0x00007f527d6956b3:   mov    $0x8f000000,%r10d
+  0x00007f527d6956b9:   add    %r10,%rdi
+  0x00007f527d6956bc:   cmp    0x170(%rbx),%rdi
+  0x00007f527d6956c3:   jne    0x00007f527d6956d2
+  0x00007f527d6956c5:   addq   $0x1,0x178(%rbx)
+  0x00007f527d6956cd:   jmpq   0x00007f527d695732
+  0x00007f527d6956d2:   cmp    0x180(%rbx),%rdi
+  0x00007f527d6956d9:   jne    0x00007f527d6956e8
+  0x00007f527d6956db:   addq   $0x1,0x188(%rbx)
+  0x00007f527d6956e3:   jmpq   0x00007f527d695732
+  0x00007f527d6956e8:   cmpq   $0x0,0x170(%rbx)
+  0x00007f527d6956f0:   jne    0x00007f527d695709
+  0x00007f527d6956f2:   mov    %rdi,0x170(%rbx)
+  0x00007f527d6956f9:   movq   $0x1,0x178(%rbx)
+  0x00007f527d695704:   jmpq   0x00007f527d695732
+  0x00007f527d695709:   cmpq   $0x0,0x180(%rbx)
+  0x00007f527d695711:   jne    0x00007f527d69572a
+  0x00007f527d695713:   mov    %rdi,0x180(%rbx)
+  0x00007f527d69571a:   movq   $0x1,0x188(%rbx)
+  0x00007f527d695725:   jmpq   0x00007f527d695732
+  0x00007f527d69572a:   addq   $0x1,0x168(%rbx)
+  0x00007f527d695732:   mov    0x14(%rdx),%edi
+  0x00007f527d695735:   shl    $0x3,%rdi
+  0x00007f527d695739:   cmp    (%rdi),%rax                  ; implicit exception: dispatches to 0x00007f527d695a95
+  0x00007f527d69573c:   mov    %rdi,%rbx
+  0x00007f527d69573f:   movabs $0x7f52770a4878,%rcx         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695749:   mov    0x8(%rbx),%ebx
+  0x00007f527d69574c:   mov    $0x8f000000,%r10d
+  0x00007f527d695752:   add    %r10,%rbx
+  0x00007f527d695755:   cmp    0x1a0(%rcx),%rbx
+  0x00007f527d69575c:   jne    0x00007f527d69576b
+  0x00007f527d69575e:   addq   $0x1,0x1a8(%rcx)
+  0x00007f527d695766:   jmpq   0x00007f527d6957cb
+  0x00007f527d69576b:   cmp    0x1b0(%rcx),%rbx
+  0x00007f527d695772:   jne    0x00007f527d695781
+  0x00007f527d695774:   addq   $0x1,0x1b8(%rcx)
+  0x00007f527d69577c:   jmpq   0x00007f527d6957cb
+  0x00007f527d695781:   cmpq   $0x0,0x1a0(%rcx)
+  0x00007f527d695789:   jne    0x00007f527d6957a2
+  0x00007f527d69578b:   mov    %rbx,0x1a0(%rcx)
+  0x00007f527d695792:   movq   $0x1,0x1a8(%rcx)
+  0x00007f527d69579d:   jmpq   0x00007f527d6957cb
+  0x00007f527d6957a2:   cmpq   $0x0,0x1b0(%rcx)
+  0x00007f527d6957aa:   jne    0x00007f527d6957c3
+  0x00007f527d6957ac:   mov    %rbx,0x1b0(%rcx)
+  0x00007f527d6957b3:   movq   $0x1,0x1b8(%rcx)
+  0x00007f527d6957be:   jmpq   0x00007f527d6957cb
+  0x00007f527d6957c3:   addq   $0x1,0x198(%rcx)
+  0x00007f527d6957cb:   movabs $0x7f5276c14b68,%rbx         ;   {metadata(method data for {method} {0x00007f5276acc630} 'sentinel' '()Z' in 'io/aklivity/zilla/runtime/binding/kafka/internal/cache/KafkaCachePartition$Node')}
+  0x00007f527d6957d5:   mov    0x90(%rbx),%ecx
+  0x00007f527d6957db:   add    $0x2,%ecx
+  0x00007f527d6957de:   mov    %ecx,0x90(%rbx)
+  0x00007f527d6957e4:   and    $0x1ffffe,%ecx
+  0x00007f527d6957ea:   test   %ecx,%ecx
+  0x00007f527d6957ec:   je     0x00007f527d695a9a
+  0x00007f527d6957f2:   mov    0x18(%rdi),%ebx
+  0x00007f527d6957f5:   shl    $0x3,%rbx
+  0x00007f527d6957f9:   mov    0x7c(%rbx),%ebx              ; implicit exception: dispatches to 0x00007f527d695abb
+  0x00007f527d6957fc:   shl    $0x3,%rbx
+  0x00007f527d695800:   cmp    %rbx,%rdi
+  0x00007f527d695803:   movabs $0x7f5276c14b68,%rdi         ;   {metadata(method data for {method} {0x00007f5276acc630} 'sentinel' '()Z' in 'io/aklivity/zilla/runtime/binding/kafka/internal/cache/KafkaCachePartition$Node')}
+  0x00007f527d69580d:   mov    $0xd8,%ebx
+  0x00007f527d695812:   jne    0x00007f527d695819
+  0x00007f527d695814:   mov    $0xe8,%ebx
+  0x00007f527d695819:   mov    (%rdi,%rbx,1),%rcx
+  0x00007f527d69581d:   lea    0x1(%rcx),%rcx
+  0x00007f527d695821:   mov    %rcx,(%rdi,%rbx,1)
+  0x00007f527d695825:   jne    0x00007f527d695845
+  0x00007f527d69582b:   movabs $0x7f5276c14b68,%rdi         ;   {metadata(method data for {method} {0x00007f5276acc630} 'sentinel' '()Z' in 'io/aklivity/zilla/runtime/binding/kafka/internal/cache/KafkaCachePartition$Node')}
+  0x00007f527d695835:   incl   0xf8(%rdi)
+  0x00007f527d69583b:   mov    $0x1,%edi
+  0x00007f527d695840:   jmpq   0x00007f527d69584a
+  0x00007f527d695845:   mov    $0x0,%edi
+  0x00007f527d69584a:   and    $0x1,%edi
+  0x00007f527d69584d:   test   %edi,%edi
+  0x00007f527d69584f:   movabs $0x7f52770a4878,%rdi         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695859:   mov    $0x1c8,%ebx
+  0x00007f527d69585e:   jne    0x00007f527d695865
+  0x00007f527d695860:   mov    $0x1d8,%ebx
+  0x00007f527d695865:   mov    (%rdi,%rbx,1),%rcx
+  0x00007f527d695869:   lea    0x1(%rcx),%rcx
+  0x00007f527d69586d:   mov    %rcx,(%rdi,%rbx,1)
+  0x00007f527d695871:   jne    0x00007f527d695a0c
+  0x00007f527d695877:   mov    %rdx,%rdi
+  0x00007f527d69587a:   movabs $0x7f52770a4878,%rbx         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695884:   mov    0x8(%rdi),%edi
+  0x00007f527d695887:   mov    $0x8f000000,%r10d
+  0x00007f527d69588d:   add    %r10,%rdi
+  0x00007f527d695890:   cmp    0x1f0(%rbx),%rdi
+  0x00007f527d695897:   jne    0x00007f527d6958a6
+  0x00007f527d695899:   addq   $0x1,0x1f8(%rbx)
+  0x00007f527d6958a1:   jmpq   0x00007f527d695906
+  0x00007f527d6958a6:   cmp    0x200(%rbx),%rdi
+  0x00007f527d6958ad:   jne    0x00007f527d6958bc
+  0x00007f527d6958af:   addq   $0x1,0x208(%rbx)
+  0x00007f527d6958b7:   jmpq   0x00007f527d695906
+  0x00007f527d6958bc:   cmpq   $0x0,0x1f0(%rbx)
+  0x00007f527d6958c4:   jne    0x00007f527d6958dd
+  0x00007f527d6958c6:   mov    %rdi,0x1f0(%rbx)
+  0x00007f527d6958cd:   movq   $0x1,0x1f8(%rbx)
+  0x00007f527d6958d8:   jmpq   0x00007f527d695906
+  0x00007f527d6958dd:   cmpq   $0x0,0x200(%rbx)
+  0x00007f527d6958e5:   jne    0x00007f527d6958fe
+  0x00007f527d6958e7:   mov    %rdi,0x200(%rbx)
+  0x00007f527d6958ee:   movq   $0x1,0x208(%rbx)
+  0x00007f527d6958f9:   jmpq   0x00007f527d695906
+  0x00007f527d6958fe:   addq   $0x1,0x1e8(%rbx)
+  0x00007f527d695906:   mov    %rdx,%rdi
+  0x00007f527d695909:   mov    %rax,%rdx
+  0x00007f527d69590c:   mov    %rdi,%rsi
+  0x00007f527d69590f:   mov    %rdi,0x40(%rsp)
+  0x00007f527d695914:   data16 xchg %ax,%ax
+  0x00007f527d695917:   callq  0x00007f527d695b20           ; ImmutableOopMap {[56]=Oop [64]=Oop }
+                                                            ;*invokevirtual clean {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@37 (line 1051)
+                                                            ;   {optimized virtual_call}
+  0x00007f527d69591c:   nopl   0x594(%rax,%rax,1)           ;   {post_call_nop}
+  0x00007f527d695924:   mov    0x40(%rsp),%rdx
+  0x00007f527d695929:   movabs $0x7f52770a4878,%rsi         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695933:   mov    0x8(%rdx),%edx
+  0x00007f527d695936:   mov    $0x8f000000,%r10d
+  0x00007f527d69593c:   add    %r10,%rdx
+  0x00007f527d69593f:   cmp    0x220(%rsi),%rdx
+  0x00007f527d695946:   jne    0x00007f527d695955
+  0x00007f527d695948:   addq   $0x1,0x228(%rsi)
+  0x00007f527d695950:   jmpq   0x00007f527d6959b5
+  0x00007f527d695955:   cmp    0x230(%rsi),%rdx
+  0x00007f527d69595c:   jne    0x00007f527d69596b
+  0x00007f527d69595e:   addq   $0x1,0x238(%rsi)
+  0x00007f527d695966:   jmpq   0x00007f527d6959b5
+  0x00007f527d69596b:   cmpq   $0x0,0x220(%rsi)
+  0x00007f527d695973:   jne    0x00007f527d69598c
+  0x00007f527d695975:   mov    %rdx,0x220(%rsi)
+  0x00007f527d69597c:   movq   $0x1,0x228(%rsi)
+  0x00007f527d695987:   jmpq   0x00007f527d6959b5
+  0x00007f527d69598c:   cmpq   $0x0,0x230(%rsi)
+  0x00007f527d695994:   jne    0x00007f527d6959ad
+  0x00007f527d695996:   mov    %rdx,0x230(%rsi)
+  0x00007f527d69599d:   movq   $0x1,0x238(%rsi)
+  0x00007f527d6959a8:   jmpq   0x00007f527d6959b5
+  0x00007f527d6959ad:   addq   $0x1,0x218(%rsi)
+  0x00007f527d6959b5:   mov    0x40(%rsp),%rdx
+  0x00007f527d6959ba:   mov    0x14(%rdx),%esi
+  0x00007f527d6959bd:   shl    $0x3,%rsi
+  0x00007f527d6959c1:   movabs $0x7f52770a4878,%rdi         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d6959cb:   mov    0x94(%rdi),%ebx
+  0x00007f527d6959d1:   add    $0x2,%ebx
+  0x00007f527d6959d4:   mov    %ebx,0x94(%rdi)
+  0x00007f527d6959da:   and    $0x3ffe,%ebx
+  0x00007f527d6959e0:   test   %ebx,%ebx
+  0x00007f527d6959e2:   je     0x00007f527d695ac0
+  0x00007f527d6959e8:   mov    0x30(%r15),%r10              ; ImmutableOopMap {rsi=Oop [56]=Oop }
+                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@47 (line 1052)
+  0x00007f527d6959ec:   test   %eax,(%r10)                  ;   {poll}
+  0x00007f527d6959ef:   movabs $0x7f52770a4878,%rdi         ;   {metadata(method data for {method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d6959f9:   incl   0x248(%rdi)
+  0x00007f527d6959ff:   mov    %rsi,%rdx
+  0x00007f527d695a02:   mov    0x48(%rsp),%rax
+  0x00007f527d695a07:   jmpq   0x00007f527d6956a0
+  0x00007f527d695a0c:   mov    0x38(%rsp),%rsi
+  0x00007f527d695a11:   movabs $0x7fffffffffffffff,%r10
+  0x00007f527d695a1b:   mov    %r10,0x70(%rsi)
+  0x00007f527d695a1f:   mov    $0xffffffffffffffff,%r10
+  0x00007f527d695a26:   mov    %r10,0x78(%rsi)
+  0x00007f527d695a2a:   add    $0x60,%rsp
+  0x00007f527d695a2e:   pop    %rbp
+  0x00007f527d695a2f:   cmp    0x28(%r15),%rsp              ;   {poll_return}
+  0x00007f527d695a33:   ja     0x00007f527d695ae1
+  0x00007f527d695a39:   retq   
+  0x00007f527d695a3a:   movabs $0x7f5276b43d10,%r10         ;   {metadata({method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695a44:   mov    %r10,0x8(%rsp)
+  0x00007f527d695a49:   movq   $0xffffffffffffffff,(%rsp)
+  0x00007f527d695a51:   callq  0x00007f5283c4b160           ; ImmutableOopMap {rsi=Oop rdx=Oop [56]=Oop }
+                                                            ;*synchronization entry
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@-1 (line 1046)
+                                                            ;   {runtime_call C1 Runtime counter_overflow_blob}
+  0x00007f527d695a56:   jmpq   0x00007f527d6954e7
+  0x00007f527d695a5b:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rsi=Oop [56]=Oop }
+                                                            ;*getfield clock {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@4 (line 1046)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695a60:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rsi=Oop rdi=Oop [56]=Oop }
+                                                            ;*invokevirtual millis {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@7 (line 1046)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695a65:   movabs $0x8f3b3800,%r10             ;   {metadata({method} {0x000000008f3b3800} 'millis' '()J' in 'java/time/Clock$SystemClock')}
+  0x00007f527d695a6f:   mov    %r10,0x8(%rsp)
+  0x00007f527d695a74:   movq   $0xffffffffffffffff,(%rsp)
+  0x00007f527d695a7c:   callq  0x00007f5283c4b160           ; ImmutableOopMap {rsi=Oop [56]=Oop }
+                                                            ;*synchronization entry
+                                                            ; - java.time.Clock$SystemClock::millis@-1 (line 607)
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@7 (line 1046)
+                                                            ;   {runtime_call C1 Runtime counter_overflow_blob}
+  0x00007f527d695a81:   jmpq   0x00007f527d695537
+  0x00007f527d695a86:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rsi=Oop rdx=Oop [56]=Oop }
+                                                            ;*invokevirtual sentinel {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@15 (line 1048)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695a8b:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rsi=Oop rdx=Oop [56]=Oop }
+                                                            ;*invokevirtual next {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@18 (line 1048)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695a90:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rdx=Oop [56]=Oop }
+                                                            ;*invokevirtual next {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@25 (line 1049)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695a95:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rdx=Oop rdi=Oop [56]=Oop }
+                                                            ;*invokevirtual sentinel {reexecute=0 rethrow=0 return_oop=0}
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@28 (line 1049)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695a9a:   movabs $0x7f5276acc630,%r10         ;   {metadata({method} {0x00007f5276acc630} 'sentinel' '()Z' in 'io/aklivity/zilla/runtime/binding/kafka/internal/cache/KafkaCachePartition$Node')}
+  0x00007f527d695aa4:   mov    %r10,0x8(%rsp)
+  0x00007f527d695aa9:   movq   $0xffffffffffffffff,(%rsp)
+  0x00007f527d695ab1:   callq  0x00007f5283c4b160           ; ImmutableOopMap {rdx=Oop rdi=Oop [56]=Oop }
+                                                            ;*synchronization entry
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartition$Node::sentinel@-1 (line 1240)
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@28 (line 1049)
+                                                            ;   {runtime_call C1 Runtime counter_overflow_blob}
+  0x00007f527d695ab6:   jmpq   0x00007f527d6957f2
+  0x00007f527d695abb:   callq  0x00007f5283bb63e0           ; ImmutableOopMap {rdx=Oop rdi=Oop [56]=Oop }
+                                                            ;*getfield sentinel {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartition$Node::sentinel@5 (line 1240)
+                                                            ; - io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@28 (line 1049)
+                                                            ;   {runtime_call C1 Runtime throw_null_pointer_exception_blob}
+  0x00007f527d695ac0:   movabs $0x7f5276b43d10,%r10         ;   {metadata({method} {0x00007f5276b43d10} 'onClientFanInitialSignalSegmentCompact' '(Lio/aklivity/zilla/runtime/binding/kafka/internal/types/stream/SignalFW;)V' in 'io/aklivity/zilla/runtime/binding/kafka/internal/stream/KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan')}
+  0x00007f527d695aca:   mov    %r10,0x8(%rsp)
+  0x00007f527d695acf:   movq   $0x2f,(%rsp)
+  0x00007f527d695ad7:   callq  0x00007f5283c4b160           ; ImmutableOopMap {rsi=Oop [56]=Oop }
+                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                            ; - (reexecute) io.aklivity.zilla.runtime.binding.kafka.internal.stream.KafkaCacheClientProduceFactory$KafkaCacheClientProduceFan::onClientFanInitialSignalSegmentCompact@47 (line 1052)
+                                                            ;   {runtime_call C1 Runtime counter_overflow_blob}
+  0x00007f527d695adc:   jmpq   0x00007f527d6959e8
+  0x00007f527d695ae1:   movabs $0x7f527d695a2f,%r10         ;   {internal_word}
+  0x00007f527d695aeb:   mov    %r10,0x538(%r15)
+  0x00007f527d695af2:   jmpq   0x00007f5283b89860           ;   {runtime_call SafepointBlob}
+  0x00007f527d695af7:   mov    0x5e0(%r15),%rax
+  0x00007f527d695afe:   movq   $0x0,0x5e0(%r15)
+  0x00007f527d695b09:   movq   $0x0,0x5e8(%r15)
+  0x00007f527d695b14:   add    $0x60,%rsp
+  0x00007f527d695b18:   pop    %rbp
+  0x00007f527d695b19:   jmpq   0x00007f5283bb72e0           ;   {runtime_call C1 Runtime unwind_exception_blob}
+  0x00007f527d695b1e:   hlt    
+  0x00007f527d695b1f:   hlt    
+[Stub Code]
+  0x00007f527d695b20:   movabs $0x7f5276acd038,%rbx         ;   {static_stub}
+  0x00007f527d695b2a:   jmpq   0x00007f5283b85436           ;   {runtime_call I2C/C2I adapters}
+[Exception Handler]
+  0x00007f527d695b2f:   callq  0x00007f5283c473e0           ;   {runtime_call C1 Runtime handle_exception_from_callee_blob}
+  0x00007f527d695b34:   movabs $0x7f529b108b15,%rdi         ;   {external_word}
+  0x00007f527d695b3e:   and    $0xfffffffffffffff0,%rsp
+  0x00007f527d695b42:   callq  0x00007f529ab17f40           ;   {runtime_call MacroAssembler::debug64(char*, long, long*)}
+  0x00007f527d695b47:   hlt    
+[Deopt Handler Code]
+  0x00007f527d695b48:   movabs $0x7f527d695b48,%r10         ;   {section_word}
+  0x00007f527d695b52:   push   %r10
+  0x00007f527d695b54:   jmpq   0x00007f5283b87fe0           ;   {runtime_call DeoptimizationBlob}
+  0x00007f527d695b59:   hlt    
+  0x00007f527d695b5a:   hlt    
+  0x00007f527d695b5b:   hlt    
+  0x00007f527d695b5c:   hlt    
+  0x00007f527d695b5d:   hlt    
+  0x00007f527d695b5e:   hlt    
+  0x00007f527d695b5f:   hlt    
+--------------------------------------------------------------------------------
+[/Disassembly]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007f5294c76530, length=14, elements={
+0x00007f529401ad20, 0x00007f529405dbb0, 0x00007f529405f3c0, 0x00007f5294060f20,
+0x00007f5294062820, 0x00007f5294064080, 0x00007f5294065e60, 0x00007f5294067830,
+0x00007f529407a5e0, 0x00007f5294126880, 0x00007f5294909450, 0x00007f5294913e40,
+0x00007f529403f830, 0x00007f5294c6e420
+}
+_to_delete_list=0x00007f5294040730, length=13, elements={
+0x00007f529401ad20, 0x00007f529405dbb0, 0x00007f529405f3c0, 0x00007f5294060f20,
+0x00007f5294062820, 0x00007f5294064080, 0x00007f5294065e60, 0x00007f5294067830,
+0x00007f529407a5e0, 0x00007f5294126880, 0x00007f5294909450, 0x00007f5294913e40,
+0x00007f529403f830
+}
+
+Java Threads: ( => current thread )
+  0x00007f529401ad20 JavaThread "main"                              [_thread_blocked, id=6815, stack(0x00007f5299900000,0x00007f5299a00000) (1024K)]
+  0x00007f529405dbb0 JavaThread "Reference Handler"          daemon [_thread_blocked, id=6818, stack(0x00007f5298885000,0x00007f5298985000) (1024K)]
+  0x00007f529405f3c0 JavaThread "Finalizer"                  daemon [_thread_blocked, id=6819, stack(0x00007f5298785000,0x00007f5298885000) (1024K)]
+  0x00007f5294060f20 JavaThread "Signal Dispatcher"          daemon [_thread_blocked, id=6820, stack(0x00007f5298685000,0x00007f5298785000) (1024K)]
+  0x00007f5294062820 JavaThread "Service Thread"             daemon [_thread_blocked, id=6821, stack(0x00007f5298585000,0x00007f5298685000) (1024K)]
+  0x00007f5294064080 JavaThread "Monitor Deflation Thread"   daemon [_thread_blocked, id=6822, stack(0x00007f5298485000,0x00007f5298585000) (1024K)]
+  0x00007f5294065e60 JavaThread "C2 CompilerThread0"         daemon [_thread_in_native, id=6823, stack(0x00007f5298385000,0x00007f5298485000) (1024K)]
+  0x00007f5294067830 JavaThread "C1 CompilerThread0"         daemon [_thread_in_vm, id=6824, stack(0x00007f5298243000,0x00007f5298343000) (1024K)]
+  0x00007f529407a5e0 JavaThread "Common-Cleaner"             daemon [_thread_blocked, id=6825, stack(0x00007f5298143000,0x00007f5298243000) (1024K)]
+  0x00007f5294126880 JavaThread "Notification Thread"        daemon [_thread_blocked, id=6826, stack(0x00007f5298043000,0x00007f5298143000) (1024K)]
+  0x00007f5294909450 JavaThread "FileSystemWatchService"     daemon [_thread_in_native, id=6827, stack(0x00007f527c1be000,0x00007f527c2be000) (1024K)]
+=>0x00007f5294913e40 JavaThread "engine/worker#0"                   [_thread_in_Java, id=6828, stack(0x00007f527c0be000,0x00007f527c1be000) (1024K)]
+  0x00007f529403f830 JavaThread "engine/boss"                       [_thread_blocked, id=6829, stack(0x00007f524bf00000,0x00007f524c000000) (1024K)]
+  0x00007f5294c6e420 JavaThread "pool-2-thread-1"                   [_thread_in_Java, id=6830, stack(0x00007f520bd00000,0x00007f520be00000) (1024K)]
+Total: 14
+
+Other Threads:
+  0x00007f5294052910 VMThread "VM Thread"                           [id=6817, stack(0x00007f5298986000,0x00007f5298a86000) (1024K)]
+  0x00007f5294043670 WatcherThread "VM Periodic Task Thread"        [id=6816, stack(0x00007f5298a87000,0x00007f5298b87000) (1024K)]
+Total: 2
+
+Threads with active compile tasks:
+C2 CompilerThread0  149095 14625   !   4       java.util.ServiceLoader$ModuleServicesLookupIterator::hasNext (102 bytes)
+C1 CompilerThread0  149095 14675       3       org.eclipse.yasson.internal.AnnotationIntrospector::getFieldAnnotation (16 bytes)
+Total: 2
+
+VM state: not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap address: 0x000000072a400000, size: 3420 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x000000008f000000-0x000000008fd92000-0x000000008fd92000), size 14229504, SharedBaseAddress: 0x000000008f000000, ArchiveRelocationMode: 1.
+Compressed class space mapped at: 0x0000000090000000-0x00000000d0000000, reserved size: 1073741824
+UseCompressedClassPointers 1, UseCompactObjectHeaders 0
+Narrow klass pointer bits 32, Max shift 3
+Narrow klass base: 0x000000008f000000, Narrow klass shift: 0
+Encoding Range: [0x000000008f000000 - 0x000000018f000000), (4294967296 bytes)
+Klass Range:    [0x000000008f001000 - 0x00000000d0000000), (1090514944 bytes)
+Klass ID Range:  [4096 - 1090519033) (1090514937)
+Protection zone: [0x000000008f000000 - 0x000000008f001000), (4096 bytes)
+
+GC Precious Log:
+ CardTable entry size: 512
+ CPUs: 4 total, 1 available
+ Memory: 13674M
+ Large Page Support: Disabled
+ NUMA Support: Disabled
+ Compressed Oops: Enabled (Zero based)
+ Heap Min Capacity: 8M
+ Heap Initial Capacity: 214M
+ Heap Max Capacity: 3420M
+ Pre-touch: Disabled
+
+Heap:
+ DefNew     total 65792K, used 60481K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,  94% used [0x000000072a400000, 0x000000072d9f0398, 0x000000072dd20000)
+  from space 7296K,  71% used [0x000000072dd20000, 0x000000072e240230, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 402648K, used 402522K [0x0000000771800000, 0x000000078a136000, 0x0000000800000000)
+  the  space 402648K,  99% used [0x0000000771800000, 0x000000078a116b28, 0x000000078a136000)
+
+Card table byte_map: [0x00007f529907c000,0x00007f529972a000] _byte_map_base: 0x00007f529572a000
+
+Polling page: 0x00007f529b890000
+
+Metaspace:
+Metaspace        used 56536K, committed 57024K, reserved 1114112K
+ class space     used 6684K, committed 6912K, reserved 1048576K
+
+Usage:
+  Non-class:     48.68 MB used.
+      Class:      6.53 MB used.
+       Both:     55.21 MB used.
+
+Virtual space:
+  Non-class space:       64.00 MB reserved,      48.94 MB ( 76%) committed,  1 nodes.
+      Class space:        1.00 GB reserved,       6.75 MB ( <1%) committed,  1 nodes.
+             Both:        1.06 GB reserved,      55.69 MB (  5%) committed. 
+
+Chunk freelists:
+   Non-Class:  14.33 MB
+       Class:  9.31 MB
+        Both:  23.64 MB
+
+MaxMetaspaceSize: unlimited
+CompressedClassSpaceSize: 1.00 GB
+Initial GC threshold: 21.00 MB
+Current GC threshold: 58.38 MB
+CDS: on
+ - commit_granule_bytes: 65536.
+ - commit_granule_words: 8192.
+ - virtual_space_node_default_size: 8388608.
+ - enlarge_chunks_in_place: 1.
+UseCompressedClassPointers 1, UseCompactObjectHeaders 0
+Narrow klass pointer bits 32, Max shift 3
+Narrow klass base: 0x000000008f000000, Narrow klass shift: 0
+Encoding Range: [0x000000008f000000 - 0x000000018f000000), (4294967296 bytes)
+Klass Range:    [0x000000008f001000 - 0x00000000d0000000), (1090514944 bytes)
+Klass ID Range:  [4096 - 1090519033) (1090514937)
+Protection zone: [0x000000008f000000 - 0x000000008f001000), (4096 bytes)
+
+
+Internal statistics:
+
+num_allocs_failed_limit: 6.
+num_arena_births: 604.
+num_arena_deaths: 0.
+num_vsnodes_births: 2.
+num_vsnodes_deaths: 0.
+num_space_committed: 890.
+num_space_uncommitted: 0.
+num_chunks_returned_to_freelist: 6.
+num_chunks_taken_from_freelist: 2522.
+num_chunk_merges: 6.
+num_chunk_splits: 1878.
+num_chunks_enlarged: 1609.
+num_inconsistent_stats: 0.
+
+CodeHeap 'non-profiled nmethods': size=120036Kb used=9114Kb max_used=9114Kb free=110922Kb
+ bounds [0x00007f52840c7000, 0x00007f52849b7000, 0x00007f528b600000]
+CodeHeap 'profiled nmethods': size=120036Kb used=20432Kb max_used=20432Kb free=99603Kb
+ bounds [0x00007f527c5ff000, 0x00007f527d9ff000, 0x00007f5283b38000]
+CodeHeap 'non-nmethods': size=5692Kb used=1651Kb max_used=1694Kb free=4040Kb
+ bounds [0x00007f5283b38000, 0x00007f5283da8000, 0x00007f52840c7000]
+CodeCache: size=245764Kb, used=31197Kb, max_used=31240Kb, free=214565Kb
+ total_blobs=15203, nmethods=14240, adapters=869, full_count=0
+Compilation: enabled, stopped_count=0, restarted_count=0
+
+Compilation events (20 events):
+Event: 148.869 Thread 0x00007f5294067830 nmethod 14624 0x00007f527d9dfd08 code [0x00007f527d9dfe00, 0x00007f527d9e0030]
+Event: 148.869 Thread 0x00007f5294067830 14623       3       java.lang.Long::numberOfLeadingZeros (26 bytes)
+Event: 148.871 Thread 0x00007f5294067830 nmethod 14623 0x00007f527d9e0088 code [0x00007f527d9e0180, 0x00007f527d9e0328]
+Event: 148.871 Thread 0x00007f5294067830 14622       3       java.util.AbstractList$RandomAccessSpliterator::estimateSize (11 bytes)
+Event: 148.874 Thread 0x00007f5294067830 nmethod 14622 0x00007f527d9e0388 code [0x00007f527d9e0480, 0x00007f527d9e05d0]
+Event: 148.874 Thread 0x00007f5294067830 14616       3       sun.net.www.URLConnection::<init> (22 bytes)
+Event: 148.876 Thread 0x00007f5294067830 nmethod 14616 0x00007f527d9e0688 code [0x00007f527d9e0780, 0x00007f527d9e0aa8]
+Event: 148.880 Thread 0x00007f5294067830 14617       3       sun.net.www.MessageHeader::<init> (6 bytes)
+Event: 148.880 Thread 0x00007f5294067830 nmethod 14617 0x00007f527d9e0b08 code [0x00007f527d9e0c00, 0x00007f527d9e0df8]
+Event: 148.880 Thread 0x00007f5294067830 14618       3       sun.net.www.MessageHeader::<init> (14 bytes)
+Event: 148.881 Thread 0x00007f5294067830 nmethod 14618 0x00007f527d9e0e08 code [0x00007f527d9e0f00, 0x00007f527d9e1090]
+Event: 148.881 Thread 0x00007f5294067830 14619       3       sun.net.www.MessageHeader::grow (92 bytes)
+Event: 148.884 Thread 0x00007f5294065e60 nmethod 14609 0x00007f52849ac208 code [0x00007f52849ac300, 0x00007f52849ac598]
+Event: 148.884 Thread 0x00007f5294065e60 14625   !   4       java.util.ServiceLoader$ModuleServicesLookupIterator::hasNext (102 bytes)
+Event: 148.885 Thread 0x00007f5294067830 nmethod 14619 0x00007f527d9e1108 code [0x00007f527d9e1200, 0x00007f527d9e16b0]
+Event: 148.885 Thread 0x00007f5294067830 14627       3       io.aklivity.zilla.runtime.common.feature.FeatureFilter::filter (29 bytes)
+Event: 148.894 Thread 0x00007f5294067830 nmethod 14627 0x00007f527d9e1708 code [0x00007f527d9e1800, 0x00007f527d9e2050]
+Event: 148.894 Thread 0x00007f5294067830 14630       3       java.util.stream.StreamSpliterators$WrappingSpliterator$$Lambda/0x000000009000c230::accept (9 bytes)
+Event: 148.898 Thread 0x00007f5294067830 nmethod 14630 0x00007f527d9e2088 code [0x00007f527d9e2180, 0x00007f527d9e2348]
+Event: 148.898 Thread 0x00007f5294067830 14621       3       jdk.internal.loader.URLClassPath$1::hasMoreElements (5 bytes)
+
+GC Heap Usage History (20 events):
+Event: 56.756 {heap Before GC invocations=22 (full 2):
+ DefNew     total 65792K, used 64361K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,  97% used [0x000000072a400000, 0x000000072dbba578, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072dd20000, 0x000000072e43fff8, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 197072K, used 197022K [0x0000000771800000, 0x000000077d874000, 0x0000000800000000)
+  the  space 197072K,  99% used [0x0000000771800000, 0x000000077d867850, 0x000000077d874000)
+}
+Event: 56.822 {heap After GC invocations=23 (full 2):
+ DefNew     total 65792K, used 7295K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072e440000, 0x000000072eb5fff8, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 224660K, used 224598K [0x0000000771800000, 0x000000077f365000, 0x0000000800000000)
+  the  space 224660K,  99% used [0x0000000771800000, 0x000000077f355870, 0x000000077f365000)
+}
+Event: 61.516 {heap Before GC invocations=23 (full 2):
+ DefNew     total 65792K, used 65791K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072e440000, 0x000000072eb5fff8, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 224660K, used 224598K [0x0000000771800000, 0x000000077f365000, 0x0000000800000000)
+  the  space 224660K,  99% used [0x0000000771800000, 0x000000077f355870, 0x000000077f365000)
+}
+Event: 61.614 {heap After GC invocations=24 (full 2):
+ DefNew     total 65792K, used 7296K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072dd20000, 0x000000072e440000, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 258336K, used 258165K [0x0000000771800000, 0x0000000781448000, 0x0000000800000000)
+  the  space 258336K,  99% used [0x0000000771800000, 0x000000078141d478, 0x0000000781448000)
+}
+Event: 68.309 {heap Before GC invocations=24 (full 2):
+ DefNew     total 65792K, used 65792K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072dd20000, 0x000000072e440000, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 258336K, used 258165K [0x0000000771800000, 0x0000000781448000, 0x0000000800000000)
+  the  space 258336K,  99% used [0x0000000771800000, 0x000000078141d478, 0x0000000781448000)
+}
+Event: 68.656 {heap After GC invocations=25 (full 2):
+ DefNew     total 65792K, used 7296K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072e440000, 0x000000072eb60000, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 287532K, used 287461K [0x0000000771800000, 0x00000007830cb000, 0x0000000800000000)
+  the  space 287532K,  99% used [0x0000000771800000, 0x00000007830b9700, 0x00000007830cb000)
+}
+Event: 74.999 {heap Before GC invocations=25 (full 2):
+ DefNew     total 65792K, used 65792K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072e440000, 0x000000072eb60000, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 287532K, used 287461K [0x0000000771800000, 0x00000007830cb000, 0x0000000800000000)
+  the  space 287532K,  99% used [0x0000000771800000, 0x00000007830b9700, 0x00000007830cb000)
+}
+Event: 75.074 {heap After GC invocations=26 (full 2):
+ DefNew     total 65792K, used 7296K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072dd20000, 0x000000072e440000, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 316468K, used 316362K [0x0000000771800000, 0x0000000784d0d000, 0x0000000800000000)
+  the  space 316468K,  99% used [0x0000000771800000, 0x0000000784cf2810, 0x0000000784d0d000)
+}
+Event: 78.715 {heap Before GC invocations=26 (full 2):
+ DefNew     total 65792K, used 65792K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072dd20000, 0x000000072e440000, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 316468K, used 316362K [0x0000000771800000, 0x0000000784d0d000, 0x0000000800000000)
+  the  space 316468K,  99% used [0x0000000771800000, 0x0000000784cf2810, 0x0000000784d0d000)
+}
+Event: 78.793 {heap After GC invocations=27 (full 2):
+ DefNew     total 65792K, used 7296K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072e440000, 0x000000072eb60000, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 345600K, used 345447K [0x0000000771800000, 0x0000000786980000, 0x0000000800000000)
+  the  space 345600K,  99% used [0x0000000771800000, 0x0000000786959da0, 0x0000000786980000)
+}
+Event: 81.629 {heap Before GC invocations=27 (full 2):
+ DefNew     total 65792K, used 65792K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K, 100% used [0x000000072e440000, 0x000000072eb60000, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 345600K, used 345447K [0x0000000771800000, 0x0000000786980000, 0x0000000800000000)
+  the  space 345600K,  99% used [0x0000000771800000, 0x0000000786959da0, 0x0000000786980000)
+}
+Event: 81.750 {heap After GC invocations=28 (full 2):
+ DefNew     total 65792K, used 7295K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072dd20000, 0x000000072e43fff8, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 378324K, used 378222K [0x0000000771800000, 0x0000000788975000, 0x0000000800000000)
+  the  space 378324K,  99% used [0x0000000771800000, 0x000000078895bb38, 0x0000000788975000)
+}
+Event: 89.485 {heap Before GC invocations=28 (full 2):
+ DefNew     total 65792K, used 65791K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072dd20000, 0x000000072e43fff8, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 378324K, used 378222K [0x0000000771800000, 0x0000000788975000, 0x0000000800000000)
+  the  space 378324K,  99% used [0x0000000771800000, 0x000000078895bb38, 0x0000000788975000)
+}
+Event: 89.555 {heap After GC invocations=29 (full 2):
+ DefNew     total 65792K, used 7295K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072e440000, 0x000000072eb5fff8, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 396696K, used 396686K [0x0000000771800000, 0x0000000789b66000, 0x0000000800000000)
+  the  space 396696K,  99% used [0x0000000771800000, 0x0000000789b63a60, 0x0000000789b66000)
+}
+Event: 104.495 {heap Before GC invocations=29 (full 2):
+ DefNew     total 65792K, used 65791K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K,  99% used [0x000000072e440000, 0x000000072eb5fff8, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 396696K, used 396686K [0x0000000771800000, 0x0000000789b66000, 0x0000000800000000)
+  the  space 396696K,  99% used [0x0000000771800000, 0x0000000789b63a60, 0x0000000789b66000)
+}
+Event: 104.542 {heap After GC invocations=30 (full 2):
+ DefNew     total 65792K, used 4725K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K,  64% used [0x000000072dd20000, 0x000000072e1bd468, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 402648K, used 402518K [0x0000000771800000, 0x000000078a136000, 0x0000000800000000)
+  the  space 402648K,  99% used [0x0000000771800000, 0x000000078a115b38, 0x000000078a136000)
+}
+Event: 119.236 {heap Before GC invocations=30 (full 2):
+ DefNew     total 65792K, used 63221K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K, 100% used [0x000000072a400000, 0x000000072dd20000, 0x000000072dd20000)
+  from space 7296K,  64% used [0x000000072dd20000, 0x000000072e1bd468, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 402648K, used 402518K [0x0000000771800000, 0x000000078a136000, 0x0000000800000000)
+  the  space 402648K,  99% used [0x0000000771800000, 0x000000078a115b38, 0x000000078a136000)
+}
+Event: 119.252 {heap After GC invocations=31 (full 2):
+ DefNew     total 65792K, used 3196K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K,  43% used [0x000000072e440000, 0x000000072e75f240, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 402648K, used 402522K [0x0000000771800000, 0x000000078a136000, 0x0000000800000000)
+  the  space 402648K,  99% used [0x0000000771800000, 0x000000078a116b28, 0x000000078a136000)
+}
+Event: 134.386 {heap Before GC invocations=31 (full 2):
+ DefNew     total 65792K, used 59900K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,  96% used [0x000000072a400000, 0x000000072db60138, 0x000000072dd20000)
+  from space 7296K,  43% used [0x000000072e440000, 0x000000072e75f240, 0x000000072eb60000)
+  to   space 7296K,   0% used [0x000000072dd20000, 0x000000072dd20000, 0x000000072e440000)
+ Tenured    total 402648K, used 402522K [0x0000000771800000, 0x000000078a136000, 0x0000000800000000)
+  the  space 402648K,  99% used [0x0000000771800000, 0x000000078a116b28, 0x000000078a136000)
+}
+Event: 134.406 {heap After GC invocations=32 (full 2):
+ DefNew     total 65792K, used 5248K [0x000000072a400000, 0x000000072eb60000, 0x0000000771800000)
+  eden space 58496K,   0% used [0x000000072a400000, 0x000000072a400000, 0x000000072dd20000)
+  from space 7296K,  71% used [0x000000072dd20000, 0x000000072e240230, 0x000000072e440000)
+  to   space 7296K,   0% used [0x000000072e440000, 0x000000072e440000, 0x000000072eb60000)
+ Tenured    total 402648K, used 402522K [0x0000000771800000, 0x000000078a136000, 0x0000000800000000)
+  the  space 402648K,  99% used [0x0000000771800000, 0x000000078a116b28, 0x000000078a136000)
+}
+
+Metaspace Usage History (20 events):
+Event: 56.756 {metaspace Before GC invocations=22 (full 2):
+ Metaspace       used 56445K, committed 56896K, reserved 1114112K
+  class space    used 6679K, committed 6848K, reserved 1048576K
+}
+Event: 56.822 {metaspace After GC invocations=23 (full 2):
+ Metaspace       used 56445K, committed 56896K, reserved 1114112K
+  class space    used 6679K, committed 6848K, reserved 1048576K
+}
+Event: 61.516 {metaspace Before GC invocations=23 (full 2):
+ Metaspace       used 56467K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 61.614 {metaspace After GC invocations=24 (full 2):
+ Metaspace       used 56467K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 68.309 {metaspace Before GC invocations=24 (full 2):
+ Metaspace       used 56472K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 68.656 {metaspace After GC invocations=25 (full 2):
+ Metaspace       used 56472K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 74.999 {metaspace Before GC invocations=25 (full 2):
+ Metaspace       used 56472K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 75.074 {metaspace After GC invocations=26 (full 2):
+ Metaspace       used 56472K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 78.715 {metaspace Before GC invocations=26 (full 2):
+ Metaspace       used 56472K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 78.793 {metaspace After GC invocations=27 (full 2):
+ Metaspace       used 56472K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 81.629 {metaspace Before GC invocations=27 (full 2):
+ Metaspace       used 56479K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 81.750 {metaspace After GC invocations=28 (full 2):
+ Metaspace       used 56479K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 89.485 {metaspace Before GC invocations=28 (full 2):
+ Metaspace       used 56480K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 89.555 {metaspace After GC invocations=29 (full 2):
+ Metaspace       used 56480K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 104.495 {metaspace Before GC invocations=29 (full 2):
+ Metaspace       used 56480K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 104.542 {metaspace After GC invocations=30 (full 2):
+ Metaspace       used 56480K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 119.236 {metaspace Before GC invocations=30 (full 2):
+ Metaspace       used 56480K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 119.252 {metaspace After GC invocations=31 (full 2):
+ Metaspace       used 56480K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 134.386 {metaspace Before GC invocations=31 (full 2):
+ Metaspace       used 56484K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+Event: 134.406 {metaspace After GC invocations=32 (full 2):
+ Metaspace       used 56484K, committed 56896K, reserved 1114112K
+  class space    used 6682K, committed 6848K, reserved 1048576K
+}
+
+Dll operation events (18 events):
+Event: 0.001 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+Event: 0.001 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+Event: 0.018 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+Event: 0.018 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+Event: 0.022 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+Event: 0.022 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+Event: 0.040 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+Event: 0.040 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+Event: 0.428 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+Event: 0.428 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+Event: 0.477 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+Event: 0.477 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+Event: 0.679 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+Event: 0.679 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+Event: 1.053 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+Event: 1.053 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+Event: 1.053 Attempting to load shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+Event: 1.053 Loaded shared library /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+
+Deoptimization events (20 events):
+Event: 148.858 Thread 0x00007f5294c6e420 Uncommon trap: trap_request=0xffffffde fr.pc=0x00007f52846e6d74 relative=0x00000000000008f4
+Event: 148.858 Thread 0x00007f5294c6e420 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f52846e6d74 method=java.util.stream.ReduceOps$ReduceOp.evaluateSequential(Ljava/util/stream/PipelineHelper;Ljava/util/Spliterator;)Ljava/lang/Object; @ 6 c2
+Event: 148.858 Thread 0x00007f5294c6e420 DEOPT PACKING pc=0x00007f52846e6d74 sp=0x00007f520bdfdcb0
+Event: 148.858 Thread 0x00007f5294c6e420 DEOPT UNPACKING pc=0x00007f5283bb3df9 sp=0x00007f520bdfdc78 mode 2
+Event: 148.858 Thread 0x00007f5294c6e420 Uncommon trap: trap_request=0xffffffde fr.pc=0x00007f52846b4f80 relative=0x0000000000000180
+Event: 148.858 Thread 0x00007f5294c6e420 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f52846b4f80 method=java.util.stream.ReduceOps$3ReducingSink.begin(J)V @ 5 c2
+Event: 148.858 Thread 0x00007f5294c6e420 DEOPT PACKING pc=0x00007f52846b4f80 sp=0x00007f520bdfdb70
+Event: 148.858 Thread 0x00007f5294c6e420 DEOPT UNPACKING pc=0x00007f5283bb3df9 sp=0x00007f520bdfdb10 mode 2
+Event: 148.858 Thread 0x00007f5294c6e420 Uncommon trap: trap_request=0xffffff6e fr.pc=0x00007f5284732c98 relative=0x0000000000000198
+Event: 148.858 Thread 0x00007f5294c6e420 Uncommon trap: reason=predicate action=maybe_recompile pc=0x00007f5284732c98 method=java.util.ArrayList$ArrayListSpliterator.forEachRemaining(Ljava/util/function/Consumer;)V @ 83 c2
+Event: 148.858 Thread 0x00007f5294c6e420 DEOPT PACKING pc=0x00007f5284732c98 sp=0x00007f520bdfdb40
+Event: 148.858 Thread 0x00007f5294c6e420 DEOPT UNPACKING pc=0x00007f5283bb3df9 sp=0x00007f520bdfdaf0 mode 2
+Event: 148.875 Thread 0x00007f5294c6e420 Uncommon trap: trap_request=0xffffffde fr.pc=0x00007f52846e6d74 relative=0x00000000000008f4
+Event: 148.875 Thread 0x00007f5294c6e420 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f52846e6d74 method=java.util.stream.ReduceOps$ReduceOp.evaluateSequential(Ljava/util/stream/PipelineHelper;Ljava/util/Spliterator;)Ljava/lang/Object; @ 6 c2
+Event: 148.876 Thread 0x00007f5294c6e420 DEOPT PACKING pc=0x00007f52846e6d74 sp=0x00007f520bdfdc40
+Event: 148.876 Thread 0x00007f5294c6e420 DEOPT UNPACKING pc=0x00007f5283bb3df9 sp=0x00007f520bdfdc08 mode 2
+Event: 148.876 Thread 0x00007f5294c6e420 Uncommon trap: trap_request=0xffffffde fr.pc=0x00007f52846b4f80 relative=0x0000000000000180
+Event: 148.876 Thread 0x00007f5294c6e420 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007f52846b4f80 method=java.util.stream.ReduceOps$3ReducingSink.begin(J)V @ 5 c2
+Event: 148.876 Thread 0x00007f5294c6e420 DEOPT PACKING pc=0x00007f52846b4f80 sp=0x00007f520bdfdb00
+Event: 148.876 Thread 0x00007f5294c6e420 DEOPT UNPACKING pc=0x00007f5283bb3df9 sp=0x00007f520bdfdaa0 mode 2
+
+Classes loaded (20 events):
+Event: 5.109 Loading class java/util/Formatter$FormatSpecifierParser
+Event: 5.109 Loading class java/util/Formatter$FormatSpecifierParser done
+Event: 9.655 Loading class jdk/internal/foreign/MemorySessionImpl$ResourceList
+Event: 9.656 Loading class jdk/internal/foreign/MemorySessionImpl$ResourceList done
+Event: 17.569 Loading class java/nio/file/StandardCopyOption
+Event: 17.569 Loading class java/nio/file/StandardCopyOption done
+Event: 17.569 Loading class sun/nio/fs/UnixFileSystem$Flags
+Event: 17.569 Loading class sun/nio/fs/UnixFileSystem$Flags done
+Event: 17.570 Loading class sun/nio/fs/LinuxNativeDispatcher
+Event: 17.570 Loading class sun/nio/fs/LinuxNativeDispatcher done
+Event: 17.595 Loading class java/util/DualPivotQuicksort
+Event: 17.595 Loading class java/util/DualPivotQuicksort done
+Event: 17.596 Loading class java/util/DualPivotQuicksort$PartitionOperation
+Event: 17.596 Loading class java/util/DualPivotQuicksort$PartitionOperation done
+Event: 17.629 Loading class java/util/DualPivotQuicksort$SortOperation
+Event: 17.629 Loading class java/util/DualPivotQuicksort$SortOperation done
+Event: 17.677 Loading class java/util/DualPivotQuicksort$Sorter
+Event: 17.677 Loading class java/util/DualPivotQuicksort$Sorter done
+Event: 148.815 Loading class java/util/concurrent/LinkedBlockingDeque$Node
+Event: 148.816 Loading class java/util/concurrent/LinkedBlockingDeque$Node done
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (20 events):
+Event: 85.629 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072cc70070}> (0x000000072cc70070) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 114.969 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072c5e42a0}> (0x000000072c5e42a0) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 114.996 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072c62c1f0}> (0x000000072c62c1f0) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 114.996 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072c62c920}> (0x000000072c62c920) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 114.996 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072c62cf40}> (0x000000072c62cf40) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 114.996 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072c62d670}> (0x000000072c62d670) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 115.001 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072c63b1f8}> (0x000000072c63b1f8) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 139.878 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072be1d798}> (0x000000072be1d798) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 139.908 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072be651b8}> (0x000000072be651b8) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 139.909 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072be658e8}> (0x000000072be658e8) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 139.909 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072be65f08}> (0x000000072be65f08) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 139.909 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072be66638}> (0x000000072be66638) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 139.914 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072be74a78}> (0x000000072be74a78) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 146.712 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072d412aa8}> (0x000000072d412aa8) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 146.713 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072d4130c8}> (0x000000072d4130c8) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 146.713 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072d4137f8}> (0x000000072d4137f8) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 146.713 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072d413e18}> (0x000000072d413e18) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 146.713 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072d414548}> (0x000000072d414548) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 146.714 Thread 0x00007f5294913e40 Exception <a 'sun/nio/fs/UnixException'{0x000000072d414b68}> (0x000000072d414b68) 
+thrown [./src/hotspot/share/prims/jni.cpp, line 516]
+Event: 148.899 Thread 0x00007f5294913e40 Implicit null exception at 0x00007f5284242f51 to 0x0000000000000000
+
+VM Operations (20 events):
+Event: 60.062 Executing non-safepoint VM operation: RendezvousGCThreads
+Event: 60.062 Executing non-safepoint VM operation: RendezvousGCThreads done
+Event: 61.516 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 61.615 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 68.309 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 68.656 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 74.999 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 75.076 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 78.715 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 78.793 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 81.629 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 81.751 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 89.485 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 89.555 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 104.495 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 104.542 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 119.236 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 119.252 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+Event: 134.386 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure)
+Event: 134.406 Executing safepoint VM operation: SerialCollectForAllocation (Allocation Failure) done
+
+Memory protections (15 events):
+Event: 0.001 Protecting memory [0x00007f5299900000,0x00007f5299904000] with protection modes 0
+Event: 0.010 Protecting memory [0x000000008f000000,0x000000008f001000] with protection modes 0
+Event: 0.016 Protecting memory [0x00007f5298885000,0x00007f5298889000] with protection modes 0
+Event: 0.017 Protecting memory [0x00007f5298785000,0x00007f5298789000] with protection modes 0
+Event: 0.017 Protecting memory [0x00007f5298685000,0x00007f5298689000] with protection modes 0
+Event: 0.017 Protecting memory [0x00007f5298585000,0x00007f5298589000] with protection modes 0
+Event: 0.017 Protecting memory [0x00007f5298485000,0x00007f5298489000] with protection modes 0
+Event: 0.017 Protecting memory [0x00007f5298385000,0x00007f5298389000] with protection modes 0
+Event: 0.020 Protecting memory [0x00007f5298243000,0x00007f5298247000] with protection modes 0
+Event: 0.038 Protecting memory [0x00007f5298143000,0x00007f5298147000] with protection modes 0
+Event: 0.353 Protecting memory [0x00007f5298043000,0x00007f5298047000] with protection modes 0
+Event: 2.299 Protecting memory [0x00007f527c1be000,0x00007f527c1c2000] with protection modes 0
+Event: 2.302 Protecting memory [0x00007f527c0be000,0x00007f527c0c2000] with protection modes 0
+Event: 3.765 Protecting memory [0x00007f524bf00000,0x00007f524bf04000] with protection modes 0
+Event: 4.845 Protecting memory [0x00007f520bd00000,0x00007f520bd04000] with protection modes 0
+
+Nmethod flushes (20 events):
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c85ad88
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c85d388
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c85ef88
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c861d88
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c862688
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c863108
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c863c08
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c865208
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c865588
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c867208
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c867508
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c867f88
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c869708
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c869a08
+Event: 3.502 Thread 0x00007f5294052910 flushing osr nmethod 0x00007f527c869d08
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c86aa08
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c8c7688
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c8dba88
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c8e0008
+Event: 3.502 Thread 0x00007f5294052910 flushing  nmethod 0x00007f527c91c708
+
+Events (17 events):
+Event: 0.011 Thread 0x00007f529401ad20 Thread added: 0x00007f529401ad20
+Event: 0.013 Thread 0x00007f529401ad20 JVMTI - enter early start phase
+Event: 0.016 Thread 0x00007f529401ad20 Thread added: 0x00007f529405dbb0
+Event: 0.016 Thread 0x00007f529401ad20 Thread added: 0x00007f529405f3c0
+Event: 0.017 Thread 0x00007f529401ad20 Thread added: 0x00007f5294060f20
+Event: 0.017 Thread 0x00007f529401ad20 Thread added: 0x00007f5294062820
+Event: 0.017 Thread 0x00007f529401ad20 Thread added: 0x00007f5294064080
+Event: 0.017 Thread 0x00007f529401ad20 Thread added: 0x00007f5294065e60
+Event: 0.020 Thread 0x00007f529401ad20 Thread added: 0x00007f5294067830
+Event: 0.036 Thread 0x00007f529401ad20 Thread added: 0x00007f529407a5e0
+Event: 0.352 Thread 0x00007f529401ad20 JVMTI - enter start phase
+Event: 0.352 Thread 0x00007f529401ad20 JVMTI - enter live phase
+Event: 0.353 Thread 0x00007f529401ad20 Thread added: 0x00007f5294126880
+Event: 2.298 Thread 0x00007f529401ad20 Thread added: 0x00007f5294909450
+Event: 2.301 Thread 0x00007f529401ad20 Thread added: 0x00007f5294913e40
+Event: 3.765 Thread 0x00007f529401ad20 Thread added: 0x00007f529403f830
+Event: 4.844 Thread 0x00007f529401ad20 Thread added: 0x00007f5294c6e420
+
+
+Dynamic libraries:
+8f000000-8f001000 ---p 00000000 00:00 0 
+8f001000-8fd92000 rw-p 00001000 fe:00 8978601                            /usr/lib/jvm/java-25-openjdk-amd64/lib/server/classes.jsa
+8fd92000-90000000 ---p 00000000 00:00 0 
+90000000-90040000 rw-p 00000000 00:00 0 
+90040000-900e0000 rw-p 00000000 00:00 0 
+900e0000-90100000 rw-p 00000000 00:00 0 
+90100000-90180000 rw-p 00000000 00:00 0 
+90180000-905e0000 rw-p 00000000 00:00 0 
+905e0000-906c0000 rw-p 00000000 00:00 0 
+906c0000-d0000000 ---p 00000000 00:00 0 
+72a400000-72eb60000 rw-p 00000000 00:00 0 
+72eb60000-771800000 ---p 00000000 00:00 0 
+771800000-78a136000 rw-p 00000000 00:00 0 
+78a136000-800000000 ---p 00000000 00:00 0 
+55be94c33000-55be94c34000 r--p 00000000 fe:00 8978436                    /usr/lib/jvm/java-25-openjdk-amd64/bin/java
+55be94c34000-55be94c35000 r-xp 00001000 fe:00 8978436                    /usr/lib/jvm/java-25-openjdk-amd64/bin/java
+55be94c35000-55be94c36000 r--p 00002000 fe:00 8978436                    /usr/lib/jvm/java-25-openjdk-amd64/bin/java
+55be94c36000-55be94c37000 r--p 00002000 fe:00 8978436                    /usr/lib/jvm/java-25-openjdk-amd64/bin/java
+55be94c37000-55be94c38000 rw-p 00003000 fe:00 8978436                    /usr/lib/jvm/java-25-openjdk-amd64/bin/java
+55bea4c97000-55bea4cdf000 rw-p 00000000 00:00 0                          [heap]
+7f4b3a200000-7f4b7a200000 rw-s 00000000 fe:00 1147061                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.delta
+7f4b7a200000-7f4bba200000 rw-s 00000000 fe:00 1147045                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.log
+7f4bba200000-7f4bfa200000 rw-s 00000000 fe:00 1148001                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.log (deleted)
+7f4bfa200000-7f4c3a200000 rw-s 00000000 fe:00 1146917                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000611737.delta
+7f4c3a200000-7f4c7a200000 rw-s 00000000 fe:00 1146916                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002402939.delta
+7f4cba200000-7f4cca6a4000 rw-s 00000000 fe:00 1147856                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001747592.log
+7f4d0a800000-7f4d4a800000 rw-s 00000000 fe:00 1146885                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002402939.log
+7f4d4a800000-7f4d8a800000 rw-s 00000000 fe:00 1148145                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0-0/0000000000000000000.delta
+7f4d8a800000-7f4dca800000 rw-s 00000000 fe:00 1148129                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0-0/0000000000000000000.log
+7f4de9c00000-7f4dfa0af000 rw-s 00000000 fe:00 1146900                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002184490.log
+7f4dfa200000-7f4e0a6af000 rw-s 00000000 fe:00 1146884                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001966041.log
+7f4e0a800000-7f4e1acb0000 rw-s 00000000 fe:00 1149046                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000873796.log
+7f4e21a00000-7f4e22400000 rw-s 00000000 fe:00 1147801                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.nscan
+7f4e22400000-7f4e22e00000 rw-s 00000000 fe:00 1147105                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.kscan
+7f4e22e00000-7f4e23800000 rw-s 00000000 fe:00 1147089                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.hscan
+7f4e23800000-7f4e24200000 rw-s 00000000 fe:00 1147075                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.index
+7f4e24200000-7f4e24c00000 rw-s 00000000 fe:00 1147029                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000611737.nscan
+7f4e24c00000-7f4e25600000 rw-s 00000000 fe:00 1147013                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000611737.kscan
+7f4e25600000-7f4e26000000 rw-s 00000000 fe:00 1147044                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002184490.hindex
+7f4e26000000-7f4e26a00000 rw-s 00000000 fe:00 1147028                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002402939.nscan
+7f4e26a00000-7f4e27400000 rw-s 00000000 fe:00 1147043                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001966041.hindex
+7f4e27e00000-7f4e28800000 rw-s 00000000 fe:00 1146997                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000611737.hscan
+7f4e28800000-7f4e29200000 rw-s 00000000 fe:00 1146979                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001747592.hindex
+7f4e29c00000-7f4e3a0ae000 rw-s 00000000 fe:00 1147025                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001529143.log
+7f4e3a200000-7f4e4a6ae000 rw-s 00000000 fe:00 1146881                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001310694.log
+7f4e4a800000-7f4e5aca3000 rw-s 00000000 fe:00 1149055                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001092245.log
+7f4e5ae00000-7f4e5b800000 rw-s 00000000 fe:00 1149025                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000000000.hindex
+7f4e5b800000-7f4e6bca1000 rw-s 00000000 fe:00 1148966                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000000000.log
+7f4e6c800000-7f4e6d200000 rw-s 00000000 fe:00 1146963                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002402939.kscan
+7f4e6d200000-7f4e6dc00000 rw-s 00000000 fe:00 1146945                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002402939.hscan
+7f4e6dc00000-7f4e6e600000 rw-s 00000000 fe:00 1146929                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002402939.index
+7f4e6e600000-7f4eae600000 rw-s 00000000 fe:00 1148017                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.delta (deleted)
+7f4eae600000-7f4eee600000 rw-s 00000000 fe:00 1148001                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.log (deleted)
+7f4eee600000-7f4eef000000 rw-s 00000000 fe:00 1148988                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0/0000000000000000000.nscan
+7f4eef000000-7f4eefa00000 rw-s 00000000 fe:00 1148987                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0/0000000000000000000.kscan
+7f4eefa00000-7f4ef0400000 rw-s 00000000 fe:00 1148986                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0/0000000000000000000.hscan
+7f4ef0400000-7f4ef0e00000 rw-s 00000000 fe:00 1148985                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0/0000000000000000000.index
+7f4ef0e00000-7f4f30e00000 rw-s 00000000 fe:00 1148984                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0/0000000000000000000.delta
+7f4f30e00000-7f4f70e00000 rw-s 00000000 fe:00 1148379                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0/0000000000000000000.log
+7f4f70e00000-7f4f71800000 rw-s 00000000 fe:00 1148983                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-devices-0/0000000000000000000.nscan
+7f4f71800000-7f4f72200000 rw-s 00000000 fe:00 1148982                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-devices-0/0000000000000000000.kscan
+7f4f72200000-7f4f72c00000 rw-s 00000000 fe:00 1148981                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-devices-0/0000000000000000000.hscan
+7f4f72c00000-7f4f73600000 rw-s 00000000 fe:00 1148980                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-devices-0/0000000000000000000.index
+7f4f73600000-7f4fb3600000 rw-s 00000000 fe:00 1148979                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-devices-0/0000000000000000000.delta
+7f4fb3600000-7f4ff3600000 rw-s 00000000 fe:00 1148978                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-devices-0/0000000000000000000.log
+7f4ff3600000-7f4ff4000000 rw-s 00000000 fe:00 1148977                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0/0000000000000000000.nscan
+7f4ff4000000-7f5034000000 rw-s 00000000 fe:00 1148973                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0/0000000000000000000.delta
+7f5034000000-7f5074000000 rw-s 00000000 fe:00 1148972                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0/0000000000000000000.log
+7f5074800000-7f5075200000 rw-s 00000000 fe:00 1148209                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0-0/0000000000000000000.nscan
+7f5075200000-7f5075c00000 rw-s 00000000 fe:00 1148193                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0-0/0000000000000000000.kscan
+7f5075c00000-7f5076600000 rw-s 00000000 fe:00 1148177                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0-0/0000000000000000000.hscan
+7f5076600000-7f5077000000 rw-s 00000000 fe:00 1148161                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0-0/0000000000000000000.index
+7f5077000000-7f5077a00000 rw-s 00000000 fe:00 1148101                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.nscan (deleted)
+7f5077a00000-7f5078400000 rw-s 00000000 fe:00 1147937                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001529143.hindex
+7f5078e00000-7f5079800000 rw-s 00000000 fe:00 1147799                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001310694.hindex
+7f507a200000-7f507ac00000 rw-s 00000000 fe:00 1146977                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001092245.hindex
+7f507b600000-7f507c000000 rw-s 00000000 fe:00 1149061                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000873796.hindex
+7f507ca00000-7f507d400000 rw-s 00000000 fe:00 1149052                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000655347.hindex
+7f507d400000-7f508d8af000 rw-s 00000000 fe:00 1149037                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000655347.log
+7f508e400000-7f508ee00000 rw-s 00000000 fe:00 1149043                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000436898.hindex
+7f508ee00000-7f509f2a7000 rw-s 00000000 fe:00 1149028                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000436898.log
+7f509fe00000-7f50a0800000 rw-s 00000000 fe:00 1148065                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.kscan (deleted)
+7f50a0800000-7f50a1200000 rw-s 00000000 fe:00 1148049                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.hscan (deleted)
+7f50a1200000-7f50a1c00000 rw-s 00000000 fe:00 1148033                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.index (deleted)
+7f50a1c00000-7f50a2600000 rw-s 00000000 fe:00 1149034                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000218449.hindex
+7f50a2600000-7f50b2aab000 rw-s 00000000 fe:00 1149019                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000218449.log
+7f50b3600000-7f50b4000000 rw-s 00000000 fe:00 1146981                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000611737.index
+7f50b4000000-7f50f4000000 rw-s 00000000 fe:00 1146901                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000611737.log
+7f50f4000000-7f5134000000 rw-s 00000000 fe:00 1148961                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0-0/0000000000000000000.delta
+7f5134000000-7f5174000000 rw-s 00000000 fe:00 1148960                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0-0/0000000000000000000.log
+7f5174000000-7f5174021000 rw-p 00000000 00:00 0 
+7f5174021000-7f5178000000 ---p 00000000 00:00 0 
+7f5178200000-7f5178c00000 rw-s 00000000 fe:00 1148976                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0/0000000000000000000.kscan
+7f5178c00000-7f5179600000 rw-s 00000000 fe:00 1148975                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0/0000000000000000000.hscan
+7f5179600000-7f517a000000 rw-s 00000000 fe:00 1148974                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-retained-0/0000000000000000000.index
+7f517a800000-7f517aa00000 rw-s 00000000 fe:00 1148364                    /tmp/zl/.zilla/engine/budgets0
+7f517ae00000-7f517af56000 r-xp 00000000 fe:00 689679                     /usr/lib/jvm/java-25-openjdk-amd64/lib/hsdis-amd64.so
+7f517af56000-7f517b156000 ---p 00156000 fe:00 689679                     /usr/lib/jvm/java-25-openjdk-amd64/lib/hsdis-amd64.so
+7f517b156000-7f517b225000 r--p 00156000 fe:00 689679                     /usr/lib/jvm/java-25-openjdk-amd64/lib/hsdis-amd64.so
+7f517b225000-7f517b22c000 rw-p 00225000 fe:00 689679                     /usr/lib/jvm/java-25-openjdk-amd64/lib/hsdis-amd64.so
+7f517b22c000-7f517b231000 rw-p 00000000 00:00 0 
+7f517b255000-7f517b400000 rw-s 00000000 fe:00 1146980                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002184490.index
+7f517b4cf000-7f517b800000 rw-p 00000000 00:00 0 
+7f517b800000-7f517bcab000 rw-s 00000000 fe:00 1148033                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0-0/0000000000000000000.index (deleted)
+7f517be00000-7f51bbe01000 rw-s 00000000 fe:00 1148950                    /tmp/zl/.zilla/engine/data0
+7f51bbe55000-7f51bc000000 rw-s 00000000 fe:00 1146915                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001966041.index
+7f51bc000000-7f51bcca9000 rw-p 00000000 00:00 0 
+7f51bcca9000-7f51c0000000 ---p 00000000 00:00 0 
+7f51c0000000-7f51c0021000 rw-p 00000000 00:00 0 
+7f51c0021000-7f51c4000000 ---p 00000000 00:00 0 
+7f51c4000000-7f51c4021000 rw-p 00000000 00:00 0 
+7f51c4021000-7f51c8000000 ---p 00000000 00:00 0 
+7f51c8154000-7f51c82ff000 rw-s 00000000 fe:00 1147880                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001747592.index
+7f51c82ff000-7f51c84aa000 rw-s 00000000 fe:00 1147057                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001529143.index
+7f51c84aa000-7f51c8655000 rw-s 00000000 fe:00 1146913                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001310694.index
+7f51c8655000-7f51c8800000 rw-s 00000000 fe:00 1148968                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000000000.index
+7f51c89a9000-7f51c8b54000 rw-s 00000000 fe:00 1149057                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001092245.index
+7f51c8b54000-7f51c8cff000 rw-s 00000000 fe:00 1149048                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000873796.index
+7f51c8cff000-7f51c8eaa000 rw-s 00000000 fe:00 1149039                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000655347.index
+7f51c8eaa000-7f51c9055000 rw-s 00000000 fe:00 1149030                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000436898.index
+7f51c9055000-7f51c9200000 rw-s 00000000 fe:00 1149021                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000218449.index
+7f51c9200000-7f51c9c00000 rw-s 00000000 fe:00 1148965                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0-0/0000000000000000000.nscan
+7f51c9c00000-7f51ca600000 rw-s 00000000 fe:00 1148964                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0-0/0000000000000000000.kscan
+7f51ca600000-7f51cb000000 rw-s 00000000 fe:00 1148963                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0-0/0000000000000000000.hscan
+7f51cb000000-7f51cba00000 rw-s 00000000 fe:00 1148962                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-sessions-0-0/0000000000000000000.index
+7f51cba00000-7f51cbc00000 rw-s 00000000 fe:00 1148364                    /tmp/zl/.zilla/engine/budgets0
+7f51cbc00000-7f520bc41000 rw-s 00000000 fe:00 1148951                    /tmp/zl/.zilla/engine/buffers0
+7f520bd00000-7f520bd04000 ---p 00000000 00:00 0 
+7f520bd04000-7f520be00000 rw-p 00000000 00:00 0 
+7f520be00000-7f524be01000 rw-s 00000000 fe:00 1148950                    /tmp/zl/.zilla/engine/data0
+7f524bf00000-7f524bf04000 ---p 00000000 00:00 0 
+7f524bf04000-7f524c000000 rw-p 00000000 00:00 0 
+7f524c000000-7f524c021000 rw-p 00000000 00:00 0 
+7f524c021000-7f5250000000 ---p 00000000 00:00 0 
+7f5250000000-7f5250021000 rw-p 00000000 00:00 0 
+7f5250021000-7f5254000000 ---p 00000000 00:00 0 
+7f5254000000-7f5255f2a000 rw-p 00000000 00:00 0 
+7f5255f2a000-7f5258000000 ---p 00000000 00:00 0 
+7f5258000000-7f5258e6c000 rw-p 00000000 00:00 0 
+7f5258e6c000-7f525c000000 ---p 00000000 00:00 0 
+7f525c000000-7f525c021000 rw-p 00000000 00:00 0 
+7f525c021000-7f5260000000 ---p 00000000 00:00 0 
+7f5260000000-7f5260021000 rw-p 00000000 00:00 0 
+7f5260021000-7f5264000000 ---p 00000000 00:00 0 
+7f5264000000-7f5264021000 rw-p 00000000 00:00 0 
+7f5264021000-7f5268000000 ---p 00000000 00:00 0 
+7f5268000000-7f5268021000 rw-p 00000000 00:00 0 
+7f5268021000-7f526c000000 ---p 00000000 00:00 0 
+7f526c000000-7f526c025000 rw-p 00000000 00:00 0 
+7f526c025000-7f5270000000 ---p 00000000 00:00 0 
+7f5270000000-7f5270021000 rw-p 00000000 00:00 0 
+7f5270021000-7f5274000000 ---p 00000000 00:00 0 
+7f5274000000-7f5274400000 rw-p 00000000 00:00 0 
+7f5274400000-7f5274b80000 rw-p 00000000 00:00 0 
+7f5274b80000-7f5274c00000 rw-p 00000000 00:00 0 
+7f5274c00000-7f5276500000 rw-p 00000000 00:00 0 
+7f5276500000-7f5276600000 rw-p 00000000 00:00 0 
+7f5276600000-7f52767c0000 rw-p 00000000 00:00 0 
+7f52767c0000-7f5276880000 rw-p 00000000 00:00 0 
+7f5276880000-7f5276900000 rw-p 00000000 00:00 0 
+7f5276900000-7f5276f00000 rw-p 00000000 00:00 0 
+7f5276f00000-7f5276f40000 rw-p 00000000 00:00 0 
+7f5276f40000-7f5277000000 ---p 00000000 00:00 0 
+7f5277000000-7f52771b0000 rw-p 00000000 00:00 0 
+7f52771b0000-7f5278000000 ---p 00000000 00:00 0 
+7f5278000000-7f5278021000 rw-p 00000000 00:00 0 
+7f5278021000-7f527c000000 ---p 00000000 00:00 0 
+7f527c01e000-7f527c02e000 rw-s 00000000 fe:00 1147074                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000002184490.kindex
+7f527c02e000-7f527c03e000 rw-s 00000000 fe:00 1147073                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001966041.kindex
+7f527c03e000-7f527c04e000 rw-s 00000000 fe:00 1147011                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001747592.kindex
+7f527c04e000-7f527c05e000 rw-s 00000000 fe:00 1147969                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001529143.kindex
+7f527c05e000-7f527c06e000 rw-s 00000000 fe:00 1147825                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001310694.kindex
+7f527c06e000-7f527c07e000 rw-s 00000000 fe:00 1147009                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000001092245.kindex
+7f527c07e000-7f527c08e000 rw-s 00000000 fe:00 1149063                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000873796.kindex
+7f527c08e000-7f527c09e000 rw-s 00000000 fe:00 1149054                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000655347.kindex
+7f527c09e000-7f527c0ae000 rw-s 00000000 fe:00 1149045                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000436898.kindex
+7f527c0ae000-7f527c0be000 rw-s 00000000 fe:00 1149036                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000218449.kindex
+7f527c0be000-7f527c0c2000 ---p 00000000 00:00 0 
+7f527c0c2000-7f527c1be000 rw-p 00000000 00:00 0 
+7f527c1be000-7f527c1c2000 ---p 00000000 00:00 0 
+7f527c1c2000-7f527c2be000 rw-p 00000000 00:00 0 
+7f527c2be000-7f527c2ff000 rw-s 00000000 fe:00 1148346                    /tmp/zl/.zilla/engine/events0
+7f527c2ff000-7f527c3ff000 rw-s 00000000 fe:00 1148949                    /tmp/zl/.zilla/engine/metrics/histograms0
+7f527c3ff000-7f527c4ff000 rw-s 00000000 fe:00 1148948                    /tmp/zl/.zilla/engine/metrics/gauges0
+7f527c4ff000-7f527c5ff000 rw-s 00000000 fe:00 1148947                    /tmp/zl/.zilla/engine/metrics/counters0
+7f527c5ff000-7f527d9ff000 rwxp 00000000 00:00 0 
+7f527d9ff000-7f5283b38000 ---p 00000000 00:00 0 
+7f5283b38000-7f5283da8000 rwxp 00000000 00:00 0 
+7f5283da8000-7f52840c7000 ---p 00000000 00:00 0 
+7f52840c7000-7f52849b7000 rwxp 00000000 00:00 0 
+7f52849b7000-7f528b600000 ---p 00000000 00:00 0 
+7f528b600000-7f5293fe2000 r--s 00000000 fe:00 8978598                    /usr/lib/jvm/java-25-openjdk-amd64/lib/modules
+7f5293fe7000-7f5293ff7000 rw-s 00000000 fe:00 1149027                    /tmp/zl/.zilla/engine/cache/kafka/zilla-mqtt-kafka-proxy.south_kafka_cache_server/mqtt-messages-0/0000000000000000000.kindex
+7f5293ff7000-7f5293ff9000 r--p 00000000 fe:00 8978586                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+7f5293ff9000-7f5293ffd000 r-xp 00002000 fe:00 8978586                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+7f5293ffd000-7f5293ffe000 r--p 00006000 fe:00 8978586                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+7f5293ffe000-7f5293fff000 r--p 00007000 fe:00 8978586                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+7f5293fff000-7f5294000000 rw-p 00008000 fe:00 8978586                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement_ext.so
+7f5294000000-7f5294c93000 rw-p 00000000 00:00 0 
+7f5294c93000-7f5298000000 ---p 00000000 00:00 0 
+7f5298002000-7f5298043000 rw-s 00000000 fe:00 1148945                    /tmp/zl/.zilla/engine/events
+7f5298043000-7f5298047000 ---p 00000000 00:00 0 
+7f5298047000-7f5298143000 rw-p 00000000 00:00 0 
+7f5298143000-7f5298147000 ---p 00000000 00:00 0 
+7f5298147000-7f5298243000 rw-p 00000000 00:00 0 
+7f5298243000-7f5298247000 ---p 00000000 00:00 0 
+7f5298247000-7f5298343000 rw-p 00000000 00:00 0 
+7f5298343000-7f5298344000 r--p 00000000 fe:00 8978594                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+7f5298344000-7f529837d000 r-xp 00001000 fe:00 8978594                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+7f529837d000-7f5298383000 r--p 0003a000 fe:00 8978594                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+7f5298383000-7f5298384000 r--p 0003f000 fe:00 8978594                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+7f5298384000-7f5298385000 rw-p 00040000 fe:00 8978594                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libsimdsort.so
+7f5298385000-7f5298389000 ---p 00000000 00:00 0 
+7f5298389000-7f5298485000 rw-p 00000000 00:00 0 
+7f5298485000-7f5298489000 ---p 00000000 00:00 0 
+7f5298489000-7f5298585000 rw-p 00000000 00:00 0 
+7f5298585000-7f5298589000 ---p 00000000 00:00 0 
+7f5298589000-7f5298685000 rw-p 00000000 00:00 0 
+7f5298685000-7f5298689000 ---p 00000000 00:00 0 
+7f5298689000-7f5298785000 rw-p 00000000 00:00 0 
+7f5298785000-7f5298789000 ---p 00000000 00:00 0 
+7f5298789000-7f5298885000 rw-p 00000000 00:00 0 
+7f5298885000-7f5298889000 ---p 00000000 00:00 0 
+7f5298889000-7f5298985000 rw-p 00000000 00:00 0 
+7f5298985000-7f5298986000 ---p 00000000 00:00 0 
+7f5298986000-7f5298a86000 rw-p 00000000 00:00 0 
+7f5298a86000-7f5298a87000 ---p 00000000 00:00 0 
+7f5298a87000-7f5298b87000 rw-p 00000000 00:00 0 
+7f5298b87000-7f5298ccd000 rw-p 00000000 00:00 0 
+7f5298ccd000-7f529907c000 ---p 00000000 00:00 0 
+7f529907c000-7f52990a0000 rw-p 00000000 00:00 0 
+7f52990a0000-7f52992b6000 ---p 00000000 00:00 0 
+7f52992b6000-7f529937b000 rw-p 00000000 00:00 0 
+7f529937b000-7f529972a000 ---p 00000000 00:00 0 
+7f529972a000-7f529973c000 rw-p 00000000 00:00 0 
+7f529973c000-7f5299815000 ---p 00000000 00:00 0 
+7f5299815000-7f529983d000 rw-p 00000000 00:00 0 
+7f529983d000-7f5299900000 ---p 00000000 00:00 0 
+7f5299900000-7f5299904000 ---p 00000000 00:00 0 
+7f5299904000-7f5299a00000 rw-p 00000000 00:00 0 
+7f5299a00000-7f5299a9d000 r--p 00000000 fe:00 201483                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7f5299a9d000-7f5299be5000 r-xp 0009d000 fe:00 201483                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7f5299be5000-7f5299c6c000 r--p 001e5000 fe:00 201483                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7f5299c6c000-7f5299c77000 r--p 0026b000 fe:00 201483                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7f5299c77000-7f5299c7a000 rw-p 00276000 fe:00 201483                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7f5299c7a000-7f5299c7e000 rw-p 00000000 00:00 0 
+7f5299c81000-7f5299c84000 r--p 00000000 fe:00 8978584                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+7f5299c84000-7f5299c85000 r-xp 00003000 fe:00 8978584                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+7f5299c85000-7f5299c86000 r--p 00004000 fe:00 8978584                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+7f5299c86000-7f5299c87000 r--p 00004000 fe:00 8978584                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+7f5299c87000-7f5299c88000 rw-p 00005000 fe:00 8978584                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libmanagement.so
+7f5299c88000-7f5299c8c000 r--p 00000000 fe:00 8978596                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+7f5299c8c000-7f5299c95000 r-xp 00004000 fe:00 8978596                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+7f5299c95000-7f5299c97000 r--p 0000d000 fe:00 8978596                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+7f5299c97000-7f5299c99000 r--p 0000e000 fe:00 8978596                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+7f5299c99000-7f5299c9a000 rw-p 00010000 fe:00 8978596                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libverify.so
+7f5299c9a000-7f5299c9c000 r--p 00000000 fe:00 8978597                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+7f5299c9c000-7f5299ca1000 r-xp 00002000 fe:00 8978597                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+7f5299ca1000-7f5299ca3000 r--p 00007000 fe:00 8978597                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+7f5299ca3000-7f5299ca4000 r--p 00008000 fe:00 8978597                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+7f5299ca4000-7f5299ca5000 rw-p 00009000 fe:00 8978597                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libzip.so
+7f5299ca5000-7f5299cac000 r--p 00000000 fe:00 8978589                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+7f5299cac000-7f5299cb6000 r-xp 00007000 fe:00 8978589                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+7f5299cb6000-7f5299cba000 r--p 00011000 fe:00 8978589                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+7f5299cba000-7f5299cbb000 r--p 00015000 fe:00 8978589                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+7f5299cbb000-7f5299cbc000 rw-p 00016000 fe:00 8978589                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnio.so
+7f5299cbc000-7f5299d17000 rw-p 00000000 00:00 0 
+7f5299d17000-7f5299d27000 r--p 00000000 fe:00 201432                     /usr/lib/x86_64-linux-gnu/libm.so.6
+7f5299d27000-7f5299da6000 r-xp 00010000 fe:00 201432                     /usr/lib/x86_64-linux-gnu/libm.so.6
+7f5299da6000-7f5299dfe000 r--p 0008f000 fe:00 201432                     /usr/lib/x86_64-linux-gnu/libm.so.6
+7f5299dfe000-7f5299dff000 r--p 000e7000 fe:00 201432                     /usr/lib/x86_64-linux-gnu/libm.so.6
+7f5299dff000-7f5299e00000 rw-p 000e8000 fe:00 201432                     /usr/lib/x86_64-linux-gnu/libm.so.6
+7f5299e00000-7f529a0e3000 r--p 00000000 fe:00 8978606                    /usr/lib/jvm/java-25-openjdk-amd64/lib/server/libjvm.so
+7f529a0e3000-7f529b0fe000 r-xp 002e3000 fe:00 8978606                    /usr/lib/jvm/java-25-openjdk-amd64/lib/server/libjvm.so
+7f529b0fe000-7f529b40f000 r--p 012fe000 fe:00 8978606                    /usr/lib/jvm/java-25-openjdk-amd64/lib/server/libjvm.so
+7f529b40f000-7f529b4fa000 r--p 0160f000 fe:00 8978606                    /usr/lib/jvm/java-25-openjdk-amd64/lib/server/libjvm.so
+7f529b4fa000-7f529b526000 rw-p 016fa000 fe:00 8978606                    /usr/lib/jvm/java-25-openjdk-amd64/lib/server/libjvm.so
+7f529b526000-7f529b5a1000 rw-p 00000000 00:00 0 
+7f529b5a4000-7f529b5a7000 r--p 00000000 fe:00 8978588                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+7f529b5a7000-7f529b5af000 r-xp 00003000 fe:00 8978588                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+7f529b5af000-7f529b5b1000 r--p 0000b000 fe:00 8978588                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+7f529b5b1000-7f529b5b2000 r--p 0000c000 fe:00 8978588                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+7f529b5b2000-7f529b5b3000 rw-p 0000d000 fe:00 8978588                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libnet.so
+7f529b5b3000-7f529b5f9000 rw-p 00000000 00:00 0 
+7f529b5f9000-7f529b600000 ---p 00000000 00:00 0 
+7f529b600000-7f529b628000 r--p 00000000 fe:00 201390                     /usr/lib/x86_64-linux-gnu/libc.so.6
+7f529b628000-7f529b7b1000 r-xp 00028000 fe:00 201390                     /usr/lib/x86_64-linux-gnu/libc.so.6
+7f529b7b1000-7f529b800000 r--p 001b1000 fe:00 201390                     /usr/lib/x86_64-linux-gnu/libc.so.6
+7f529b800000-7f529b804000 r--p 001ff000 fe:00 201390                     /usr/lib/x86_64-linux-gnu/libc.so.6
+7f529b804000-7f529b806000 rw-p 00203000 fe:00 201390                     /usr/lib/x86_64-linux-gnu/libc.so.6
+7f529b806000-7f529b813000 rw-p 00000000 00:00 0 
+7f529b816000-7f529b819000 rw-s 00000000 fe:00 1148944                    /tmp/zl/.zilla/engine/tuning
+7f529b819000-7f529b825000 r--p 00000000 fe:00 8978575                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+7f529b825000-7f529b834000 r-xp 0000c000 fe:00 8978575                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+7f529b834000-7f529b839000 r--p 0001b000 fe:00 8978575                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+7f529b839000-7f529b83a000 r--p 00020000 fe:00 8978575                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+7f529b83a000-7f529b83b000 rw-p 00021000 fe:00 8978575                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjava.so
+7f529b83b000-7f529b83c000 rw-p 00000000 00:00 0 
+7f529b83c000-7f529b844000 rw-s 00000000 fe:00 697857                     /tmp/hsperfdata_root/6813
+7f529b844000-7f529b848000 r--p 00000000 fe:00 201415                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f529b848000-7f529b86c000 r-xp 00004000 fe:00 201415                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f529b86c000-7f529b870000 r--p 00028000 fe:00 201415                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f529b870000-7f529b871000 r--p 0002b000 fe:00 201415                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f529b871000-7f529b872000 rw-p 0002c000 fe:00 201415                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f529b872000-7f529b874000 rw-p 00000000 00:00 0 
+7f529b874000-7f529b876000 r--p 00000000 fe:00 201503                     /usr/lib/x86_64-linux-gnu/libz.so.1.3
+7f529b876000-7f529b888000 r-xp 00002000 fe:00 201503                     /usr/lib/x86_64-linux-gnu/libz.so.1.3
+7f529b888000-7f529b88e000 r--p 00014000 fe:00 201503                     /usr/lib/x86_64-linux-gnu/libz.so.1.3
+7f529b88e000-7f529b88f000 r--p 0001a000 fe:00 201503                     /usr/lib/x86_64-linux-gnu/libz.so.1.3
+7f529b88f000-7f529b890000 rw-p 0001b000 fe:00 201503                     /usr/lib/x86_64-linux-gnu/libz.so.1.3
+7f529b890000-7f529b891000 ---p 00000000 00:00 0 
+7f529b891000-7f529b892000 r--p 00000000 00:00 0 
+7f529b892000-7f529b893000 ---p 00000000 00:00 0 
+7f529b893000-7f529b895000 r--p 00000000 fe:00 8978578                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+7f529b895000-7f529b898000 r-xp 00002000 fe:00 8978578                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+7f529b898000-7f529b899000 r--p 00005000 fe:00 8978578                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+7f529b899000-7f529b89a000 r--p 00006000 fe:00 8978578                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+7f529b89a000-7f529b89b000 rw-p 00007000 fe:00 8978578                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjimage.so
+7f529b89b000-7f529b89d000 r--p 00000000 fe:00 8978579                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjli.so
+7f529b89d000-7f529b8a7000 r-xp 00002000 fe:00 8978579                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjli.so
+7f529b8a7000-7f529b8aa000 r--p 0000c000 fe:00 8978579                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjli.so
+7f529b8aa000-7f529b8ab000 r--p 0000f000 fe:00 8978579                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjli.so
+7f529b8ab000-7f529b8ac000 rw-p 00010000 fe:00 8978579                    /usr/lib/jvm/java-25-openjdk-amd64/lib/libjli.so
+7f529b8ac000-7f529b8ae000 rw-p 00000000 00:00 0 
+7f529b8ae000-7f529b8b2000 r--p 00000000 00:00 0                          [vvar]
+7f529b8b2000-7f529b8b4000 r--p 00000000 00:00 0                          [vvar_vclock]
+7f529b8b4000-7f529b8b6000 r-xp 00000000 00:00 0                          [vdso]
+7f529b8b6000-7f529b8b7000 r--p 00000000 fe:00 201370                     /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f529b8b7000-7f529b8e2000 r-xp 00001000 fe:00 201370                     /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f529b8e2000-7f529b8ec000 r--p 0002c000 fe:00 201370                     /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f529b8ec000-7f529b8ee000 r--p 00036000 fe:00 201370                     /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f529b8ee000-7f529b8f0000 rw-p 00038000 fe:00 201370                     /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffec3416000-7ffec3439000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]
+Total number of mappings: 334
+
+JVMTI agents: none
+
+
+VM Arguments:
+jvm_args: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=REDACTED -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes= -XX:ErrorFile=/tmp/zl/hs_err_pid%p.log -Dzilla.engine.directory=/tmp/zl/dir -Dzilla.engine.config.url=file:/tmp/zl/zilla.yaml --add-opens=java.base/sun.nio.ch=org.agrona --add-opens=java.base/java.nio=org.agrona --add-opens=java.base/jdk.internal.misc=org.agrona --add-exports=java.base/jdk.internal.misc=org.agrona --enable-native-access=ALL-UNNAMED,io.aklivity.zilla.runtime.common.agrona --module-path=/tmp/zl/mods -Djdk.module.main=io.aklivity.zilla.runtime.command -XX:+UnlockDiagnosticVMOptions -XX:DisableIntrinsic=_base64_encodeBlock,_base64_decodeBlock 
+java_command: io.aklivity.zilla.runtime.command/io.aklivity.zilla.runtime.command.internal.ZillaMain start -w 1 -c /tmp/zl/zilla.yaml -v
+java_class_path (initial): <not set>
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     bool AOTInvokeDynamicLinking                  = false                                  {diagnostic} {ergonomic}
+     bool AOTRecordTraining                        = false                                  {diagnostic} {ergonomic}
+     bool AOTReplayTraining                        = false                                  {diagnostic} {ergonomic}
+     intx CICompilerCount                          = 2                                         {product} {ergonomic}
+ccstrlist DisableIntrinsic                         = _base64_encodeBlock,_base64_decodeBlock         {diagnostic} {environment}
+    ccstr ErrorFile                                = /tmp/zl/hs_err_pid%p.log                  {product} {command line}
+   size_t InitialHeapSize                          = 224395264                                 {product} {ergonomic}
+     bool IntelJccErratumMitigation                = false                             {ARCH diagnostic} {ergonomic}
+   size_t MaxHeapSize                              = 3586129920                                {product} {ergonomic}
+   size_t MaxNewSize                               = 1195376640                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 196608                                    {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+   size_t NewSize                                  = 74776576                                  {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5828608                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122916864                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122916864                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251662336                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 3586129920                             {manageable} {ergonomic}
+     bool THPStackMitigation                       = false                                  {diagnostic} {ergonomic}
+     bool UnlockDiagnosticVMOptions                = true                                   {diagnostic} {environment}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseSerialGC                              = true                                      {product} {ergonomic}
+      int X86ICacheSync                            = 3                                 {ARCH diagnostic} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags foldmultilines=false
+ #1: stderr all=off uptime,level,tags foldmultilines=false
+
+Release file:
+IMPLEMENTOR="Ubuntu"
+JAVA_RUNTIME_VERSION="25.0.5.1+2-1-24.04.1-Ubuntu"
+JAVA_VERSION="25.0.5.1"
+JAVA_VERSION_DATE="2026-11-17"
+LIBC="gnu"
+MODULES="java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.cryptoki jdk.crypto.ec jdk.dynalink jdk.internal.ed jdk.editpad jdk.internal.vm.ci jdk.graal.compiler jdk.graal.compiler.management jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.md jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom"
+OS_ARCH="x86_64"
+OS_NAME="Linux"
+SOURCE=""
+
+Environment Variables:
+JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
+JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=REDACTED -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes=
+_JAVA_OPTIONS=-XX:+UnlockDiagnosticVMOptions -XX:DisableIntrinsic=_base64_encodeBlock,_base64_decodeBlock
+PATH=REDACTED
+SHELL=/bin/bash
+TERM=linux
+TMPDIR=/tmp
+TMP=/tmp
+TEMP=/tmp
+
+Active Locale:
+LC_ALL=C
+LC_COLLATE=C
+LC_CTYPE=C
+LC_MESSAGES=C
+LC_MONETARY=C
+LC_NUMERIC=C
+LC_TIME=C
+
+Signal Handlers:
+   SIGSEGV: crash_handler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, unblocked
+    SIGBUS: crash_handler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, unblocked
+    SIGFPE: crash_handler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, unblocked
+   SIGPIPE: javaSignalHandler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, blocked
+   SIGXFSZ: javaSignalHandler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, blocked
+    SIGILL: crash_handler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, unblocked
+   SIGUSR2: UserHandler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, blocked
+  *** Handler was modified!
+  *** Expected: SR_handler in libjvm.so, mask=00000000000000000000000000000000, flags=SA_RESTART|SA_SIGINFO
+    SIGHUP: SIG_IGN, mask=00000000000000000000000000000000, flags=none, blocked
+    SIGINT: SIG_IGN, mask=00000000000000000000000000000000, flags=none, blocked
+   SIGTERM: UserHandler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, blocked
+   SIGQUIT: UserHandler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, blocked
+   SIGTRAP: crash_handler in libjvm.so, mask=11100100010111111101111111111110, flags=SA_RESTART|SA_SIGINFO, unblocked
+
+
+Compilation memory statistics disabled.
+
+Periodic native trim disabled
+
+---------------  S Y S T E M  ---------------
+
+OS:
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=24.04
+DISTRIB_CODENAME=noble
+DISTRIB_DESCRIPTION="Ubuntu 24.04.5 LTS"
+uname: Linux 6.18.44-fc-v819 #1 SMP PREEMPT_DYNAMIC @0 x86_64
+OS uptime: 0 days 0:18 hours
+libc: glibc 2.39 NPTL 2.39 
+rlimit (soft/hard): STACK 8192k/infinity , CORE 0k/infinity , NPROC 64272/64272 , NOFILE 20000/20000 , AS infinity/infinity , CPU infinity/infinity , DATA infinity/infinity , FSIZE infinity/infinity , MEMLOCK 8192k/8192k
+load average: 2.98 2.21 1.36
+
+/proc/meminfo:
+MemTotal:       16473316 kB
+MemFree:          879552 kB
+MemAvailable:   13358684 kB
+Buffers:          164604 kB
+Cached:         12140500 kB
+SwapCached:            0 kB
+Active:          8239640 kB
+Inactive:        6600960 kB
+Active(anon):        196 kB
+Inactive(anon):  2573036 kB
+Active(file):    8239444 kB
+Inactive(file):  4027924 kB
+Unevictable:       11044 kB
+Mlocked:            8808 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Zswap:                 0 kB
+Zswapped:              0 kB
+Dirty:             77200 kB
+Writeback:         42948 kB
+AnonPages:       2546864 kB
+Mapped:          2912816 kB
+Shmem:             37448 kB
+KReclaimable:     549788 kB
+Slab:             678396 kB
+SReclaimable:     549788 kB
+SUnreclaim:       128608 kB
+KernelStack:        5696 kB
+PageTables:        19912 kB
+SecPageTables:         0 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     8236656 kB
+Committed_AS:    5042924 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:       10520 kB
+VmallocChunk:          0 kB
+Percpu:             1424 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+Balloon:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:       20480 kB
+DirectMap2M:     2076672 kB
+DirectMap1G:    16777216 kB
+
+/sys/kernel/mm/transparent_hugepage/enabled: always [madvise] never
+/sys/kernel/mm/transparent_hugepage/hpage_pmd_size: 2097152
+/sys/kernel/mm/transparent_hugepage/shmem_enabled: always within_size advise [never] deny force
+/sys/kernel/mm/transparent_hugepage/defrag (defrag/compaction efforts parameter): always defer defer+madvise [madvise] never
+
+Process Memory:
+Virtual Size: 32656568K (peak: 32658616K)
+Resident Set Size: 4356768K (peak: 4628992K) (anon: 652848K, file: 3703920K, shmem: 0K)
+Swapped out: 0K
+C-Heap outstanding allocations: 63443K, retained: 15384K
+glibc malloc tunables: (default)
+
+/proc/sys/kernel/threads-max (system-wide limit on the number of threads): 128544
+/proc/sys/vm/max_map_count (maximum number of memory map areas a process may have): 65530
+/proc/sys/vm/swappiness (control to define how aggressively the kernel swaps out anonymous memory): 60
+/proc/sys/kernel/pid_max (system-wide limit on number of process identifiers): 32768
+
+container (cgroup) information:
+container_type: cgroupv1
+cpu_cpuset_cpus: 0-3
+cpu_memory_nodes: 0
+active_processor_count: 1
+cpu_quota: no quota
+cpu_period: 100000
+cpu_shares: no shares
+cpu_usage_in_micros: 1322855018
+memory_limit_in_bytes: 14002316 k
+memory_and_swap_limit_in_bytes: unlimited
+memory_soft_limit_in_bytes: unlimited
+memory_throttle_limit_in_bytes: not supported
+memory_usage_in_bytes: 10603616 k
+memory_max_usage_in_bytes: 13245480 k
+rss_usage_in_bytes: 718100 k
+cache_usage_in_bytes: 9458516 k
+kernel_memory_limit_in_bytes: unlimited
+kernel_memory_usage_in_bytes: 426776 k
+kernel_memory_max_usage_in_bytes: 470712 k
+maximum number of tasks: 30337
+current number of tasks: 87
+
+KVM virtualization detected
+Steal ticks since vm start: 355
+Steal ticks percentage since vm start:  0.006
+
+CPU: total 4 (initial active 1) (4 cores per cpu, 1 threads per core) family 6 model 173 stepping 1 microcode 0x1, cx8, cmov, fxsr, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, rtm, adx, avx512f, avx512dq, avx512pf, avx512er, avx512cd, avx512bw, avx512vl, sha, fma, vzeroupper, avx512_vpopcntdq, avx512_vpclmulqdq, avx512_vaes, avx512_vnni, clflush, clflushopt, clwb, avx512_vbmi2, avx512_vbmi, hv, serialize, rdtscp, rdpid, fsrm, gfni, avx512_bitalg, f16c, pku, ospke, avx512_ifma, avx512_fp16, avx10_1
+CPU Model and flags from /proc/cpuinfo:
+model name	: Intel(R) Xeon(R) Processor @ 2.30GHz
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx_vnni avx512_bf16 wbnoinvd arat avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid bus_lock_detect cldemote movdiri movdir64b fsrm md_clear serialize tsxldtrk amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities
+
+Online cpus: 0-3
+Offline cpus: 
+BIOS frequency limitation: <Not Available>
+Frequency switch latency (ns): <Not Available>
+Available cpu frequencies: <Not Available>
+Current governor: <Not Available>
+Core performance/turbo boost: <Not Available>
+
+Memory: 4k page, physical 14002316k(3398700k free), swap 0k(0k free)
+Page Sizes: 4k
+
+vm_info: OpenJDK 64-Bit Server VM (25.0.5.1+2-1-24.04.1-Ubuntu) for linux-amd64 JRE (25.0.5.1+2-1-24.04.1-Ubuntu), built on 2026-11-18T04:29:43Z with gcc 13.3.0
+
+END.

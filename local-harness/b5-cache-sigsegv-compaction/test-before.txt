@@ -1,0 +1,5 @@
+[ERROR] Tests run: 38, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.585 s <<< FAILURE! - in io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartitionTest
+[ERROR] io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartitionTest.shouldDelimitProduceEntriesByLimit  Time elapsed: 0.014 s  <<< FAILURE!
+java.lang.AssertionError: expected:<360> but was:<296>
+	at io.aklivity.zilla.runtime.binding.kafka.internal.cache.KafkaCachePartitionTest.shouldDelimitProduceEntriesByLimit(KafkaCachePartitionTest.java:333)
+[ERROR]   KafkaCachePartitionTest.shouldDelimitProduceEntriesByLimit:333 expected:<360> but was:<296>
