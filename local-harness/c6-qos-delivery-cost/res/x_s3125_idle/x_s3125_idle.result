@@ -1,5 +1,0 @@
-label=x_s3125_idle mode=sub flag=true qos=1 clients=3125 window=62.9s
-kafka_records=0 rate=0/s
-worker_cpu: user=1.39s sys=0.61s total=2.00s (3.2% of cpu)
-process_cpu=4.07s (6.5%)
-worker_us_per_record=2000000.0

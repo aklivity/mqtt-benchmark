@@ -1,5 +1,0 @@
-label=pubsub_on_2 mode=pubsub flag=true qos=1 clients=3125 window=63.3s
-kafka_records=193381 rate=3056/s
-worker_cpu: user=25.80s sys=10.59s total=36.39s (57.5% of cpu)
-process_cpu=41.41s (65.4%)
-worker_us_per_record=188.2

@@ -1,114 +1,0 @@
-1s sub total=21 rate=20.96/sec
-2s sub total=59 rate=38.00/sec
-3s sub total=106 rate=47.00/sec
-4s sub total=164 rate=58.00/sec
-5s sub total=234 rate=70.00/sec
-6s sub total=334 rate=100.00/sec
-7s sub total=446 rate=112.00/sec
-8s sub total=577 rate=131.00/sec
-9s sub total=716 rate=139.00/sec
-10s sub total=879 rate=163.00/sec
-11s sub total=1057 rate=178.00/sec
-12s sub total=1235 rate=178.00/sec
-13s sub total=1430 rate=195.00/sec
-14s sub total=1643 rate=213.00/sec
-15s sub total=1881 rate=238.00/sec
-16s sub total=2126 rate=245.00/sec
-17s sub total=2362 rate=236.00/sec
-18s sub total=2562 rate=200.00/sec
-19s sub total=2808 rate=246.00/sec
-20s sub total=3048 rate=240.00/sec
-21s sub total=3125 rate=77.00/sec
-23s recv total=51 rate=2.22/sec
-24s recv total=210 rate=159.00/sec
-25s recv total=457 rate=247.00/sec
-26s recv total=782 rate=325.00/sec
-27s recv total=1194 rate=412.00/sec
-28s recv total=1715 rate=521.00/sec
-29s recv total=2212 rate=497.00/sec
-30s recv total=2716 rate=502.49/sec
-31s recv total=3215 rate=500.50/sec
-32s recv total=3715 rate=500.00/sec
-33s recv total=4216 rate=501.00/sec
-34s recv total=4718 rate=502.00/sec
-35s recv total=5216 rate=498.00/sec
-36s recv total=5716 rate=500.00/sec
-37s recv total=6215 rate=499.00/sec
-38s recv total=6716 rate=501.00/sec
-39s recv total=7217 rate=501.00/sec
-40s recv total=7716 rate=499.00/sec
-41s recv total=8217 rate=501.00/sec
-42s recv total=8717 rate=500.00/sec
-43s recv total=9215 rate=498.00/sec
-44s recv total=9718 rate=503.00/sec
-45s recv total=10218 rate=500.00/sec
-46s recv total=10717 rate=499.00/sec
-47s recv total=11218 rate=501.00/sec
-48s recv total=11714 rate=496.00/sec
-49s recv total=12218 rate=504.00/sec
-50s recv total=12717 rate=499.00/sec
-51s recv total=13214 rate=497.00/sec
-52s recv total=13589 rate=375.00/sec
-53s recv total=14218 rate=629.00/sec
-54s recv total=14718 rate=500.00/sec
-55s recv total=15218 rate=500.00/sec
-56s recv total=15718 rate=500.00/sec
-57s recv total=16217 rate=499.00/sec
-58s recv total=16718 rate=501.00/sec
-59s recv total=17218 rate=500.00/sec
-1m0s recv total=17718 rate=500.00/sec
-1m1s recv total=18218 rate=500.00/sec
-1m2s recv total=18718 rate=500.00/sec
-1m3s recv total=19218 rate=500.00/sec
-1m4s recv total=19718 rate=500.00/sec
-1m5s recv total=20218 rate=500.00/sec
-1m6s recv total=20712 rate=494.00/sec
-1m7s recv total=21218 rate=506.00/sec
-1m8s recv total=21718 rate=500.00/sec
-1m9s recv total=22218 rate=500.00/sec
-1m10s recv total=22718 rate=500.00/sec
-1m11s recv total=23218 rate=499.00/sec
-1m12s recv total=23718 rate=501.00/sec
-1m13s recv total=24218 rate=500.00/sec
-1m14s recv total=24718 rate=500.00/sec
-1m15s recv total=25218 rate=500.00/sec
-1m16s recv total=25718 rate=500.00/sec
-1m17s recv total=26218 rate=500.00/sec
-1m18s recv total=26718 rate=500.00/sec
-1m19s recv total=27218 rate=500.00/sec
-1m20s recv total=27718 rate=500.00/sec
-1m21s recv total=28218 rate=500.00/sec
-1m22s recv total=28718 rate=500.00/sec
-1m23s recv total=29218 rate=500.00/sec
-1m24s recv total=29718 rate=500.00/sec
-1m25s recv total=30218 rate=500.00/sec
-1m26s recv total=30718 rate=500.00/sec
-1m27s recv total=31218 rate=500.00/sec
-1m28s recv total=31718 rate=500.00/sec
-1m29s recv total=32218 rate=500.00/sec
-1m30s recv total=32718 rate=500.00/sec
-1m31s recv total=33218 rate=500.00/sec
-1m32s recv total=33718 rate=500.00/sec
-1m33s recv total=34218 rate=500.00/sec
-1m34s recv total=34718 rate=500.00/sec
-1m35s recv total=35218 rate=500.00/sec
-1m36s recv total=35718 rate=500.00/sec
-1m37s recv total=36218 rate=500.00/sec
-1m38s recv total=36718 rate=500.00/sec
-1m39s recv total=37218 rate=500.00/sec
-1m40s recv total=37718 rate=500.00/sec
-1m41s recv total=38218 rate=500.00/sec
-1m42s recv total=38718 rate=500.00/sec
-1m43s recv total=39218 rate=500.00/sec
-1m44s recv total=39718 rate=500.00/sec
-1m45s recv total=40218 rate=500.00/sec
-1m46s recv total=40718 rate=500.00/sec
-1m47s recv total=41217 rate=499.00/sec
-1m48s recv total=41718 rate=501.00/sec
-1m49s recv total=42218 rate=500.00/sec
-1m50s recv total=42718 rate=500.00/sec
-1m51s recv total=43218 rate=500.00/sec
-1m52s recv total=43718 rate=500.00/sec
-1m53s recv total=44218 rate=500.00/sec
-1m54s recv total=44716 rate=498.00/sec
-1m55s recv total=45218 rate=502.00/sec
