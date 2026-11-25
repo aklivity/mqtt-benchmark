@@ -162,7 +162,7 @@ rec_start() {
   on "$KAFKA_PUB" "KAFKA_TOPIC=$KAFKA_TOPIC nohup bash $REC_DIR/record-offsets.sh $REC_DIR/offsets $OFFSET_INTERVAL_S > /dev/null 2>&1 < /dev/null &" < /dev/null
   local k   # every emqtt-bench metrics page of every client host, every 5 s, with the epoch ms of each read
   for k in "${!CLIENTS[@]}"; do
-    on "${CLIENTS[$k]}" "mkdir -p $REC_DIR/metrics && nohup bash -c 'while [ ! -e $REC_DIR/metrics/stop ]; do for r in $PUB_API $SUB_API; do echo \"### \$(date +%s%3N) port \$r\"; curl -s localhost:\$r/metrics; done; sleep 5; done' > $REC_DIR/metrics/series.txt 2>&1 < /dev/null &" < /dev/null
+    on "${CLIENTS[$k]}" "mkdir -p $REC_DIR/metrics; nohup bash -c 'while [ ! -e $REC_DIR/metrics/stop ]; do for r in $PUB_API $SUB_API; do echo \"### \$(date +%s%3N) port \$r\"; curl -s localhost:\$r/metrics; done; sleep 5; done' > $REC_DIR/metrics/series.txt 2>&1 < /dev/null &" < /dev/null
   done
 }
 rec_meta() {   # what ran: image digest and revision label, the JVM options, host uptime and the run's index since the broker host started
