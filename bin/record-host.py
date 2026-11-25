@@ -63,6 +63,7 @@ def system():
         f.write(f'\n# lsblk\n{sh("lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,SERIAL,MODEL")}\n# mounts\n{sh("findmnt -rn -o TARGET,SOURCE,FSTYPE")}\n')
         f.write(f'# df\n{sh("df -h / /data /var/lib/docker /var/run/zilla 2>/dev/null")}\n')
         f.write(f'# uname\n{sh("uname -a")}# nproc {sh("nproc")}')
+        f.write(f'# vm settings\n{sh("sysctl vm.dirty_ratio vm.dirty_background_ratio vm.dirty_expire_centisecs vm.dirty_writeback_centisecs vm.dirty_bytes vm.dirty_background_bytes vm.swappiness 2>&1")}')
 
 
 def find_pid():
