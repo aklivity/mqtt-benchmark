@@ -105,6 +105,7 @@ Credentials, three sets (they may be the same ones):
 | `bin/aws/run-scenario.sh scenarios/x.env` | `bin/run-scenario.sh` on the controller; fetches `results/<run-id>` even when the run failed. `DIAG`, `BENCH_IMAGE` and `RUN_ID` are forwarded. `SSM_TIMEOUT` (default 14400). |
 | `bin/aws/verify-delivery.sh` | `bin/verify-delivery.sh` on the controller; `QOS`, `KAFKA_TOPIC` and `QOS2_RECONNECT_N` are forwarded. Prints PASS or FAIL; there is no results directory. |
 | `bin/aws/zilla-image.sh <docker-save.tar.gz>` | Loads a locally built Zilla image onto the broker host through the bucket. |
+| `bin/table-driver.sh <scenario>...` | Runs on the controller (not from your machine): a clean deploy and `bin/run-scenario.sh` for each scenario in turn, so the sequence survives your session. See below. |
 
 ### Testing a Zilla image built from a checkout
 
@@ -118,12 +119,27 @@ bin/aws/deploy.sh -e zilla_image=<image:tag> -e zilla_image_loaded=true
 `zilla_image_loaded=true` skips the `docker pull`, so Ansible starts the image that is already on the host. The same
 variables work in the SSH flow.
 
+### Running several scenarios in a row
+
+`bin/table-driver.sh` runs on the controller from `/opt/mqtt-benchmark-src` (after `bin/aws/push-bundle.sh`) and takes
+scenario file stems from `scenarios/`. For each one it redeploys from scratch, runs `bin/run-scenario.sh` with `DIAG=1`,
+samples per-worker CPU (`top -H`) and, for the `mqtt-kafka-100k` scenarios, a thread-dump profile
+(`bin/agg-dumps.py`), reads the end offsets of the four topics, and uploads `results/<run>.tgz` and a progress log
+(`status/driver.log`) to the bucket. It needs `BUCKET`; `DEPLOY_ARGS` goes to `ansible-playbook`, split on spaces, so put
+anything with a space in a vars file:
+
+```bash
+bin/aws/ssm-run.py 'cd /opt/mqtt-benchmark-src && BUCKET=<bucket> DEPLOY_ARGS="-e @/tmp/vars.yml" setsid nohup bin/table-driver.sh mqtt-kafka-100k mqtt-kafka-100k-q2 > /dev/null 2>&1 < /dev/null &'
+```
+
 ## Tuning variables and diagnostics
 
 Pass with `-e` to `deploy.sh` (or `ansible-playbook`):
 
 - `mqtt_devices_partitions` (16), `mqtt_messages_partitions` (16), `mqtt_sessions_partitions` (1),
   `mqtt_retained_partitions` (1).
+- `zilla_cache_bootstrap` (`false`): `true` adds the cache_server `bootstrap` block, which keeps fetching every partition of
+  the listed topics into the cache even when nothing reads them. Leave it off for publish-only runs.
 - `zilla_diagnostics=true`: Zilla starts with GC logging and a continuous Flight Recorder recording, both under
   `/var/log/zilla` on the broker host.
 
