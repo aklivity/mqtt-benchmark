@@ -159,7 +159,9 @@ prints CPU% per worker over the window and the ramp, the cpus each ran on, and w
 `-e zilla_shm_gib=<n>` (default 0) mounts a tmpfs of that many GiB at `/dev/shm/zilla` in the Zilla container and sets
 `zilla.engine.directory` there, so the stream rings and the Kafka cache live in RAM instead of the broker's root volume.
 Keep `n` at 21 or more on a 61 GiB host, or Zilla's memory sizing changes (the smaller of 25% of RAM and 75% of the
-directory's free space), and well under RAM minus the JVM heap: the cache grows about 110 MB/s at 100K msg/s of 1 KB.
+directory's free space), and well under RAM minus the JVM heap. The cache takes about 2.3 KB per 1 KB publish, so 100K msg/s
+writes about 230 MB/s and a good-regime run needs 75-90 GB: a 32 GiB tmpfs holds only about 70 s of measuring after the ramp
+and warm-up; `-Pzilla.binding.kafka.cache.client.trailers.size.max=32` in `zilla_start_args` cuts the bytes by about 38%.
 
 Scenario knobs for the shape of the load: `PUB_CONN_RATE` (connections per second, in total), `WAIT_BEFORE_PUBLISHING`
 (`true` by default: each emqtt-bench instance starts publishing once all of its connections are up; `false`: each publisher

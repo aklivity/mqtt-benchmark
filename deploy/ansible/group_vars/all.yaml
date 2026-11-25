@@ -29,9 +29,10 @@ zilla_cache_bootstrap: false
 # true: GC log and a continuous Flight Recorder recording of Zilla under /var/log/zilla on the broker host
 # (bin/run-scenario.sh with DIAG=1 collects them)
 # GiB of RAM for a tmpfs at /dev/shm/zilla in the Zilla container; above 0 the engine directory (stream rings and the Kafka
-# cache, ~110 MB/s at 100K msg/s of 1 KB) moves there instead of the broker's root volume. Zilla sizes its memory as the
-# smaller of 25% of RAM and 75% of the engine directory's free space, so keep this at 21 GiB or more on a 61 GiB host or the
-# sizing changes; keep it well under RAM minus the JVM heap (a 240 s window plus warm-up and ramp writes about 40 GiB).
+# cache) moves there instead of the broker's root volume. The cache takes about 2.3 KB per 1 KB publish (two entries, each with
+# about 700 B of fixed overhead), so 100K msg/s writes about 230 MB/s: roughly 75-90 GB for a full good-regime run, more than
+# the 61 GiB of RAM of a c6i.8xlarge. Zilla sizes its memory as the smaller of 25% of RAM and 75% of the engine directory's free
+# space, so keep this at 21 GiB or more on a 61 GiB host, and well under RAM minus the JVM heap.
 zilla_shm_gib: 0
 zilla_diagnostics: false
 # false: with zilla_diagnostics, record only the GC log. For images whose runtime has no jdk.jfr module
