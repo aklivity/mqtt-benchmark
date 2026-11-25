@@ -15,7 +15,9 @@ def norm(line):
 samples = collections.defaultdict(list)   # worker -> list of frame lists
 n_dumps = 0
 cur = None; frames = None
+STAMP = re.compile(r'^\d{4}-\d\d-\d\dT[\d:.]+Z ')
 for line in open(path, errors='replace'):
+    line = STAMP.sub('', line)
     if line.startswith('Full thread dump'):
         n_dumps += 1
     m = re.match(r'"(engine/worker#\d+)"', line)

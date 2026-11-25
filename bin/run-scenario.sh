@@ -28,12 +28,24 @@
 #   ss-s.txt                  `ss -s` on the broker host at the end of the window
 #   gc.log, zilla.jfr         the GC log and a Flight Recorder dump, when the broker was deployed with
 #                             `-e zilla_diagnostics=true`
+#
+# DIAG=1 (or REC=1) also records the whole run, from the connection ramp to the end, for the broker and Kafka hosts:
+#   events.txt                epoch ms of run_start, ramp_start, ramp_end, warmup_end, probe_start, t0, t1, probe_done
+#   offsets-t0.txt, offsets-t1.txt   end offset of every partition of KAFKA_TOPIC at T0 and T1 (topic:partition:offset)
+#   recorder-broker.tgz       bin/record-host.py output: per-thread cpu (tid, container tid, utime, stime, cpu id) every 5 s,
+#                             meminfo Dirty/Writeback, /proc/<pid>/io, diskstats and vmstat every second, cpu topology
+#   recorder-kafka.tgz        the same without threads, plus offsets.tsv from bin/record-offsets.sh: the end offset of every
+#                             partition of every mqtt-* topic every OFFSET_INTERVAL_S (10) seconds
+#   locations.txt, ebs-*.json where the Zilla cache and the Kafka log live, and the volume type, IOPS and throughput
+#   puback-probe.json, puback-probe-progress.txt   the probe summary (waited for up to 60 s) and its counters every 5 s
+# WAIT_BEFORE_PUBLISHING=true (default) makes each emqtt-bench instance publish only once all its connections are up;
+# false lets each publisher start as soon as it is connected.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SCENARIO=${1:?usage: bin/run-scenario.sh scenarios/<name>.env}
 MODE=pubsub; SUBSCRIBERS=0; SUB_CONN_RATE=500; SUB_TOPIC=''; SUB_QOS=1; PLACEMENT=split; DELIVERIES_PER_MSG=1
 PUBLISHERS=0; PUB_CONN_RATE=500; PROBE_CONNECTIONS=0; INFLIGHT=1; KAFKA_TOPIC=mqtt-devices
-MQTT_VERSION=4; KEEPALIVE_S=300; CLEAN_SESSION=true; WARMUP_S=60; DURATION_S=1800
+MQTT_VERSION=4; KEEPALIVE_S=300; CLEAN_SESSION=true; WARMUP_S=60; DURATION_S=1800; WAIT_BEFORE_PUBLISHING=true
 # shellcheck disable=SC1090
 source "$SCENARIO"
 INVENTORY=${INVENTORY:-deploy/inventory.ini}
@@ -42,6 +54,8 @@ BENCH_IMAGE=${BENCH_IMAGE:-emqx/emqtt-bench:0.6.3}
 PUB_API=8080; SUB_API=8081
 RUN_ID=${RUN_ID:-"$NAME-$(date -u +%Y%m%dT%H%M%SZ)"}
 DIAG=${DIAG:-0}
+REC=${REC:-$DIAG}
+OFFSET_INTERVAL_S=${OFFSET_INTERVAL_S:-10}
 OUT="results/$RUN_ID"; mkdir -p "$OUT/clients" "$OUT/metrics"
 
 hosts() {   # hosts <group> <field: ansible_host|private_ip>
@@ -58,8 +72,13 @@ log() { echo "[$(date -u +%T)] $*" | tee -a "$OUT/run.log"; }
 ZILLA_DIAGNOSTICS=false   # not in broker.env of hosts deployed before the option existed
 eval "$(on "$BROKER_PUB" cat /opt/mqtt-benchmark/broker.env)"   # BROKER=zilla|emqx, MQTT_PORT, ZILLA_DIAGNOSTICS
 
-offsets() { on "$KAFKA_PUB" "docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic $KAFKA_TOPIC" \
-  | awk -F: '{s+=$3} END {print s+0}'; }
+# offsets [file]: the sum of the end offsets of KAFKA_TOPIC; with a file, also saves the topic:partition:offset lines
+offsets() {
+  local raw
+  raw=$(on "$KAFKA_PUB" "docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic $KAFKA_TOPIC")
+  if [ -n "${1:-}" ]; then echo "$raw" > "$1"; fi
+  echo "$raw" | awk -F: '{s+=$3} END {print s+0}'; }
+ev() { echo "$(date +%s%3N) $1" >> "$OUT/events.txt"; }
 # share <total> <k>: clients for host k when <total> is split evenly; first <total> <k>: sequence start for host k
 share() { echo $(( $1 / N + ($2 < $1 % N ? 1 : 0) )); }
 first() { local i s=1; for ((i = 0; i < $2; i++)); do s=$((s + $(share "$1" "$i"))); done; echo "$s"; }
@@ -126,7 +145,58 @@ diag_zilla_logs() {
   fi; }
 if [ "$DIAG" = 1 ]; then mkdir -p "$DIAG_DIR"; fi
 
+# The recorder (bin/record-host.py, bin/record-offsets.sh) is copied to the hosts and run in the background for the whole
+# run; every step is best effort, a failure is logged and never aborts the run.
+REC_DIR=/tmp/rec-$RUN_ID
+rec() { [ "$REC" = 1 ] || return 0; "$@" || log "recorder: $* failed"; }
+rec_start() {
+  local h
+  for h in "$BROKER_PUB" "$KAFKA_PUB"; do
+    on "$h" "mkdir -p $REC_DIR && cat > $REC_DIR/record-host.py" < bin/record-host.py
+  done
+  on "$KAFKA_PUB" "cat > $REC_DIR/record-offsets.sh" < bin/record-offsets.sh
+  on "$BROKER_PUB" "sudo nohup python3 $REC_DIR/record-host.py $REC_DIR/broker --interval 1 --threads > /dev/null 2>&1 < /dev/null &" < /dev/null
+  on "$KAFKA_PUB" "sudo nohup python3 $REC_DIR/record-host.py $REC_DIR/kafka --interval 5 > /dev/null 2>&1 < /dev/null &" < /dev/null
+  on "$KAFKA_PUB" "KAFKA_TOPIC=$KAFKA_TOPIC nohup bash $REC_DIR/record-offsets.sh $REC_DIR/offsets $OFFSET_INTERVAL_S > /dev/null 2>&1 < /dev/null &" < /dev/null
+}
+rec_locations() {   # where the Zilla cache and the Kafka log live, and what the volumes are
+  {
+    echo "## $BROKER mounts"; on "$BROKER_PUB" "docker inspect $BROKER --format '{{json .Mounts}}'; docker exec $BROKER df -h /var/run/zilla 2>&1; df -h / /var/lib/docker"
+    echo "## kafka mounts"; on "$KAFKA_PUB" "docker inspect kafka --format '{{json .Mounts}}'; df -h /data"
+  } > "$OUT/locations.txt"
+  local role h iid
+  for role in broker kafka; do
+    h=$([ "$role" = broker ] && echo "$BROKER_PUB" || echo "$KAFKA_PUB")
+    iid=$(on "$h" 'T=$(curl -s -X PUT -H "X-aws-ec2-metadata-token-ttl-seconds: 60" http://169.254.169.254/latest/api/token); curl -s -H "X-aws-ec2-metadata-token: $T" http://169.254.169.254/latest/meta-data/instance-id')
+    echo "$iid" > "$OUT/instance-$role.txt"
+    aws ec2 describe-volumes --filters "Name=attachment.instance-id,Values=$iid" \
+      --query 'Volumes[].{id:VolumeId,type:VolumeType,iops:Iops,mbps:Throughput,gib:Size,device:Attachments[0].Device}' --output json \
+      > "$OUT/ebs-$role.json" 2>/dev/null || echo "aws ec2 describe-volumes not available here, see lsblk in the recorder system.txt" > "$OUT/ebs-$role.json"
+  done
+}
+rec_cloudwatch() {   # EBS volume and instance EBS metrics for the run, from the controller (needs cloudwatch:GetMetricStatistics)
+  local role vols start_ms end_ms
+  start_ms=$(head -1 "$OUT/events.txt" | cut -d' ' -f1); end_ms=$(date +%s%3N)
+  for role in broker kafka; do
+    vols=$(python3 -c 'import json,sys; print(" ".join(v["id"] for v in json.load(open(sys.argv[1]))))' "$OUT/ebs-$role.json" 2>/dev/null || true)
+    python3 bin/ebs-cloudwatch.py "$OUT/ebs-cloudwatch-$role.json" "$start_ms" "$end_ms" "$(cat "$OUT/instance-$role.txt")" $vols
+  done
+}
+rec_stop() {
+  local h name i
+  on "$BROKER_PUB" "sudo touch $REC_DIR/broker/stop" < /dev/null || true
+  on "$KAFKA_PUB" "sudo touch $REC_DIR/kafka/stop; touch $REC_DIR/offsets/stop" < /dev/null || true
+  for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do   # up to 30 s for the last Kafka offset read to finish
+    on "$BROKER_PUB" "test -e $REC_DIR/broker/done" < /dev/null \
+      && on "$KAFKA_PUB" "test -e $REC_DIR/kafka/done && test -e $REC_DIR/offsets/done" < /dev/null && break
+    sleep 2
+  done
+  on "$BROKER_PUB" "tar czf - -C $REC_DIR broker" < /dev/null > "$OUT/recorder-broker.tgz"
+  on "$KAFKA_PUB" "tar czf - -C $REC_DIR kafka offsets" < /dev/null > "$OUT/recorder-kafka.tgz"
+}
+
 log "run $RUN_ID ($MODE) on $N client hosts"
+ev run_start
 cp "$SCENARIO" "$OUT/scenario.env"
 {
   echo "broker=$BROKER"
@@ -142,7 +212,9 @@ log "broker: $BROKER on $BROKER_IP:$MQTT_PORT"
 for h in "${CLIENTS[@]}"; do on "$h" "docker rm -f bench-pub bench-sub bench-conn >/dev/null 2>&1 || true"; done
 
 CONNECTED=0; SUBSCRIBED=0
+rec rec_start; rec rec_locations
 if [ "$MODE" = conn ]; then
+  ev ramp_start
   for k in "${!CLIENTS[@]}"; do
     c=$(share "$CONNECTIONS" "$k"); [ "$c" -gt 0 ] || continue
     bench "$k" bench-conn $PUB_API conn -c "$c" -R $(( (CONN_RATE + N - 1) / N )) -n "$(first "$CONNECTIONS" "$k")" --prefix "'$RUN_ID-c-'" -Q true
@@ -150,7 +222,7 @@ if [ "$MODE" = conn ]; then
   done
   T_START=$(date +%s)
   CONNECTED=$(wait_for pub connect_succ "$CONNECTIONS" $(( CONNECTIONS / CONN_RATE * 3 + 120 )))
-  T_CONNECTED=$(date +%s)
+  T_CONNECTED=$(date +%s); ev ramp_end
   log "connected $CONNECTED/$CONNECTIONS in $((T_CONNECTED - T_START)) s"
 else
   if [ "$SUBSCRIBERS" -gt 0 ]; then
@@ -166,26 +238,29 @@ else
   # With subscribers, publishers add emqtt-bench's 8-byte send timestamp for end-to-end latency; shrink the body
   # so the payload on the wire is still PAYLOAD_BYTES. Without subscribers there is no timestamp.
   if [ "$SUBSCRIBERS" -gt 0 ]; then HDRS="--payload-hdrs ts"; BODY=$((PAYLOAD_BYTES - 8)); else HDRS=""; BODY=$PAYLOAD_BYTES; fi
+  ev ramp_start   # publishers (and, with WAIT_BEFORE_PUBLISHING=true, their start) follow the connection ramp
   for k in "${!CLIENTS[@]}"; do
     if [ "$PLACEMENT" = first ]; then [ "$k" -eq 0 ] && c=$PUBLISHERS || c=0; start=1
     else c=$(share "$PUBLISHERS" "$k"); start=$(first "$PUBLISHERS" "$k"); fi
     [ "$c" -gt 0 ] || continue
     bench "$k" bench-pub $PUB_API pub -c "$c" -R $(( (PUB_CONN_RATE + N - 1) / N )) -n "$start" --prefix "'$RUN_ID-p-'" \
-      -t "'$PUB_TOPIC'" -q "$QOS" -s "$BODY" -I "$PUBLISH_INTERVAL_MS" -F "$INFLIGHT" -w true $HDRS
+      -t "'$PUB_TOPIC'" -q "$QOS" -s "$BODY" -I "$PUBLISH_INTERVAL_MS" -F "$INFLIGHT" -w "$WAIT_BEFORE_PUBLISHING" $HDRS
     log "client $k: $c publishers from #$start"
   done
   CONNECTED=$(wait_for pub connect_succ "$PUBLISHERS" $(( PUBLISHERS / PUB_CONN_RATE * 3 + 120 )))
+  ev ramp_end
   log "publishers connected: $CONNECTED/$PUBLISHERS (connect_fail=$(total pub connect_fail))"
 fi
 
-log "warm-up ${WARMUP_S}s"; sleep "$WARMUP_S"
+log "warm-up ${WARMUP_S}s"; sleep "$WARMUP_S"; ev warmup_end
 diag diag_histogram start
 
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
-  on "${CLIENTS[0]}" "nohup python3 /opt/mqtt-benchmark/puback-probe.py $BROKER_IP $MQTT_PORT $PROBE_CONNECTIONS $DURATION_S $RUN_ID $PAYLOAD_BYTES $QOS \
+  on "${CLIENTS[0]}" "PROBE_PROGRESS=/tmp/probe-$RUN_ID.progress nohup python3 /opt/mqtt-benchmark/puback-probe.py $BROKER_IP $MQTT_PORT $PROBE_CONNECTIONS $DURATION_S $RUN_ID $PAYLOAD_BYTES $QOS \
     < /dev/null > /tmp/probe-$RUN_ID.json 2>/tmp/probe-$RUN_ID.err &"
+  ev probe_start
 fi
-T0=$(date +%s); K0=$(offsets); snapshot t0; emqx_action t0
+ev t0; T0=$(date +%s); K0=$(offsets "$OUT/offsets-t0.txt"); snapshot t0; emqx_action t0
 log "measuring for ${DURATION_S}s"
 if [ "$DIAG" = 1 ]; then
   sleep $((DURATION_S / 2)); diag diag_threads
@@ -193,10 +268,19 @@ if [ "$DIAG" = 1 ]; then
 else
   sleep "$DURATION_S"
 fi
-T1=$(date +%s); K1=$(offsets); snapshot t1; emqx_action t1
+ev t1; T1=$(date +%s); K1=$(offsets "$OUT/offsets-t1.txt"); snapshot t1; emqx_action t1
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
-  sleep 15; on "${CLIENTS[0]}" "cat /tmp/probe-$RUN_ID.json" > "$OUT/puback-probe.json" 2>/dev/null || true
+  # The probe writes its summary only when its last publish has been acked or has timed out (10 s), so under load it
+  # can still be running a while after T1: wait for a complete JSON, up to 60 s, before the clients are torn down.
+  for _ in $(seq 1 30); do
+    on "${CLIENTS[0]}" "python3 -c 'import json,sys; json.load(open(sys.argv[1]))' /tmp/probe-$RUN_ID.json" 2>/dev/null && break
+    sleep 2
+  done
+  on "${CLIENTS[0]}" "cat /tmp/probe-$RUN_ID.json" > "$OUT/puback-probe.json" 2>/dev/null || true
+  on "${CLIENTS[0]}" "cat /tmp/probe-$RUN_ID.progress /tmp/probe-$RUN_ID.err" > "$OUT/puback-probe-progress.txt" 2>/dev/null || true
+  ev probe_done
 fi
+rec rec_stop; rec rec_cloudwatch
 
 W="$((T1 - T0))s"
 cpu() { promq "avg_over_time((100 * (1 - avg(rate(node_cpu_seconds_total{role=\"$1\",mode=\"idle\"}[1m]))))[$W:15s])" "$T1"; }

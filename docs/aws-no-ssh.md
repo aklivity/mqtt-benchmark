@@ -132,6 +132,37 @@ anything with a space in a vars file:
 bin/aws/ssm-run.py 'cd /opt/mqtt-benchmark-src && BUCKET=<bucket> DEPLOY_ARGS="-e @/tmp/vars.yml" setsid nohup bin/table-driver.sh mqtt-kafka-100k mqtt-kafka-100k-q2 > /dev/null 2>&1 < /dev/null &'
 ```
 
+### Run recorder
+
+With `DIAG=1` (which `bin/table-driver.sh` always sets), or `REC=1`, `bin/run-scenario.sh` records the whole run, from the
+start of the connection ramp to the end, on the broker and Kafka hosts. Every step is best effort. It saves, in
+`results/<run>/`:
+
+| File | Contents |
+|---|---|
+| `events.txt` | Epoch milliseconds of `run_start`, `ramp_start`, `ramp_end`, `warmup_end`, `probe_start`, `t0`, `t1`, `probe_done` |
+| `offsets-t0.txt`, `offsets-t1.txt` | End offset of every partition of `KAFKA_TOPIC` at T0 and T1 (`topic:partition:offset`) |
+| `recorder-broker.tgz` | `bin/record-host.py`, run as root every second: per-thread CPU (container tid, `utime`, `stime`, last cpu, `minflt`, `majflt`, and for `engine/*` threads the context switches and `wchan`), `/proc/<pid>/io`, `meminfo` (`Dirty`, `Writeback`, `MemAvailable`), `/proc/vmstat` (`nr_dirty`, `nr_writeback`, `nr_dirtied`, `nr_written`, the dirty thresholds, page faults), the pressure stall files, `diskstats` and `vmstat`, and `iostat -x 1`; the cpu topology and hyperthread siblings (`system.txt`) |
+| `recorder-kafka.tgz` | The same without threads, plus `offsets/offsets.tsv`: the end offset of every partition of every `mqtt-*` topic every `OFFSET_INTERVAL_S` (default 10) s |
+| `ebs-cloudwatch-broker.json`, `ebs-cloudwatch-kafka.json` | `bin/ebs-cloudwatch.py`: per-minute EBS volume and instance EBS metrics (throughput, ops, queue length, idle time), when the controller may call `cloudwatch:GetMetricStatistics`; CloudWatch lags a minute or two, so the last minutes may be missing |
+| `locations.txt`, `ebs-broker.json`, `ebs-kafka.json` | Where the Zilla cache (`/var/run/zilla` in the container, on the broker's root volume) and the Kafka log (`/data`) live, and each instance's volume type, IOPS and throughput when the controller may call `ec2:DescribeVolumes` |
+| `puback-probe.json`, `puback-probe-progress.txt` | The probe summary (waited for up to 60 s after T1) and its counters every 5 s |
+
+The kernel cuts thread names to 15 characters, so `top` shows `engine/worker#10` to `#19` all as `engine/worker#1`.
+`bin/worker-cpu.py <run-dir>` names each worker by joining the recorded container tid to the `nid` of the thread dumps and
+prints CPU% per worker over the window and the ramp, the cpus each ran on, and whether the dumps lie inside the window
+(`worker-cpu.txt`, `worker-cpu-series.tsv` for the 5 s series). The 100K scenarios take 10 thread dumps 20 s into the ramp and
+60 from t0+30 s (`dumps-ramp.txt.gz`, `dumps-window.txt.gz`).
+
+`-e zilla_shm_gib=<n>` (default 0) mounts a tmpfs of that many GiB at `/dev/shm/zilla` in the Zilla container and sets
+`zilla.engine.directory` there, so the stream rings and the Kafka cache live in RAM instead of the broker's root volume.
+Keep `n` at 21 or more on a 61 GiB host, or Zilla's memory sizing changes (the smaller of 25% of RAM and 75% of the
+directory's free space), and well under RAM minus the JVM heap: the cache grows about 110 MB/s at 100K msg/s of 1 KB.
+
+Scenario knobs for the shape of the load: `PUB_CONN_RATE` (connections per second, in total), `WAIT_BEFORE_PUBLISHING`
+(`true` by default: each emqtt-bench instance starts publishing once all of its connections are up; `false`: each publisher
+starts as soon as it is connected), and the offered rate `PUBLISHERS x 1000 / PUBLISH_INTERVAL_MS`.
+
 ## Tuning variables and diagnostics
 
 Pass with `-e` to `deploy.sh` (or `ansible-playbook`):

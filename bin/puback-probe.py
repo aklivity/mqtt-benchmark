@@ -10,10 +10,11 @@ Each connection has one publish in flight at a time, like emqtt-bench with INFLI
 over plain TCP.
 
 Usage: puback-probe.py <host> <port> <connections> <duration_s> <run_id> [payload_bytes] [qos]
+With PROBE_PROGRESS=<file> it also appends one JSON line every 5 s (epoch ms and the running counters), to see the rate over time.
 Writes a JSON summary to stdout: qos, sent, acked (completed), timed_out, connect_failed, disconnected,
 avg/p50/p90/p99/p999/max in ms, and for QoS 2 the same percentiles up to PUBREC under "pubrec".
 """
-import asyncio, json, struct, sys, time
+import asyncio, json, os, struct, sys, time
 
 HOST, PORT, CONNS, DURATION, RUN = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), sys.argv[5]
 PAYLOAD = b'x' * (int(sys.argv[6]) if len(sys.argv) > 6 else 1024)
@@ -122,10 +123,20 @@ def percentiles(ms):
                 max_ms=round(s[-1], 2) if s else None)
 
 
+async def progress(path):
+    with open(path, 'a', buffering=1) as f:
+        while True:
+            f.write(json.dumps(dict(stats, t_ms=int(time.time() * 1000))) + '\n')
+            await asyncio.sleep(5)
+
+
 async def main():
     t0 = time.monotonic()
+    ticker = asyncio.ensure_future(progress(os.environ['PROBE_PROGRESS'])) if os.environ.get('PROBE_PROGRESS') else None
     # spread the probe connections over the first second so their publishes don't all coincide
     await asyncio.gather(*(client(i, t0 + i / max(CONNS, 1)) for i in range(CONNS)))
+    if ticker:
+        ticker.cancel()
     out = dict(stats, qos=QOS, connections=CONNS, duration_s=DURATION, **percentiles(samples))
     if QOS == 2:
         out['pubrec'] = percentiles(pubrec_samples)
