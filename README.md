@@ -11,6 +11,7 @@ Kafka rule, as a baseline measured with the same clients, Kafka and hosts.
 | Scenario | Source | What it does |
 |---|---|---|
 | `mqtt-kafka-100k` | | 100,000 publishers connecting at 5,000/s, one topic each, 1 msg/s each (100,000 msg/s), QoS 1, 1 KB, all written to one Kafka topic with 16 partitions |
+| `mqtt-kafka-50k` | | The same as `mqtt-kafka-100k` with 50,000 publishers (50,000 msg/s) |
 | `basic-conn-10k` | [Open MQTT Benchmark Suite](https://github.com/emqx/mqttbs), Basic Set | 10,000 connections within 100 s, held for 30 minutes |
 | `basic-fanout-1-1k` | Basic Set | 1 publisher, 1,000 subscribers on one topic, 1 msg/s in, 1,000 msg/s out, QoS 1, 16 B |
 | `basic-p2p-1k` | Basic Set | 1,000 publisher/subscriber pairs, one topic per pair, 1,000 msg/s in and out, QoS 1, 16 B |
