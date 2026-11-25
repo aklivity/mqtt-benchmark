@@ -49,11 +49,13 @@ bindings:
   south_kafka_cache_server:
     type: kafka
     kind: cache_server
+{% if zilla_cache_bootstrap | default(false) | bool %}
     options:
       bootstrap:
         - mqtt-messages
         - mqtt-retained
         - mqtt-devices
+{% endif %}
     exit: south_kafka_client
   south_kafka_client:
     type: kafka
