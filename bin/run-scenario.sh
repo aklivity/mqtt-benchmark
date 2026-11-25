@@ -38,6 +38,7 @@
 #                             partition of every mqtt-* topic every OFFSET_INTERVAL_S (10) seconds
 #   locations.txt, ebs-*.json where the Zilla cache and the Kafka log live, and the volume type, IOPS and throughput
 #   puback-probe.json, puback-probe-progress.txt   the probe summary (waited for up to 60 s) and its counters every 5 s
+# SESSION_EXPIRY_S=<seconds> (MQTT 5 with CLEAN_SESSION=false) passes emqtt-bench -x, so every client's session persists.
 # WAIT_BEFORE_PUBLISHING=true (default) makes each emqtt-bench instance publish only once all its connections are up;
 # false lets each publisher start as soon as it is connected.
 set -euo pipefail
@@ -46,6 +47,7 @@ SCENARIO=${1:?usage: bin/run-scenario.sh scenarios/<name>.env}
 MODE=pubsub; SUBSCRIBERS=0; SUB_CONN_RATE=500; SUB_TOPIC=''; SUB_QOS=1; PLACEMENT=split; DELIVERIES_PER_MSG=1
 PUBLISHERS=0; PUB_CONN_RATE=500; PROBE_CONNECTIONS=0; INFLIGHT=1; KAFKA_TOPIC=mqtt-devices
 MQTT_VERSION=4; KEEPALIVE_S=300; CLEAN_SESSION=true; WARMUP_S=60; DURATION_S=1800; WAIT_BEFORE_PUBLISHING=true
+SESSION_EXPIRY_S=''
 # shellcheck disable=SC1090
 source "$SCENARIO"
 INVENTORY=${INVENTORY:-deploy/inventory.ini}
@@ -117,7 +119,7 @@ try:
 except Exception:
     print("null")   # monitoring host unreachable: report no value instead of aborting the run
 '; }
-COMMON="-h $BROKER_IP -p $MQTT_PORT -V $MQTT_VERSION -k $KEEPALIVE_S -C $CLEAN_SESSION"
+COMMON="-h $BROKER_IP -p $MQTT_PORT -V $MQTT_VERSION -k $KEEPALIVE_S -C $CLEAN_SESSION${SESSION_EXPIRY_S:+ -x $SESSION_EXPIRY_S}"
 bench() {  # bench <host index> <name> <api port> <args...>
   local k=$1 name=$2 port=$3; shift 3
   on "${CLIENTS[$k]}" "docker run -d --name $name --network host --ulimit nofile=1048576:1048576 $BENCH_IMAGE $* \
