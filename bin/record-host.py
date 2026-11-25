@@ -15,6 +15,9 @@ Written every second:
   meminfo.tsv     MemAvailable, Dirty, Writeback, WritebackTmp, Mapped, Cached, Shmem (kB)
   vmstat-proc.tsv nr_dirty nr_writeback nr_dirtied nr_written, the two dirty thresholds (pages), pgfault pgmajfault, pgscan_*
   pressure.tsv    /proc/pressure/io, memory and cpu (PSI) when the kernel has them
+  cpustat.tsv     /proc/stat cpu lines (total and per cpu): user nice system idle iowait irq softirq steal, in clock ticks
+  procs.tsv       pid, comm, utime, stime of every process or kernel thread whose name matches kworker, kswapd, jbd2,
+                  ksoftirqd, containerd, dockerd, java, snapd, amazon-ssm (the kworker flush threads are the writeback)
   diskstats.tsv   /proc/diskstats lines of the whole disks (utilisation, await and throughput come from deltas)
   vmstat.txt      `vmstat -t 1`
   iostat.txt      `iostat -x -t 1`, when sysstat is installed
@@ -88,14 +91,35 @@ def key_values(path, keys, sep):
     return v
 
 
+PROC_NAMES = ('kworker', 'kswapd', 'jbd2', 'ksoftirqd', 'containerd', 'dockerd', 'java', 'snapd', 'amazon-ssm')
+
+
+def sample_procs(f, t):
+    for pid in os.listdir('/proc'):
+        if pid.isdigit():
+            try:
+                raw = open(f'/proc/{pid}/stat').read()
+                comm = raw[raw.index('(') + 1:raw.rindex(')')]
+                if comm.startswith(PROC_NAMES):
+                    rest = raw[raw.rindex(')') + 2:].split()
+                    f.write(f'{t}\t{pid}\t{comm}\t{rest[11]}\t{rest[12]}\n')
+            except (OSError, ValueError, IndexError):
+                continue
+
+
 def per_second():
     ds, mem, vm, psi = out('diskstats.tsv'), out('meminfo.tsv'), out('vmstat-proc.tsv'), out('pressure.tsv')
+    cpus, procs = out('cpustat.tsv'), out('procs.tsv')
     while not stop.is_set():
         t = now_ms()
         for line in open('/proc/diskstats'):
             p = line.split()
             if len(p) > 13 and whole_disk(p[2]):
                 ds.write(f'{t}\t{line.strip()}\n')
+        for line in open('/proc/stat'):
+            if line.startswith('cpu'):
+                cpus.write(f'{t}\t' + '\t'.join(line.split()[:9]) + '\n')
+        sample_procs(procs, t)
         m = key_values('/proc/meminfo', MEM_KEYS, ':')
         mem.write(f'{t}\t' + '\t'.join(f'{k}={m.get(k, "")}' for k in MEM_KEYS) + '\n')
         v = key_values('/proc/vmstat', VM_KEYS, ' ')

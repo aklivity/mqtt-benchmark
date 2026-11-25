@@ -158,6 +158,24 @@ rec_start() {
   on "$BROKER_PUB" "sudo nohup python3 $REC_DIR/record-host.py $REC_DIR/broker --interval 1 --threads > /dev/null 2>&1 < /dev/null &" < /dev/null
   on "$KAFKA_PUB" "sudo nohup python3 $REC_DIR/record-host.py $REC_DIR/kafka --interval 5 > /dev/null 2>&1 < /dev/null &" < /dev/null
   on "$KAFKA_PUB" "KAFKA_TOPIC=$KAFKA_TOPIC nohup bash $REC_DIR/record-offsets.sh $REC_DIR/offsets $OFFSET_INTERVAL_S > /dev/null 2>&1 < /dev/null &" < /dev/null
+  local k   # every emqtt-bench metrics page of every client host, every 5 s, with the epoch ms of each read
+  for k in "${!CLIENTS[@]}"; do
+    on "${CLIENTS[$k]}" "mkdir -p $REC_DIR/metrics && nohup bash -c 'while [ ! -e $REC_DIR/metrics/stop ]; do for r in $PUB_API $SUB_API; do echo \"### \$(date +%s%3N) port \$r\"; curl -s localhost:\$r/metrics; done; sleep 5; done' > $REC_DIR/metrics/series.txt 2>&1 < /dev/null &" < /dev/null
+  done
+}
+rec_meta() {   # what ran: image digest and revision label, the JVM options, host uptime and the run's index since the broker host started
+  local env labels up idx
+  env=$(on "$BROKER_PUB" "docker inspect $BROKER --format '{{json .Config.Env}}'") || env='"unknown"'
+  labels=$(on "$BROKER_PUB" "docker inspect $BROKER --format '{{json .Config.Labels}}'") || labels='"unknown"'
+  up=$(on "$BROKER_PUB" "cut -d' ' -f1 /proc/uptime; uptime -s" | tr '\n' ' ')
+  idx=$(on "$BROKER_PUB" 'n=$(cat /var/tmp/mqtt-benchmark-run-count 2>/dev/null || echo 0); n=$((n + 1)); echo $n | sudo tee /var/tmp/mqtt-benchmark-run-count')
+  python3 - "$OUT/run-meta.json" "$RUN_ID" "$env" "$labels" "$up" "$idx" <<'PY'
+import json, sys
+out, run, env, labels, up, idx = sys.argv[1:7]
+j = lambda v: json.loads(v) if v.strip().startswith(('[', '{', '"')) else v
+json.dump({'run_id': run, 'broker_env': j(env), 'broker_labels': j(labels), 'broker_uptime_s_and_boot_time': up.strip(),
+           'run_index_since_broker_host_start': int(idx)}, open(out, 'w'), indent=1)
+PY
 }
 rec_locations() {   # where the Zilla cache and the Kafka log live, and what the volumes are
   {
@@ -183,9 +201,12 @@ rec_cloudwatch() {   # EBS volume and instance EBS metrics for the run, from the
   done
 }
 rec_stop() {
-  local h name i
+  local h name i k
   on "$BROKER_PUB" "sudo touch $REC_DIR/broker/stop" < /dev/null || true
   on "$KAFKA_PUB" "sudo touch $REC_DIR/kafka/stop; touch $REC_DIR/offsets/stop" < /dev/null || true
+  for k in "${!CLIENTS[@]}"; do
+    on "${CLIENTS[$k]}" "touch $REC_DIR/metrics/stop; sleep 6; tar czf - -C $REC_DIR metrics" < /dev/null > "$OUT/recorder-client-$k.tgz" || true
+  done
   for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do   # up to 30 s for the last Kafka offset read to finish
     on "$BROKER_PUB" "test -e $REC_DIR/broker/done" < /dev/null \
       && on "$KAFKA_PUB" "test -e $REC_DIR/kafka/done && test -e $REC_DIR/offsets/done" < /dev/null && break
@@ -212,7 +233,7 @@ log "broker: $BROKER on $BROKER_IP:$MQTT_PORT"
 for h in "${CLIENTS[@]}"; do on "$h" "docker rm -f bench-pub bench-sub bench-conn >/dev/null 2>&1 || true"; done
 
 CONNECTED=0; SUBSCRIBED=0
-rec rec_start; rec rec_locations
+rec rec_start; rec rec_locations; rec rec_meta
 if [ "$MODE" = conn ]; then
   ev ramp_start
   for k in "${!CLIENTS[@]}"; do
