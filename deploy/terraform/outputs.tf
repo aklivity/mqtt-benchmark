@@ -22,3 +22,12 @@ output "ami_id" {
   description = "Ubuntu 22.04 image the instances were created from (record it with the results)"
   value       = nonsensitive(data.aws_ssm_parameter.ubuntu_ami.value)
 }
+
+output "network" {
+  description = "Where the controller (deploy/terraform-controller) is placed: terraform.tfvars values for its root"
+  value = {
+    vpc_id            = aws_vpc.bench.id
+    subnet_id         = aws_subnet.bench.id
+    security_group_id = aws_security_group.bench.id
+  }
+}

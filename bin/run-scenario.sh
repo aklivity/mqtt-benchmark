@@ -3,6 +3,8 @@
 #
 # Usage: bin/run-scenario.sh scenarios/<name>.env
 #   SSH_KEY=~/.ssh/mqtt-benchmark  INVENTORY=deploy/inventory.ini  (defaults)
+#   RUN_ID=<id> names the run and its results directory (default <scenario NAME>-<UTC time>)
+#   DIAG=1 also saves broker diagnostics under results/<run-id>/diagnostics/ (see "diagnostics" below)
 #
 # MODE=conn    emqtt-bench `conn` clients only: connect CONNECTIONS at CONN_RATE, hold them for DURATION_S.
 # MODE=pubsub  1. SUBSCRIBERS emqtt-bench subscribers connect and subscribe (none if 0), and the runner waits for
@@ -17,6 +19,15 @@
 # PLACEMENT=first puts every publisher on client host 0 (fan-out with one publisher).
 # The broker (Zilla or EMQX) and its MQTT port are read from the broker host, where deploy/ansible records them.
 # Writes results/<run-id>/: summary.json, metric snapshots, client logs, broker config and log, image versions.
+#
+# DIAG=1, best effort (a failed diagnostic is logged and skipped, never aborts the run), in diagnostics/:
+#   broker-threads.txt        per-thread CPU of the broker process (top -H), sampled in the middle of the window
+#   class-histogram-*.txt     top 40 lines of the Zilla JVM's class histogram just before the window opens and just
+#                             after it closes (taking one forces a full GC, so never inside the window); needs jcmd
+#                             in the Zilla image
+#   ss-s.txt                  `ss -s` on the broker host at the end of the window
+#   gc.log, zilla.jfr         the GC log and a Flight Recorder dump, when the broker was deployed with
+#                             `-e zilla_diagnostics=true`
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SCENARIO=${1:?usage: bin/run-scenario.sh scenarios/<name>.env}
@@ -29,7 +40,8 @@ INVENTORY=${INVENTORY:-deploy/inventory.ini}
 SSH_KEY=${SSH_KEY:-$HOME/.ssh/mqtt-benchmark}
 BENCH_IMAGE=${BENCH_IMAGE:-emqx/emqtt-bench:0.6.3}
 PUB_API=8080; SUB_API=8081
-RUN_ID="$NAME-$(date -u +%Y%m%dT%H%M%SZ)"
+RUN_ID=${RUN_ID:-"$NAME-$(date -u +%Y%m%dT%H%M%SZ)"}
+DIAG=${DIAG:-0}
 OUT="results/$RUN_ID"; mkdir -p "$OUT/clients" "$OUT/metrics"
 
 hosts() {   # hosts <group> <field: ansible_host|private_ip>
@@ -43,7 +55,8 @@ N=${#CLIENTS[@]}; [ "$N" -gt 0 ] || { echo "no client hosts in $INVENTORY"; exit
 SSH=(ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR)
 on() { local h=$1; shift; "${SSH[@]}" "ubuntu@$h" "$@"; }
 log() { echo "[$(date -u +%T)] $*" | tee -a "$OUT/run.log"; }
-eval "$(on "$BROKER_PUB" cat /opt/mqtt-benchmark/broker.env)"   # BROKER=zilla|emqx, MQTT_PORT
+ZILLA_DIAGNOSTICS=false   # not in broker.env of hosts deployed before the option existed
+eval "$(on "$BROKER_PUB" cat /opt/mqtt-benchmark/broker.env)"   # BROKER=zilla|emqx, MQTT_PORT, ZILLA_DIAGNOSTICS
 
 offsets() { on "$KAFKA_PUB" "docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic $KAFKA_TOPIC" \
   | awk -F: '{s+=$3} END {print s+0}'; }
@@ -90,6 +103,28 @@ bench() {  # bench <host index> <name> <api port> <args...>
   local k=$1 name=$2 port=$3; shift 3
   on "${CLIENTS[$k]}" "docker run -d --name $name --network host --ulimit nofile=1048576:1048576 $BENCH_IMAGE $* \
     $COMMON --prometheus --restapi $port" >/dev/null; }
+
+DIAG_DIR="$OUT/diagnostics"
+diag() { [ "$DIAG" = 1 ] || return 0; "$@" || log "diagnostic failed: $*"; }
+# JAVA_TOOL_OPTIONS= keeps jcmd's own JVM from starting a second GC log and recording on the same files
+has_jcmd() { [ "$BROKER" = zilla ] && on "$BROKER_PUB" "docker exec zilla sh -c 'command -v jcmd'" >/dev/null 2>&1; }
+jcmd_zilla() { on "$BROKER_PUB" "docker exec -e JAVA_TOOL_OPTIONS= zilla jcmd 1 $*"; }
+diag_threads() {
+  on "$BROKER_PUB" 'pid=$(pgrep -x java | head -1); [ -n "$pid" ] || pid=$(docker inspect --format "{{.State.Pid}}" '"$BROKER"')
+    top -H -b -n 3 -d 5 -p "$pid"' > "$DIAG_DIR/broker-threads.txt"; }
+diag_histogram() {  # diag_histogram <label>
+  if has_jcmd; then jcmd_zilla 'GC.class_histogram | head -n 40' > "$DIAG_DIR/class-histogram-$1.txt"
+  else log "diagnostics: no jcmd in the $BROKER container, no class histogram"; fi; }
+diag_ss() { on "$BROKER_PUB" "ss -s" > "$DIAG_DIR/ss-s.txt"; }
+diag_zilla_logs() {
+  if [ "$BROKER" = zilla ] && [ "$ZILLA_DIAGNOSTICS" = true ]; then
+    on "$BROKER_PUB" "sudo cat /var/log/zilla/gc.log" > "$DIAG_DIR/gc.log"
+    if has_jcmd; then
+      jcmd_zilla 'JFR.dump filename=/var/log/zilla/zilla-window.jfr' > "$DIAG_DIR/jfr-dump.txt"
+      on "$BROKER_PUB" "sudo cat /var/log/zilla/zilla-window.jfr" > "$DIAG_DIR/zilla.jfr"
+    fi
+  fi; }
+if [ "$DIAG" = 1 ]; then mkdir -p "$DIAG_DIR"; fi
 
 log "run $RUN_ID ($MODE) on $N client hosts"
 cp "$SCENARIO" "$OUT/scenario.env"
@@ -144,6 +179,7 @@ else
 fi
 
 log "warm-up ${WARMUP_S}s"; sleep "$WARMUP_S"
+diag diag_histogram start
 
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
   on "${CLIENTS[0]}" "nohup python3 /opt/mqtt-benchmark/puback-probe.py $BROKER_IP $MQTT_PORT $PROBE_CONNECTIONS $DURATION_S $RUN_ID $PAYLOAD_BYTES $QOS \
@@ -151,7 +187,12 @@ if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
 fi
 T0=$(date +%s); K0=$(offsets); snapshot t0; emqx_action t0
 log "measuring for ${DURATION_S}s"
-sleep "$DURATION_S"
+if [ "$DIAG" = 1 ]; then
+  sleep $((DURATION_S / 2)); diag diag_threads
+  rest=$((T0 + DURATION_S - $(date +%s))); if [ "$rest" -gt 0 ]; then sleep "$rest"; fi
+else
+  sleep "$DURATION_S"
+fi
 T1=$(date +%s); K1=$(offsets); snapshot t1; emqx_action t1
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
   sleep 15; on "${CLIENTS[0]}" "cat /tmp/probe-$RUN_ID.json" > "$OUT/puback-probe.json" 2>/dev/null || true
@@ -163,6 +204,7 @@ mem() { promq "avg_over_time(((node_memory_MemTotal_bytes{role=\"$1\"} - node_me
 BCPU=$(cpu broker); BMEM=$(mem broker); KCPU=$(cpu kafka)
 # connections the broker holds, counted by the kernel (no broker metrics needed)
 BCONN=$(on "$BROKER_PUB" "ss -Htn state established '( sport = :$MQTT_PORT )' | wc -l")
+diag diag_ss; diag diag_histogram end; diag diag_zilla_logs
 
 for k in "${!CLIENTS[@]}"; do
   for c in bench-pub bench-sub bench-conn; do

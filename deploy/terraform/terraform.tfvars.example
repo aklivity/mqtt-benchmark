@@ -1,8 +1,13 @@
 # Copy to terraform.tfvars (git-ignored) and fill in.
 owner           = "your-name"
-operator_cidrs  = ["203.0.113.7/32"]   # your public IP, for SSH, Grafana and Prometheus
+# Prefix of every named resource; use a unique one when several deployments share the AWS account and region
+# name_prefix   = "mqtt-benchmark"
+operator_cidrs  = ["203.0.113.7/32"]   # your public IP, for SSH, Grafana and Prometheus; without SSH: ["127.0.0.1/32"]
 public_key_path = "~/.ssh/mqtt-benchmark.pub"
 region          = "us-east-1"
+
+# Every instance terminates itself after this many minutes (default 0: off); keep it above the longest run plus deploy time
+# max_lifetime_minutes = 300
 
 # Defaults: 32 vCPU / 64 GB for the broker and for Kafka. Override to experiment:
 # broker_instance_type = "c6i.8xlarge"

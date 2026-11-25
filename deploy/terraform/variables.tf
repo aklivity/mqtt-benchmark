@@ -4,20 +4,44 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "name_prefix" {
+  description = "Prefix of every named resource (VPC, security group, placement group, key pair, instances), so several deployments can share an AWS account and region"
+  type        = string
+  default     = "mqtt-benchmark"
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{0,39}$", var.name_prefix))
+    error_message = "name_prefix must start with a lowercase letter and contain only lowercase letters, digits and hyphens (at most 40 characters)."
+  }
+}
+
 variable "owner" {
   description = "Value for the Owner tag on every resource, so stray instances can be traced"
   type        = string
 }
 
 variable "operator_cidrs" {
-  description = "CIDRs allowed to reach SSH, Grafana (3000) and Prometheus (9090), e.g. [\"203.0.113.7/32\"]"
+  description = <<-EOT
+    CIDRs allowed to reach SSH, Grafana (3000) and Prometheus (9090), e.g. ["203.0.113.7/32"]. An operator who cannot
+    SSH (docs/aws-no-ssh.md) passes a harmless placeholder such as ["127.0.0.1/32"]: the hosts are then reachable
+    only from inside the VPC.
+  EOT
   type        = list(string)
 }
 
 variable "public_key_path" {
-  description = "SSH public key installed on every host; the matching private key is SSH_KEY for bin/*.sh"
+  description = "SSH public key installed on every host; the matching private key is SSH_KEY for bin/*.sh (or the controller's key)"
   type        = string
   default     = "~/.ssh/mqtt-benchmark.pub"
+}
+
+variable "max_lifetime_minutes" {
+  description = "Every instance shuts itself down, and so terminates, this many minutes after it boots: a guard against forgotten environments. 0 (the default) disables it. Keep it above the longest run plus deploy time."
+  type        = number
+  default     = 0
+  validation {
+    condition     = var.max_lifetime_minutes >= 0 && floor(var.max_lifetime_minutes) == var.max_lifetime_minutes
+    error_message = "max_lifetime_minutes must be a whole number of minutes, 0 to disable the guard."
+  }
 }
 
 variable "arch" {

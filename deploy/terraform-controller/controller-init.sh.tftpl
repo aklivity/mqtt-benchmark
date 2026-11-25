@@ -1,0 +1,38 @@
+#!/bin/bash
+# First-boot setup of the controller. Check progress with: bin/aws/ssm-run.py 'cloud-init status --wait'
+set -euo pipefail
+
+# Hard stop (the instance terminates on shutdown)
+shutdown -h +${max_lifetime_minutes}
+
+install -d -m 700 -o ubuntu -g ubuntu /home/ubuntu/.ssh
+echo '${ssh_private_key_b64}' | base64 -d > /home/ubuntu/.ssh/id_ed25519
+chown ubuntu:ubuntu /home/ubuntu/.ssh/id_ed25519
+chmod 600 /home/ubuntu/.ssh/id_ed25519
+
+# The benchmark hosts are created and replaced all the time: do not pin or prompt for their host keys
+cat > /home/ubuntu/.ssh/config <<'SSHCONFIG'
+Host ${vpc_host_pattern}
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+  LogLevel ERROR
+SSHCONFIG
+chown ubuntu:ubuntu /home/ubuntu/.ssh/config
+chmod 600 /home/ubuntu/.ssh/config
+
+install -d -o ubuntu -g ubuntu /home/ubuntu/.aws
+printf '[default]\nregion = ${region}\n' > /home/ubuntu/.aws/config
+chown ubuntu:ubuntu /home/ubuntu/.aws/config
+
+# Source bundle pushed by bin/aws/push-bundle.sh
+install -d -o ubuntu -g ubuntu /opt/mqtt-benchmark-src
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y awscli jq python3-boto3 python3-pip python3-venv
+
+# ansible-core from pip: the 22.04 package is the long-unsupported 2.10. 2.17 is the last release that runs on 22.04's
+# Python 3.10. The playbook uses only ansible.builtin modules.
+python3 -m venv /opt/ansible
+/opt/ansible/bin/pip install 'ansible-core>=2.16,<2.18'
+ln -sf /opt/ansible/bin/ansible /opt/ansible/bin/ansible-playbook /usr/local/bin/
