@@ -171,7 +171,7 @@
               -v /etc/zilla:/etc/zilla:ro {{ diagnostics_args }} {{ java_options_args }} \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
-              {{ zilla_image }} start -e -v
+              {{ zilla_image }} start -e -v {{ zilla_start_args }}
         # rc 0: ENGINE_STARTED logged; rc 2: the container exited (stop retrying and show its log); rc 1: not yet
         - name: Wait for ENGINE_STARTED
           ansible.builtin.shell: |

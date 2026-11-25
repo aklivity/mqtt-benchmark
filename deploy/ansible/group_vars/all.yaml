@@ -16,8 +16,12 @@ grafana_image: grafana/grafana:11.2.0
 mqtt_port: { zilla: 7183, emqx: 1883 }
 # true after bin/aws/zilla-image.sh loaded zilla_image onto the broker host: skips the docker pull
 zilla_image_loaded: false
-# JVM options for Zilla, e.g. -e zilla_java_options=-Dzilla.binding.mqtt.session.state.store.enabled=true; empty adds nothing
+# JVM options for Zilla (JAVA_OPTIONS), e.g. -Xmx or -XX flags; empty adds nothing. A JVM -D system property does NOT
+# reach Zilla's configuration: use zilla_start_args for Zilla properties.
 zilla_java_options: ""
+# Extra arguments for `zilla start`, e.g. -e zilla_start_args=-Pzilla.binding.mqtt.session.state.store.enabled=true
+# (Zilla reads its properties from -P options and zilla.properties, not from JVM system properties); empty adds nothing
+zilla_start_args: ""
 # true: GC log and a continuous Flight Recorder recording of Zilla under /var/log/zilla on the broker host
 # (bin/run-scenario.sh with DIAG=1 collects them)
 zilla_diagnostics: false
