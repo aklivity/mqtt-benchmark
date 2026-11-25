@@ -166,16 +166,18 @@
               if zilla_diagnostics | bool else '' }}
             java_options_args: >-
               {{ "-e JAVA_OPTIONS='" ~ zilla_java_options ~ "'" if zilla_java_options | length > 0 else '' }}
-            # zilla_shm_gib > 0: a tmpfs of that many GiB is mounted at /dev/shm/zilla in the container and Zilla's engine directory,
-            # which holds the stream rings and the Kafka cache, moves there (RAM instead of the broker's root volume)
-            shm_args: "{{ '--tmpfs /dev/shm/zilla:rw,mode=1777,size=' ~ zilla_shm_gib ~ 'g' if zilla_shm_gib | int > 0 else '' }}"
-            shm_start_args: "{{ '-Pzilla.engine.directory=/dev/shm/zilla' if zilla_shm_gib | int > 0 else '' }}"
+            # Where the files live: the image's zilla.properties sets zilla.engine.directory=/var/run/zilla (the container's overlay, on
+            # the broker's root volume), the engine cache directory defaults to <engine dir>/cache and the Kafka cache to
+            # <engine cache dir>/kafka. zilla_engine_tmpfs_gib > 0 puts the engine directory (stream rings data<N>, buffers<N>, events<N>,
+            # metrics) on a tmpfs and pins the engine cache directory to its original absolute path, so the cache stays on disk.
+            engine_tmpfs_args: "{{ '--tmpfs /dev/shm/zilla-engine:rw,mode=1777,size=' ~ zilla_engine_tmpfs_gib ~ 'g' if zilla_engine_tmpfs_gib | int > 0 else '' }}"
+            directory_start_args: "{{ '-Pzilla.engine.directory=/dev/shm/zilla-engine -Pzilla.engine.cache.directory=/var/run/zilla/cache' if zilla_engine_tmpfs_gib | int > 0 else '' }}"
           ansible.builtin.shell: |
             docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
-              -v /etc/zilla:/etc/zilla:ro {{ shm_args }} {{ diagnostics_args }} {{ java_options_args }} \
+              -v /etc/zilla:/etc/zilla:ro {{ engine_tmpfs_args }} {{ diagnostics_args }} {{ java_options_args }} \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
-              {{ zilla_image }} start -e -v {{ zilla_start_args }} {{ shm_start_args }}
+              {{ zilla_image }} start -e -v {{ zilla_start_args }} {{ directory_start_args }}
         # rc 0: ENGINE_STARTED logged; rc 2: the container exited (stop retrying and show its log); rc 1: not yet
         - name: Wait for ENGINE_STARTED
           ansible.builtin.shell: |
