@@ -22,6 +22,10 @@ zilla_java_options: ""
 # Extra arguments for `zilla start`, e.g. -e zilla_start_args=-Pzilla.binding.mqtt.session.state.store.enabled=true
 # (Zilla reads its properties from -P options and zilla.properties, not from JVM system properties); empty adds nothing
 zilla_start_args: ""
+# true adds the cache_server `bootstrap` block (mqtt-messages, mqtt-retained, mqtt-devices): the Zilla cache then keeps
+# fetching every partition of those topics into the cache whether or not anything reads them, which is extra cache work in
+# publish-only runs. false (the default) fetches a partition only while a stream reads it
+zilla_cache_bootstrap: false
 # true: GC log and a continuous Flight Recorder recording of Zilla under /var/log/zilla on the broker host
 # (bin/run-scenario.sh with DIAG=1 collects them)
 zilla_diagnostics: false
