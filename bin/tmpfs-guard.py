@@ -2,7 +2,7 @@
 """Watches a tmpfs directory on the Zilla host and asks for the run to stop before the tmpfs fills up.
 
 Usage: tmpfs-guard.py <mount-or-dir> <outdir> [--name produce] [--warn-gib 10] [--abort-gib 12]
-                      [--floor-window-s 60] [--floor-rise-s 30] [--floor-rise-mib 256] [--warmup-s 90] [--interval 1]
+                      [--floor-window-s 60] [--floor-rise-s 30] [--floor-rise-mib 1024] [--drop-mib 256] [--interval 1]
 Every --topics-every-s seconds (60) it also writes tmpfs-<name>-topics.tsv: epoch ms, topic, bytes, files and log directories of that topic.
 Every --interval seconds it writes to <outdir>/tmpfs-<name>.tsv: epoch ms, bytes used on the file system, its size, the number
 of files below <dir>, and how many file names appeared since the previous sample (a segment roll creates a new file, so this
@@ -13,8 +13,10 @@ The decision is made by Guard (importable, see bin/test_tmpfs_guard.py):
   abort   used > --abort-gib, or the sawtooth floor has been rising for --floor-rise-s seconds.
 The floor at time t is the lowest usage in the trailing --floor-window-s seconds (a segment-per-log sawtooth fills and drops
 within one window, so its floor is the memory that is not being reclaimed). The floor is rising when it is above the floor
---floor-rise-s seconds ago by more than --floor-rise-mib, and has not dropped in between. It is not evaluated during the first
---warmup-s seconds, while the first segments fill. The thresholds are provisional: they come from arithmetic, not from a load test.
+--floor-rise-s seconds ago by more than --floor-rise-mib, and has not dropped in between. The rule only applies once the usage has
+fallen by --drop-mib from its peak at least a --floor-window-s ago, i.e. once reclaim has been seen working: before the first roll
+every log fills and usage rises steadily, which is not a leak. Until then only the absolute thresholds apply. The thresholds are
+provisional: they come from arithmetic, not from a load test.
 On abort it writes the reason to <outdir>/abort (the run driver polls for that file) and keeps recording.
 """
 import argparse
@@ -29,21 +31,23 @@ MIB = 1 << 20
 
 
 class Guard:
-    def __init__(self, warn_bytes, abort_bytes, floor_window_s=60, floor_rise_s=30, floor_rise_bytes=256 * MIB, warmup_s=90):
+    def __init__(self, warn_bytes, abort_bytes, floor_window_s=60, floor_rise_s=30, floor_rise_bytes=1024 * MIB, drop_bytes=256 * MIB):
         self.warn_bytes = warn_bytes
         self.abort_bytes = abort_bytes
         self.floor_window_s = floor_window_s
         self.floor_rise_s = floor_rise_s
         self.floor_rise_bytes = floor_rise_bytes
-        self.warmup_s = warmup_s
-        self.start = None
+        self.drop_bytes = drop_bytes
+        self.peak = 0
+        self.dropped_at = None                  # when usage was first seen this far below its peak: reclaim works
         self.samples = collections.deque()      # (t_s, used)
         self.floors = collections.deque()       # (t_s, floor)
 
     def feed(self, t_s, used):
         """Returns ('ok' | 'warn' | 'abort', reason)."""
-        if self.start is None:
-            self.start = t_s
+        self.peak = max(self.peak, used)
+        if self.dropped_at is None and used <= self.peak - self.drop_bytes:
+            self.dropped_at = t_s
         self.samples.append((t_s, used))
         while self.samples[0][0] < t_s - self.floor_window_s:
             self.samples.popleft()
@@ -52,7 +56,7 @@ class Guard:
             status, reason = 'abort', f'used {used / GIB:.2f} GiB above {self.abort_bytes / GIB:.2f} GiB'
         elif used > self.warn_bytes:
             status, reason = 'warn', f'used {used / GIB:.2f} GiB above {self.warn_bytes / GIB:.2f} GiB'
-        if t_s - self.start >= self.warmup_s and t_s - self.samples[0][0] >= self.floor_window_s * 0.9:
+        if self.dropped_at is not None and t_s - self.dropped_at >= self.floor_window_s and t_s - self.samples[0][0] >= self.floor_window_s * 0.9:
             floor = min(u for _, u in self.samples)
             self.floors.append((t_s, floor))
             while self.floors[0][0] < t_s - self.floor_rise_s:
@@ -111,13 +115,13 @@ def main():
     p.add_argument('--abort-gib', type=float, default=12.0)
     p.add_argument('--floor-window-s', type=float, default=60.0)
     p.add_argument('--floor-rise-s', type=float, default=30.0)
-    p.add_argument('--floor-rise-mib', type=float, default=256.0)
-    p.add_argument('--warmup-s', type=float, default=90.0)
+    p.add_argument('--floor-rise-mib', type=float, default=1024.0)
+    p.add_argument('--drop-mib', type=float, default=256.0)
     p.add_argument('--interval', type=float, default=1.0)
     p.add_argument('--topics-every-s', type=float, default=60.0)
     a = p.parse_args()
     os.makedirs(a.outdir, exist_ok=True)
-    guard = Guard(a.warn_gib * GIB, a.abort_gib * GIB, a.floor_window_s, a.floor_rise_s, a.floor_rise_mib * MIB, a.warmup_s)
+    guard = Guard(a.warn_gib * GIB, a.abort_gib * GIB, a.floor_window_s, a.floor_rise_s, a.floor_rise_mib * MIB, a.drop_mib * MIB)
     series = open(os.path.join(a.outdir, f'tmpfs-{a.name}.tsv'), 'a', buffering=1)
     log = open(os.path.join(a.outdir, f'tmpfs-{a.name}.log'), 'a', buffering=1)
     stop = os.path.join(a.outdir, 'stop')

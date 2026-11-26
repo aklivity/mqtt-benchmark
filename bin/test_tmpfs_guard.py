@@ -27,13 +27,13 @@ class TmpfsGuardTest(unittest.TestCase):
         self.assertEqual({s for s, _ in result}, {'ok'})
 
     def test_warn_then_abort_on_absolute_thresholds(self):
-        result = run([(0, GIB), (1, 11 * GIB), (2, 13 * GIB)], warmup_s=1000)
+        result = run([(0, GIB), (1, 11 * GIB), (2, 13 * GIB)])
         self.assertEqual([s for s, _ in result], ['ok', 'warn', 'abort'])
 
     def test_rising_floor_aborts_before_the_absolute_threshold(self):
-        # the floor climbs 20 MiB per second after a stable start: 600 MiB in 30 s
+        # the floor climbs 40 MiB per second after a stable start: 1.2 GiB in 30 s
         series = sawtooth(200, 3 * GIB, 6 * GIB)
-        series += [(200 + t, 3 * GIB + 20 * MIB * t + (3 * GIB) * ((t % 54) / 54)) for t in range(0, 120)]
+        series += [(200 + t, 3 * GIB + 40 * MIB * t + (3 * GIB) * ((t % 54) / 54)) for t in range(0, 120)]
         result = run(series)
         aborts = [i for i, (s, _) in enumerate(result) if s == 'abort']
         self.assertTrue(aborts, 'a rising floor must abort')
@@ -41,12 +41,17 @@ class TmpfsGuardTest(unittest.TestCase):
         self.assertLess(max(u for _, u in series[:aborts[0] + 1]), 12 * GIB)
 
     def test_slow_drift_below_the_rise_threshold_is_ignored(self):
-        series = [(t, 3 * GIB + 1 * MIB * t + (3 * GIB) * ((t % 54) / 54)) for t in range(600)]
+        series = [(t, 3 * GIB + 5 * MIB * t + (3 * GIB) * ((t % 54) / 54)) for t in range(600)]
         self.assertEqual({s for s, _ in run(series)}, {'ok'})
 
-    def test_warmup_is_not_evaluated(self):
-        series = [(t, 100 * MIB * t) for t in range(80)]    # filling fast at the start, below the absolute thresholds
-        self.assertEqual({s for s, _ in run(series, warmup_s=90)}, {'ok'})
+    def test_the_first_fill_before_any_reclaim_is_not_a_leak(self):
+        # 3 GiB of steady filling over 200 s, no drop yet: only the absolute thresholds apply
+        series = [(t, 15 * MIB * t) for t in range(200)]
+        self.assertEqual({s for s, _ in run(series)}, {'ok'})
+
+    def test_run_that_never_reclaims_hits_the_absolute_abort(self):
+        series = [(t, 100 * MIB * t) for t in range(200)]
+        self.assertEqual([s for s, _ in run(series)][-1], 'abort')
 
     def test_a_dip_in_the_floor_resets_the_rise(self):
         series = sawtooth(200, 3 * GIB, 6 * GIB)
