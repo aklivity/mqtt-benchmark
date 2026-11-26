@@ -37,6 +37,18 @@ def series(run, name):
     return rows
 
 
+def topic_rows(run, name):
+    rows = []
+    with tarfile.open(os.path.join(run, 'recorder-broker.tgz')) as tar:
+        for m in tar.getmembers():
+            if m.name.endswith(f'tmpfs-{name}-topics.tsv'):
+                for line in tar.extractfile(m).read().decode().splitlines():
+                    p = line.split('\t')
+                    if len(p) == 5:
+                        rows.append((int(p[0]), p[1], int(p[2]), int(p[3]), int(p[4])))
+    return rows
+
+
 def log(run, name):
     with tarfile.open(os.path.join(run, 'recorder-broker.tgz')) as tar:
         for m in tar.getmembers():
@@ -61,6 +73,12 @@ def main():
         print(f'{name}: size {w[0][2] / GIB:.1f} GiB  used peak {max(r[1] for r in w) / GIB:.2f} GiB  mean '
               f'{statistics.mean(r[1] for r in w) / GIB:.2f} GiB  floor over the last 60 s {min(tail) / GIB:.2f} GiB  '
               f'files {w[-1][3]}  new files/s mean {statistics.mean(rolls) if rolls else 0:.1f} peak {max(rolls) if rolls else 0}')
+        by_topic = {}
+        for t, topic, b, n, logs in topic_rows(run, name):
+            by_topic.setdefault(topic, []).append((t, b, n, logs))
+        for topic, r in sorted(by_topic.items()):
+            print(f'  {topic}: {r[-1][3]} logs, files first {r[0][2]} last {r[-1][2]}, size MiB first {r[0][1] / (1 << 20):.0f} '
+                  f'peak {max(x[1] for x in r) / (1 << 20):.0f} last {r[-1][1] / (1 << 20):.0f} ({len(r)} samples)')
         g = log(run, name)
         if g:
             print(f'{name} guard log:\n{g}')

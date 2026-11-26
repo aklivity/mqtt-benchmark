@@ -3,6 +3,7 @@
 
 Usage: tmpfs-guard.py <mount-or-dir> <outdir> [--name produce] [--warn-gib 10] [--abort-gib 12]
                       [--floor-window-s 60] [--floor-rise-s 30] [--floor-rise-mib 256] [--warmup-s 90] [--interval 1]
+Every --topics-every-s seconds (60) it also writes tmpfs-<name>-topics.tsv: epoch ms, topic, bytes, files and log directories of that topic.
 Every --interval seconds it writes to <outdir>/tmpfs-<name>.tsv: epoch ms, bytes used on the file system, its size, the number
 of files below <dir>, and how many file names appeared since the previous sample (a segment roll creates a new file, so this
 is the roll rate). It stops when <outdir>/stop exists, then writes <outdir>/tmpfs-<name>.done.
@@ -19,6 +20,7 @@ On abort it writes the reason to <outdir>/abort (the run driver polls for that f
 import argparse
 import collections
 import os
+import re
 import sys
 import time
 
@@ -71,6 +73,27 @@ def usage(path):
     return (st.f_blocks - st.f_bfree) * st.f_frsize, st.f_blocks * st.f_frsize
 
 
+TOPIC_LOG = re.compile(r'^(.*)-\d+-\d+$')   # <topic>-<partition>-<writer worker>, one directory per log
+
+
+def topic_sizes(path):
+    """{topic: (bytes, files, logs)} of the log directories below path, the topic being the directory name without
+    its -<partition>-<worker> suffix."""
+    sizes = {}
+    for root, dirs, files in os.walk(path):
+        m = TOPIC_LOG.match(os.path.basename(root))
+        if m and files:
+            b = 0
+            for f in files:
+                try:
+                    b += os.stat(os.path.join(root, f)).st_blocks * 512
+                except OSError:
+                    pass
+            used, n, logs = sizes.get(m.group(1), (0, 0, 0))
+            sizes[m.group(1)] = (used + b, n + len(files), logs + 1)
+    return sizes
+
+
 def names_below(path):
     found = set()
     for root, _, files in os.walk(path):
@@ -91,6 +114,7 @@ def main():
     p.add_argument('--floor-rise-mib', type=float, default=256.0)
     p.add_argument('--warmup-s', type=float, default=90.0)
     p.add_argument('--interval', type=float, default=1.0)
+    p.add_argument('--topics-every-s', type=float, default=60.0)
     a = p.parse_args()
     os.makedirs(a.outdir, exist_ok=True)
     guard = Guard(a.warn_gib * GIB, a.abort_gib * GIB, a.floor_window_s, a.floor_rise_s, a.floor_rise_mib * MIB, a.warmup_s)
@@ -98,7 +122,8 @@ def main():
     log = open(os.path.join(a.outdir, f'tmpfs-{a.name}.log'), 'a', buffering=1)
     stop = os.path.join(a.outdir, 'stop')
     abort = os.path.join(a.outdir, 'abort')
-    known, last_status = set(), 'ok'
+    topics = open(os.path.join(a.outdir, f'tmpfs-{a.name}-topics.tsv'), 'a', buffering=1)
+    known, last_status, last_topics = set(), 'ok', 0.0
     while not os.path.exists(stop):
         started = time.time()
         try:
@@ -106,6 +131,10 @@ def main():
             names = names_below(a.path)
             series.write(f'{int(started * 1000)}\t{used}\t{size}\t{len(names)}\t{len(names - known)}\n')
             known = names
+            if started - last_topics >= a.topics_every_s:
+                last_topics = started
+                for topic, (b, n, logs) in sorted(topic_sizes(a.path).items()):
+                    topics.write(f'{int(started * 1000)}\t{topic}\t{b}\t{n}\t{logs}\n')
             status, reason = guard.feed(started, used)
             if status != last_status:
                 log.write(f'{int(started * 1000)} {status} {reason}\n')

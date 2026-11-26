@@ -55,5 +55,22 @@ class TmpfsGuardTest(unittest.TestCase):
         self.assertNotIn('abort', {s for s, _ in run(series)})
 
 
+class TopicSizesTest(unittest.TestCase):
+    def test_groups_log_directories_by_topic(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            for name, size in (('mqtt-devices-0-0', 4096), ('mqtt-devices-1-0', 4096), ('mqtt-retained-0-3', 8192)):
+                d = os.path.join(root, 'binding', name)
+                os.makedirs(d)
+                with open(os.path.join(d, '.log'), 'wb') as f:
+                    f.write(b'x' * size)
+            os.makedirs(os.path.join(root, 'binding', 'unrelated'))
+            sizes = mod.topic_sizes(root)
+        self.assertEqual(set(sizes), {'mqtt-devices', 'mqtt-retained'})
+        self.assertEqual(sizes['mqtt-devices'][2], 2)
+        self.assertEqual(sizes['mqtt-retained'][2], 1)
+        self.assertGreaterEqual(sizes['mqtt-devices'][0], 8192)
+
+
 if __name__ == '__main__':
     unittest.main()
