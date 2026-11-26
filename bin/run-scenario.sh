@@ -68,8 +68,10 @@ KAFKA_PUB=$(hosts kafka ansible_host | head -1)
 MONITOR_PUB=$(hosts monitor ansible_host | head -1)
 CLIENTS=(); while read -r h; do CLIENTS+=("$h"); done < <(hosts clients ansible_host)   # bash 3 (macOS) has no mapfile
 N=${#CLIENTS[@]}; [ "$N" -gt 0 ] || { echo "no client hosts in $INVENTORY"; exit 1; }
-SSH=(ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR)
+SSH=(ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR -o ServerAliveInterval=15 -o ServerAliveCountMax=4)
 on() { local h=$1; shift; "${SSH[@]}" "ubuntu@$h" "$@"; }
+# ont: the same with a time limit, for the steps after the window, where a host that hangs or drops must not lose the results
+ont() { local h=$1; shift; timeout "${STEP_TIMEOUT_S:-180}" "${SSH[@]}" "ubuntu@$h" "$@"; }
 log() { echo "[$(date -u +%T)] $*" | tee -a "$OUT/run.log"; }
 ZILLA_DIAGNOSTICS=false   # not in broker.env of hosts deployed before the option existed
 eval "$(on "$BROKER_PUB" cat /opt/mqtt-benchmark/broker.env)"   # BROKER=zilla|emqx, MQTT_PORT, ZILLA_DIAGNOSTICS
@@ -207,15 +209,15 @@ rec_stop() {
   on "$BROKER_PUB" "sudo touch $REC_DIR/broker/stop" < /dev/null || true
   on "$KAFKA_PUB" "sudo touch $REC_DIR/kafka/stop; touch $REC_DIR/offsets/stop" < /dev/null || true
   for k in "${!CLIENTS[@]}"; do
-    on "${CLIENTS[$k]}" "touch $REC_DIR/metrics/stop; sleep 6; tar czf - -C $REC_DIR metrics" < /dev/null > "$OUT/recorder-client-$k.tgz" || true
+    ont "${CLIENTS[$k]}" "touch $REC_DIR/metrics/stop; sleep 6; tar czf - -C $REC_DIR metrics" < /dev/null > "$OUT/recorder-client-$k.tgz" || true
   done
   for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do   # up to 30 s for the last Kafka offset read to finish
     on "$BROKER_PUB" "test -e $REC_DIR/broker/done" < /dev/null \
       && on "$KAFKA_PUB" "test -e $REC_DIR/kafka/done && test -e $REC_DIR/offsets/done" < /dev/null && break
     sleep 2
   done
-  on "$BROKER_PUB" "tar czf - -C $REC_DIR broker" < /dev/null > "$OUT/recorder-broker.tgz"
-  on "$KAFKA_PUB" "tar czf - -C $REC_DIR kafka offsets" < /dev/null > "$OUT/recorder-kafka.tgz"
+  ont "$BROKER_PUB" "tar czf - -C $REC_DIR broker" < /dev/null > "$OUT/recorder-broker.tgz" || log "recorder: broker tarball failed"
+  ont "$KAFKA_PUB" "tar czf - -C $REC_DIR kafka offsets" < /dev/null > "$OUT/recorder-kafka.tgz" || log "recorder: kafka tarball failed"
 }
 
 log "run $RUN_ID ($MODE) on $N client hosts"
@@ -310,18 +312,14 @@ cpu() { promq "avg_over_time((100 * (1 - avg(rate(node_cpu_seconds_total{role=\"
 mem() { promq "avg_over_time(((node_memory_MemTotal_bytes{role=\"$1\"} - node_memory_MemAvailable_bytes{role=\"$1\"}) / 2^30)[$W:15s])" "$T1"; }
 BCPU=$(cpu broker); BMEM=$(mem broker); KCPU=$(cpu kafka)
 # connections the broker holds, counted by the kernel (no broker metrics needed)
-BCONN=$(on "$BROKER_PUB" "ss -Htn state established '( sport = :$MQTT_PORT )' | wc -l")
+BCONN=$(ont "$BROKER_PUB" "ss -Htn state established '( sport = :$MQTT_PORT )' | wc -l") || BCONN=null
 diag diag_ss; diag diag_histogram end; diag diag_zilla_logs
 
-for k in "${!CLIENTS[@]}"; do
-  for c in bench-pub bench-sub bench-conn; do
-    on "${CLIENTS[$k]}" "docker logs $c" > "$OUT/clients/$c-$k.log" 2>&1 || rm -f "$OUT/clients/$c-$k.log"
-  done
-  on "${CLIENTS[$k]}" "docker rm -f bench-pub bench-sub bench-conn >/dev/null 2>&1 || true"
-done
-on "$BROKER_PUB" "docker logs --timestamps $BROKER" > "$OUT/$BROKER.log" 2>&1 || true
-BRESTARTS=$(on "$BROKER_PUB" "docker inspect $BROKER --format '{{.RestartCount}}'")
-BSTATE=$(on "$BROKER_PUB" "docker inspect $BROKER --format '{{.State.Status}}'")   # "exited" = the broker stopped
+# Everything that decides the result is saved first, each step with a time limit and a fallback, so a host that fails or hangs
+# after the window cannot abort the run before the Zilla log, the recorder tarballs and the summary exist.
+ont "$BROKER_PUB" "docker logs --timestamps $BROKER" > "$OUT/$BROKER.log" 2>&1 || log "could not read the $BROKER log"
+BRESTARTS=$(ont "$BROKER_PUB" "docker inspect $BROKER --format '{{.RestartCount}}'") || BRESTARTS=null
+BSTATE=$(ont "$BROKER_PUB" "docker inspect $BROKER --format '{{.State.Status}}'") || BSTATE=unknown   # "exited" = the broker stopped
 # Zilla: engine exceptions; EMQX: log lines at error level or above
 if [ "$BROKER" = zilla ]; then BERR=$(grep -c 'AgentTerminationException' "$OUT/$BROKER.log" || true)
 else BERR=$(grep -c -E '\[(error|critical|alert|emergency)\]' "$OUT/$BROKER.log" || true); fi
@@ -335,4 +333,12 @@ cat > "$OUT/run-values.json" <<JSON
  "connect_s": $CONNECT_S}
 JSON
 python3 bin/summarize.py "$OUT" "$SCENARIO" | tee "$OUT/summary.json"
+
+# The client logs come last: the first 5 MB of each (the connection ramp, where early exits show), best effort, then remove the clients
+for k in "${!CLIENTS[@]}"; do
+  for c in bench-pub bench-sub bench-conn; do
+    ont "${CLIENTS[$k]}" "docker inspect $c >/dev/null 2>&1 && docker logs $c 2>&1 | head -c 5000000" > "$OUT/clients/$c-$k.log" 2>/dev/null || rm -f "$OUT/clients/$c-$k.log"
+  done
+  ont "${CLIENTS[$k]}" "docker rm -f bench-pub bench-sub bench-conn >/dev/null 2>&1 || true" || log "could not remove the clients on host $k"
+done
 log "results in $OUT"
