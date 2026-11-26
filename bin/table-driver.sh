@@ -69,6 +69,7 @@ for s in "$@"; do
   python3 -I bin/worker-cpu.py "results/$RUN" --series "results/$RUN/worker-cpu-series.tsv" > "results/$RUN/worker-cpu.txt" 2>&1 || true
   python3 -I bin/tmpfs-summary.py "results/$RUN" > "results/$RUN/tmpfs-summary.txt" 2>&1 || true
   for t in mqtt-devices mqtt-sessions mqtt-retained mqtt-messages; do echo -n "$t=" >> "results/$RUN/offsets-all.txt"; ssh "${SSHO[@]}" ubuntu@$KAFKA "docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic $t" 2>/dev/null | awk -F: '{s+=$3} END{print s+0}' >> "results/$RUN/offsets-all.txt"; done
+  scp "${SSHO[@]}" bin/kafka-batch-stats.sh ubuntu@$KAFKA:/tmp/kafka-batch-stats.sh >/dev/null 2>&1 && ssh "${SSHO[@]}" ubuntu@$KAFKA "bash /tmp/kafka-batch-stats.sh mqtt-devices 0; bash /tmp/kafka-batch-stats.sh mqtt-devices 7" > "results/$RUN/kafka-batches.txt" 2>&1 || true
   tar czf "/tmp/$RUN.tgz" -C results "$RUN" && aws s3 cp "/tmp/$RUN.tgz" "s3://$BUCKET/results/$RUN.tgz" --only-show-errors
   st "done $s rc=$rc ($RUN)"
 done
