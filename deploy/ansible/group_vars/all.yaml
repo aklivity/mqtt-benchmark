@@ -35,6 +35,14 @@ zilla_cache_bootstrap: false
 # 75% of the engine directory's free space, so keep this at 21 GiB or more on a 61 GiB host or the sizing changes; a tmpfs
 # only uses what is touched (about 8-15 GB). Set 0 to keep everything on the root volume, or for a host with little RAM.
 zilla_engine_tmpfs_gib: 24
+# GiB of RAM for a second tmpfs that holds Zilla's Kafka produce staging directory (zilla.binding.kafka.cache.produce.directory);
+# 0 leaves it where the Kafka cache is. Size it for produce segment bytes x the number of produce logs (one per topic, partition
+# and writer worker): the guard in bin/tmpfs-guard.py records its usage and asks for the run to stop at 12 GiB. A full tmpfs stops
+# every engine worker. Provisional: sized from arithmetic, not from a load test.
+zilla_produce_tmpfs_gib: 0
+zilla_produce_segment_bytes: 8388608
+# 0 keeps the Zilla default, which is the Kafka cache's segment index size (10 MiB, larger than a produce segment of 8 MiB)
+zilla_produce_segment_index_bytes: 0
 zilla_diagnostics: false
 # false: with zilla_diagnostics, record only the GC log. For images whose runtime has no jdk.jfr module
 zilla_jfr: true

@@ -172,12 +172,16 @@
             # metrics) on a tmpfs and pins the engine cache directory to its original absolute path, so the cache stays on disk.
             engine_tmpfs_args: "{{ '--tmpfs /dev/shm/zilla-engine:rw,mode=1777,size=' ~ zilla_engine_tmpfs_gib ~ 'g' if zilla_engine_tmpfs_gib | int > 0 else '' }}"
             directory_start_args: "{{ '-Pzilla.engine.directory=/dev/shm/zilla-engine -Pzilla.engine.cache.directory=/var/run/zilla/cache' if zilla_engine_tmpfs_gib | int > 0 else '' }}"
+            # zilla_produce_tmpfs_gib > 0 also puts the Kafka produce staging directory on its own tmpfs, with small segments
+            produce_tmpfs_args: "{{ '--tmpfs /dev/shm/zilla-produce:rw,mode=1777,size=' ~ zilla_produce_tmpfs_gib ~ 'g' if zilla_produce_tmpfs_gib | int > 0 else '' }}"
+            produce_index_arg: "{{ '-Pzilla.binding.kafka.cache.produce.segment.index.bytes=' ~ zilla_produce_segment_index_bytes if zilla_produce_segment_index_bytes | int > 0 else '' }}"
+            produce_start_args: "{{ ('-Pzilla.binding.kafka.cache.produce.directory=/dev/shm/zilla-produce -Pzilla.binding.kafka.cache.produce.segment.bytes=' ~ zilla_produce_segment_bytes ~ ' ' ~ produce_index_arg) if zilla_produce_tmpfs_gib | int > 0 else '' }}"
           ansible.builtin.shell: |
             docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
-              -v /etc/zilla:/etc/zilla:ro {{ engine_tmpfs_args }} {{ diagnostics_args }} {{ java_options_args }} \
+              -v /etc/zilla:/etc/zilla:ro {{ engine_tmpfs_args }} {{ produce_tmpfs_args }} {{ diagnostics_args }} {{ java_options_args }} \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
-              {{ zilla_image }} start -e -v {{ zilla_start_args }} {{ directory_start_args }}
+              {{ zilla_image }} start -e -v {{ zilla_start_args }} {{ directory_start_args }} {{ produce_start_args }}
         # rc 0: ENGINE_STARTED logged; rc 2: the container exited (stop retrying and show its log); rc 1: not yet
         - name: Wait for ENGINE_STARTED
           ansible.builtin.shell: |

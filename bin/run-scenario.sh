@@ -153,6 +153,32 @@ if [ "$DIAG" = 1 ]; then mkdir -p "$DIAG_DIR"; fi
 # run; every step is best effort, a failure is logged and never aborts the run.
 REC_DIR=/tmp/rec-$RUN_ID
 rec() { [ "$REC" = 1 ] || return 0; "$@" || log "recorder: $* failed"; }
+rec_tmpfs() {   # a guard on each tmpfs the Zilla container has (engine and produce directories), see bin/tmpfs-guard.py
+  local name path gib
+  on "$BROKER_PUB" "cat > $REC_DIR/tmpfs-guard.py" < bin/tmpfs-guard.py
+  for name in produce engine; do
+    path=/dev/shm/zilla-$name
+    # the container's tmpfs is reached through the process root of the Zilla JVM; the engine tmpfs only has absolute limits
+    if [ "$name" = produce ]; then gib="--warn-gib ${PRODUCE_WARN_GIB:-10} --abort-gib ${PRODUCE_ABORT_GIB:-12}"
+    else gib="--warn-gib 20 --abort-gib 23 --floor-rise-mib 100000000"; fi
+    on "$BROKER_PUB" "pid=\$(pgrep -x java | head -1); if [ -n \"\$pid\" ] && sudo test -d /proc/\$pid/root$path; then
+      sudo nohup python3 $REC_DIR/tmpfs-guard.py /proc/\$pid/root$path $REC_DIR/tmpfs --name $name $gib > /dev/null 2>&1 < /dev/null &
+      fi" < /dev/null
+  done
+}
+tmpfs_aborted() {   # 0 when the guard on the Zilla host has asked for the run to stop; prints why
+  ont "$BROKER_PUB" "cat $REC_DIR/tmpfs/abort 2>/dev/null" < /dev/null
+}
+measure_wait() {   # measure_wait <seconds after t0>: sleeps until then, or until the tmpfs guard asks for the run to stop
+  local until_s=$((T0 + $1)) why
+  while [ "$(date +%s)" -lt "$until_s" ]; do
+    if [ "$REC" = 1 ] && why=$(tmpfs_aborted) && [ -n "$why" ]; then
+      ABORTED=1; ev aborted; log "tmpfs guard asked to stop the run: $why"; return
+    fi
+    sleep 5
+  done
+}
+ABORTED=0
 rec_start() {
   local h
   for h in "$BROKER_PUB" "$KAFKA_PUB"; do
@@ -161,6 +187,7 @@ rec_start() {
   on "$KAFKA_PUB" "cat > $REC_DIR/record-offsets.sh" < bin/record-offsets.sh
   on "$BROKER_PUB" "sudo nohup python3 $REC_DIR/record-host.py $REC_DIR/broker --interval 1 --threads > /dev/null 2>&1 < /dev/null &" < /dev/null
   on "$KAFKA_PUB" "sudo nohup python3 $REC_DIR/record-host.py $REC_DIR/kafka --interval 5 > /dev/null 2>&1 < /dev/null &" < /dev/null
+  rec_tmpfs
   on "$KAFKA_PUB" "KAFKA_TOPIC=$KAFKA_TOPIC nohup bash $REC_DIR/record-offsets.sh $REC_DIR/offsets $OFFSET_INTERVAL_S > /dev/null 2>&1 < /dev/null &" < /dev/null
   local k   # every emqtt-bench metrics page of every client host, every 5 s, with the epoch ms of each read
   for k in "${!CLIENTS[@]}"; do
@@ -206,7 +233,7 @@ rec_cloudwatch() {   # EBS volume and instance EBS metrics for the run, from the
 }
 rec_stop() {
   local h name i k
-  on "$BROKER_PUB" "sudo touch $REC_DIR/broker/stop" < /dev/null || true
+  on "$BROKER_PUB" "sudo touch $REC_DIR/broker/stop; sudo touch $REC_DIR/tmpfs/stop 2>/dev/null" < /dev/null || true
   on "$KAFKA_PUB" "sudo touch $REC_DIR/kafka/stop; touch $REC_DIR/offsets/stop" < /dev/null || true
   for k in "${!CLIENTS[@]}"; do
     ont "${CLIENTS[$k]}" "touch $REC_DIR/metrics/stop; sleep 6; tar czf - -C $REC_DIR metrics" < /dev/null > "$OUT/recorder-client-$k.tgz" || true
@@ -216,7 +243,7 @@ rec_stop() {
       && on "$KAFKA_PUB" "test -e $REC_DIR/kafka/done && test -e $REC_DIR/offsets/done" < /dev/null && break
     sleep 2
   done
-  ont "$BROKER_PUB" "tar czf - -C $REC_DIR broker" < /dev/null > "$OUT/recorder-broker.tgz" || log "recorder: broker tarball failed"
+  ont "$BROKER_PUB" "tar czf - -C $REC_DIR broker \$(test -d $REC_DIR/tmpfs && echo tmpfs)" < /dev/null > "$OUT/recorder-broker.tgz" || log "recorder: broker tarball failed"
   ont "$KAFKA_PUB" "tar czf - -C $REC_DIR kafka offsets" < /dev/null > "$OUT/recorder-kafka.tgz" || log "recorder: kafka tarball failed"
 }
 
@@ -288,10 +315,10 @@ fi
 ev t0; T0=$(date +%s); K0=$(offsets "$OUT/offsets-t0.txt"); snapshot t0; emqx_action t0
 log "measuring for ${DURATION_S}s"
 if [ "$DIAG" = 1 ]; then
-  sleep $((DURATION_S / 2)); diag diag_threads
-  rest=$((T0 + DURATION_S - $(date +%s))); if [ "$rest" -gt 0 ]; then sleep "$rest"; fi
+  measure_wait $((DURATION_S / 2))
+  [ "$ABORTED" = 1 ] || { diag diag_threads; measure_wait "$DURATION_S"; }
 else
-  sleep "$DURATION_S"
+  measure_wait "$DURATION_S"
 fi
 ev t1; T1=$(date +%s); K1=$(offsets "$OUT/offsets-t1.txt"); snapshot t1; emqx_action t1
 if [ "$MODE" = pubsub ] && [ "$PROBE_CONNECTIONS" -gt 0 ]; then
@@ -329,7 +356,7 @@ cat > "$OUT/run-values.json" <<JSON
 {"run_id": "$RUN_ID", "mode": "$MODE", "window_s": $((T1 - T0)), "k0": $K0, "k1": $K1,
  "broker": "$BROKER", "connected": $CONNECTED, "subscribed": $SUBSCRIBED, "broker_cpu": "$BCPU", "broker_mem": "$BMEM",
  "kafka_cpu": "$KCPU", "broker_tcp_connections": "$BCONN", "broker_state": "$BSTATE", "broker_restarts": $BRESTARTS,
- "broker_errors": $BERR,
+ "broker_errors": $BERR, "aborted_by_tmpfs_guard": $ABORTED,
  "connect_s": $CONNECT_S}
 JSON
 python3 bin/summarize.py "$OUT" "$SCENARIO" | tee "$OUT/summary.json"
