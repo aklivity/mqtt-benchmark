@@ -159,11 +159,15 @@ prints CPU% per worker over the window and the ramp, the cpus each ran on, and w
 Where Zilla's files live: the image's `zilla.properties` sets `zilla.engine.directory=/var/run/zilla`, so the stream rings
 (`data<N>`, `buffers<N>`, `events<N>`, `metrics/`) are in `/var/run/zilla`, the engine cache directory is `/var/run/zilla/cache`
 and the Kafka cache `/var/run/zilla/cache/kafka`, all on the container's overlay on the broker's root volume.
-`-e zilla_engine_tmpfs_gib=<n>` (default 0) mounts a tmpfs at `/dev/shm/zilla-engine`, sets `zilla.engine.directory` there and
-pins `zilla.engine.cache.directory` to `/var/run/zilla/cache`, so only the engine directory moves into RAM and the cache stays
-on disk. Keep `n` at 21 or more on a 61 GiB host or Zilla's memory sizing changes (the smaller of 25% of RAM and 75% of the
-engine directory's free space); a tmpfs only uses what is touched. The Kafka cache is not offered on tmpfs: it is memory
-mapped and unbounded (about 2.3 KB per 1 KB publish, 230 MB/s at 100K msg/s).
+`-e zilla_engine_tmpfs_gib=<n>` (default 24) mounts a tmpfs at `/dev/shm/zilla-engine`, sets `zilla.engine.directory` there and
+pins `zilla.engine.cache.directory` to `/var/run/zilla/cache`, so only the engine directory lives in RAM and the Kafka cache
+stays on disk. It is the default because the rings and buffers were about a third of Zilla's disk writes at 100K msg/s
+(3.6 KB against 2.4 KB written per 1 KB message) and, in 4 runs per arm on a 61 GiB host, the runs with them on tmpfs reached
+91-100K rec/s with 8-9% iowait where the all-disk runs split between 92K and 70-73K with 39-42% iowait. Keep `n` at 21 or more
+on a 61 GiB host or Zilla's memory sizing changes (the smaller of 25% of RAM and 75% of the engine directory's free space); a
+tmpfs only uses what is touched (about 8-15 GB). Pass `-e zilla_engine_tmpfs_gib=0` to keep everything on the root volume.
+The Kafka cache is not offered on tmpfs: it is memory mapped and unbounded (about 2.3 KB per 1 KB publish, 230 MB/s at
+100K msg/s).
 
 Scenario knobs for the shape of the load: `PUB_CONN_RATE` (connections per second, in total), `WAIT_BEFORE_PUBLISHING`
 (`true` by default: each emqtt-bench instance starts publishing once all of its connections are up; `false`: each publisher

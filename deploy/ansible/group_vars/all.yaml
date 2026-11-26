@@ -28,10 +28,13 @@ zilla_start_args: ""
 zilla_cache_bootstrap: false
 # true: GC log and a continuous Flight Recorder recording of Zilla under /var/log/zilla on the broker host
 # (bin/run-scenario.sh with DIAG=1 collects them)
-# GiB of RAM for a tmpfs that holds Zilla's engine directory (stream rings, buffers, events and metrics; the cache stays on
-# the root volume at /var/run/zilla/cache). Zilla sizes its memory as the smaller of 25% of RAM and 75% of the engine
-# directory's free space, so keep this at 21 GiB or more on a 61 GiB host or the sizing changes; a tmpfs only uses what is touched.
-zilla_engine_tmpfs_gib: 0
+# GiB of RAM for a tmpfs that holds Zilla's engine directory (stream rings, buffers, events and metrics; the Kafka cache stays
+# on the root volume at /var/run/zilla/cache, never on tmpfs: it is memory mapped and unbounded). The default keeps the rings
+# off the disk: on a 61 GiB host the 100K-publisher runs with the engine directory on tmpfs ran at 91-100K rec/s with 8-9%
+# iowait, against 70-92K with 11-42% iowait with everything on disk. Zilla sizes its memory as the smaller of 25% of RAM and
+# 75% of the engine directory's free space, so keep this at 21 GiB or more on a 61 GiB host or the sizing changes; a tmpfs
+# only uses what is touched (about 8-15 GB). Set 0 to keep everything on the root volume, or for a host with little RAM.
+zilla_engine_tmpfs_gib: 24
 zilla_diagnostics: false
 # false: with zilla_diagnostics, record only the GC log. For images whose runtime has no jdk.jfr module
 zilla_jfr: true
