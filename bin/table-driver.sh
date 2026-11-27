@@ -57,6 +57,7 @@ for s in "$@"; do
   mkdir -p "results/$RUN"
   health "$RUN" & HP=$!
   PROF=0; case "$s" in *mqtt-kafka-100k*) PROF=1;; esac   # thread-dump profile only for the 100K scenarios
+  [ "${NO_DUMPS:-0}" = 1 ] && PROF=0   # NO_DUMPS=1: no SIGQUIT thread-dump burst (a dump forces safepoints, which can confound a crash)
   DUR=$( (source "scenarios/$s.env" >/dev/null 2>&1; echo "${DURATION_S:-1800}") )
   windowprobes "$RUN" "$PROF" "$DUR" & WP=$!
   st "run $s"
@@ -69,6 +70,14 @@ for s in "$@"; do
   python3 -I bin/worker-cpu.py "results/$RUN" --series "results/$RUN/worker-cpu-series.tsv" > "results/$RUN/worker-cpu.txt" 2>&1 || true
   python3 -I bin/tmpfs-summary.py "results/$RUN" > "results/$RUN/tmpfs-summary.txt" 2>&1 || true
   for t in mqtt-devices mqtt-sessions mqtt-retained mqtt-messages; do echo -n "$t=" >> "results/$RUN/offsets-all.txt"; ssh "${SSHO[@]}" ubuntu@$KAFKA "docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic $t" 2>/dev/null | awk -F: '{s+=$3} END{print s+0}' >> "results/$RUN/offsets-all.txt"; done
+  if [ -n "${CRASH_DIR:-}" ]; then   # CRASH_DIR=<host dir of zilla_crash_dir>: keep what a JVM crash left (hs_err files, cores) before the next deploy
+    ssh "${SSHO[@]}" ubuntu@$BROKER "ls -la $CRASH_DIR; cat $CRASH_DIR/hs_err*.log 2>/dev/null" > "results/$RUN/crash-dir.txt" 2>&1 || true
+    for core in $(ssh "${SSHO[@]}" ubuntu@$BROKER "ls $CRASH_DIR/core.* 2>/dev/null"); do
+      ssh "${SSHO[@]}" ubuntu@$BROKER "gzip -1 -c $core" | aws s3 cp - "s3://$BUCKET/results/$RUN-$(basename $core).gz" --only-show-errors \
+        && echo "$core uploaded to s3://$BUCKET/results/$RUN-$(basename $core).gz" >> "results/$RUN/crash-dir.txt" || true
+    done
+    ssh "${SSHO[@]}" ubuntu@$BROKER "sudo rm -f $CRASH_DIR/core.* $CRASH_DIR/hs_err*.log" >/dev/null 2>&1 || true
+  fi
   scp "${SSHO[@]}" bin/kafka-batch-stats.sh ubuntu@$KAFKA:/tmp/kafka-batch-stats.sh >/dev/null 2>&1 && ssh "${SSHO[@]}" ubuntu@$KAFKA "bash /tmp/kafka-batch-stats.sh mqtt-devices 0; bash /tmp/kafka-batch-stats.sh mqtt-devices 7" > "results/$RUN/kafka-batches.txt" 2>&1 || true
   tar czf "/tmp/$RUN.tgz" -C results "$RUN" && aws s3 cp "/tmp/$RUN.tgz" "s3://$BUCKET/results/$RUN.tgz" --only-show-errors
   st "done $s rc=$rc ($RUN)"

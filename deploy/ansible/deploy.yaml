@@ -153,6 +153,13 @@
             state: directory
             mode: "0777"   # written by the container's user, read by bin/run-scenario.sh through sudo
           when: zilla_diagnostics | bool
+        - name: Crash directory and core dumps (zilla_crash_dir)
+          ansible.builtin.shell: |
+            mkdir -p {{ zilla_crash_dir }} && chmod 0777 {{ zilla_crash_dir }}
+            systemctl stop apport.service 2>/dev/null || true
+            sysctl -w kernel.core_pattern=/crash/core.%e.%p
+          become: true
+          when: zilla_crash_dir | length > 0
         - name: Pull the Zilla image
           ansible.builtin.shell: docker pull {{ zilla_image }} >/dev/null
           when: not (zilla_image_loaded | bool)
@@ -164,8 +171,10 @@
               " ~ ("-XX:StartFlightRecording=disk=true,maxsize=1g,filename=/var/log/zilla/zilla.jfr,settings=profile"
               if zilla_jfr | bool else "") ~ "'"
               if zilla_diagnostics | bool else '' }}
+            java_options_all: "{{ zilla_java_options ~ (' -XX:ErrorFile=/crash/hs_err_pid%p.log' if zilla_crash_dir | length > 0 else '') }}"
             java_options_args: >-
-              {{ "-e JAVA_OPTIONS='" ~ zilla_java_options ~ "'" if zilla_java_options | length > 0 else '' }}
+              {{ "-e JAVA_OPTIONS='" ~ java_options_all | trim ~ "'" if java_options_all | trim | length > 0 else '' }}
+            crash_args: "{{ ('-v ' ~ zilla_crash_dir ~ ':/crash --ulimit core=-1') if zilla_crash_dir | length > 0 else '' }}"
             # Where the files live: the image's zilla.properties sets zilla.engine.directory=/var/run/zilla (the container's overlay, on
             # the broker's root volume), the engine cache directory defaults to <engine dir>/cache and the Kafka cache to
             # <engine cache dir>/kafka. zilla_engine_tmpfs_gib > 0 puts the engine directory (stream rings data<N>, buffers<N>, events<N>,
@@ -178,7 +187,7 @@
             produce_start_args: "{{ ('-Pzilla.binding.kafka.cache.produce.directory=/dev/shm/zilla-produce -Pzilla.binding.kafka.cache.produce.segment.bytes=' ~ zilla_produce_segment_bytes ~ ' ' ~ produce_index_arg) if zilla_produce_tmpfs_gib | int > 0 else '' }}"
           ansible.builtin.shell: |
             docker run -d --name zilla --network host --restart {{ broker_restart }} --ulimit nofile=1048576:1048576 \
-              -v /etc/zilla:/etc/zilla:ro {{ engine_tmpfs_args }} {{ produce_tmpfs_args }} {{ diagnostics_args }} {{ java_options_args }} \
+              -v /etc/zilla:/etc/zilla:ro {{ engine_tmpfs_args }} {{ produce_tmpfs_args }} {{ crash_args }} {{ diagnostics_args }} {{ java_options_args }} \
               -e KAFKA_BOOTSTRAP_SERVER={{ hostvars[groups['kafka'][0]].private_ip }}:9092 \
               -e ZILLA_INCUBATOR_ENABLED=true \
               {{ zilla_image }} start -e -v {{ zilla_start_args }} {{ directory_start_args }} {{ produce_start_args }}

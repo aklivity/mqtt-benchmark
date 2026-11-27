@@ -43,6 +43,11 @@ zilla_produce_tmpfs_gib: 0
 zilla_produce_segment_bytes: 8388608
 # 0 keeps the Zilla default, which is the Kafka cache's segment index size (10 MiB, larger than a produce segment of 8 MiB)
 zilla_produce_segment_index_bytes: 0
+# A host directory (for example /var/log/zilla-crash) that keeps what a JVM crash leaves behind: it is bind-mounted into the Zilla container
+# as /crash, -XX:ErrorFile writes hs_err_pid<pid>.log there, kernel.core_pattern on the host is set to /crash/core.%e.%p (apport is stopped, so
+# the core is written inside the container's mount namespace, i.e. into this directory) and the container gets an unlimited core size.
+# Empty keeps the defaults. A core of a 12 GiB heap is large: the root volume has room, and file-backed shared mappings (the tmpfs rings) are not in it.
+zilla_crash_dir: ""
 zilla_diagnostics: false
 # false: with zilla_diagnostics, record only the GC log. For images whose runtime has no jdk.jfr module
 zilla_jfr: true

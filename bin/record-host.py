@@ -9,6 +9,8 @@ Written once, at the start (system.txt):
 Written every --interval seconds (default 1), in tab-separated files with the epoch milliseconds in the first column:
   procio.tsv      /proc/<pid>/io of the first process called --process (rchar wchar read_bytes write_bytes ...)
   procmem.tsv     /proc/<pid>/status of that process: VmRSS, VmHWM (peak RSS), RssAnon, RssShmem (kB) and Threads
+  procmaps.tsv    /proc/<pid>/maps of that process: file-backed mappings, mappings and files that are deleted but still mapped, and the mapped
+                  MiB and the distinct files of the produce staging directory, the engine directory, the fetch cache and everything else
   threads.tsv     with --threads: one row per thread of that process: tid, nspid (the tid inside its container, which is
                   what a JVM thread dump prints as nid), comm, state, utime, stime (clock ticks), processor (last cpu),
                   minflt, majflt, and for engine/* threads also the voluntary and involuntary context switches and wchan
@@ -171,11 +173,42 @@ def sample_threads(pid, f, nspid):
             continue   # the thread ended between listing and reading
 
 
+MAP_CLASSES = (('produce', '/dev/shm/zilla-produce'), ('engine', '/dev/shm/zilla-engine'), ('cache', '/var/run/zilla/cache'))
+
+
+def map_stats(lines):
+    """One row for procmaps.tsv from the lines of /proc/<pid>/maps: total mappings, mappings and files of deleted files, and per
+    class (produce staging, engine, fetch cache, other) the mapped MiB and the number of distinct files."""
+    classes = {name: [0, set()] for name, _ in MAP_CLASSES}
+    classes['other'] = [0, set()]
+    total = deleted = 0
+    deleted_files = set()
+    for line in lines:
+        parts = line.split(None, 5)
+        if len(parts) < 6 or not parts[5].startswith('/'):
+            continue
+        path = parts[5].strip()
+        lo, hi = parts[0].split('-')
+        size = int(hi, 16) - int(lo, 16)
+        total += 1
+        if path.endswith('(deleted)'):
+            deleted += 1
+            deleted_files.add(path)
+        name = next((n for n, prefix in MAP_CLASSES if prefix in path), 'other')
+        classes[name][0] += size
+        classes[name][1].add(path)
+    cols = [f'mappings={total}', f'deleted_mappings={deleted}', f'deleted_files={len(deleted_files)}']
+    for name, (size, files) in classes.items():
+        cols.append(f'{name}_mib={size >> 20}')
+        cols.append(f'{name}_files={len(files)}')
+    return cols
+
+
 def main():
     system()
     threading.Thread(target=per_second, daemon=True).start()
     children = [spawn(['vmstat', '-t', '1'], 'vmstat.txt'), spawn(['iostat', '-x', '-t', '1'], 'iostat.txt')]
-    io, thr, memory = out('procio.tsv'), out('threads.tsv'), out('procmem.tsv')
+    io, thr, memory, maps = out('procio.tsv'), out('threads.tsv'), out('procmem.tsv'), out('procmaps.tsv')
     nspid = {}
     stop_file = os.path.join(args.outdir, 'stop')
     while not stop.is_set() and not os.path.exists(stop_file):
@@ -185,6 +218,10 @@ def main():
             try:
                 io.write(f'{now_ms()}\t{pid}\t' + '\t'.join(l.strip().replace(': ', '=') for l in open(f'/proc/{pid}/io')) + '\n')
             except OSError:
+                pass
+            try:
+                maps.write(f'{now_ms()}\t{pid}\t' + '\t'.join(map_stats(open(f'/proc/{pid}/maps'))) + '\n')
+            except (OSError, ValueError):
                 pass
             memory.write(f'{now_ms()}\t{pid}\t' + '\t'.join(
                 f'{k}={v}' for k, v in key_values(f'/proc/{pid}/status', ('VmRSS', 'VmHWM', 'RssAnon', 'RssShmem', 'Threads'), ':').items()) + '\n')
