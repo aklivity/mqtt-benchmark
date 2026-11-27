@@ -8,6 +8,7 @@ Written once, at the start (system.txt):
   lscpu -e, every cpu's thread_siblings_list (hyperthread pairs), lsblk with serials (the EBS volume id), mounts
 Written every --interval seconds (default 1), in tab-separated files with the epoch milliseconds in the first column:
   procio.tsv      /proc/<pid>/io of the first process called --process (rchar wchar read_bytes write_bytes ...)
+  procmem.tsv     /proc/<pid>/status of that process: VmRSS, VmHWM (peak RSS), RssAnon, RssShmem (kB) and Threads
   threads.tsv     with --threads: one row per thread of that process: tid, nspid (the tid inside its container, which is
                   what a JVM thread dump prints as nid), comm, state, utime, stime (clock ticks), processor (last cpu),
                   minflt, majflt, and for engine/* threads also the voluntary and involuntary context switches and wchan
@@ -174,7 +175,7 @@ def main():
     system()
     threading.Thread(target=per_second, daemon=True).start()
     children = [spawn(['vmstat', '-t', '1'], 'vmstat.txt'), spawn(['iostat', '-x', '-t', '1'], 'iostat.txt')]
-    io, thr = out('procio.tsv'), out('threads.tsv')
+    io, thr, memory = out('procio.tsv'), out('threads.tsv'), out('procmem.tsv')
     nspid = {}
     stop_file = os.path.join(args.outdir, 'stop')
     while not stop.is_set() and not os.path.exists(stop_file):
@@ -185,6 +186,8 @@ def main():
                 io.write(f'{now_ms()}\t{pid}\t' + '\t'.join(l.strip().replace(': ', '=') for l in open(f'/proc/{pid}/io')) + '\n')
             except OSError:
                 pass
+            memory.write(f'{now_ms()}\t{pid}\t' + '\t'.join(
+                f'{k}={v}' for k, v in key_values(f'/proc/{pid}/status', ('VmRSS', 'VmHWM', 'RssAnon', 'RssShmem', 'Threads'), ':').items()) + '\n')
             if args.threads:
                 sample_threads(pid, thr, nspid)
         stop.wait(max(0.0, args.interval - (time.time() - started)))
