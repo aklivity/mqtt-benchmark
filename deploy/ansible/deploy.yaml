@@ -158,6 +158,10 @@
             mkdir -p {{ zilla_crash_dir }} && chmod 0777 {{ zilla_crash_dir }}
             systemctl stop apport.service 2>/dev/null || true
             sysctl -w kernel.core_pattern=/crash/core.%e.%p
+            # the JVM exits (code 127) without aborting when its error report crashes, so no core is written: -XX:OnError runs this script,
+            # which marks that it ran and aborts the JVM (found by its main class; the container runs with --init, because the kernel ignores
+            # signals sent to pid 1 from inside its own namespace) so the kernel writes the core
+            printf '#!/bin/sh\ntouch /crash/onerror-ran\nfor p in /proc/[0-9]*; do tr "\\0" " " < $p/cmdline 2>/dev/null | grep -q ZillaMain && kill -ABRT ${p#/proc/}; done\n' > {{ zilla_crash_dir }}/abort-jvm.sh && chmod 0755 {{ zilla_crash_dir }}/abort-jvm.sh
           become: true
           when: zilla_crash_dir | length > 0
         - name: Pull the Zilla image
@@ -171,10 +175,10 @@
               " ~ ("-XX:StartFlightRecording=disk=true,maxsize=1g,filename=/var/log/zilla/zilla.jfr,settings=profile"
               if zilla_jfr | bool else "") ~ "'"
               if zilla_diagnostics | bool else '' }}
-            java_options_all: "{{ zilla_java_options ~ (' -XX:ErrorFile=/crash/hs_err_pid%p.log' if zilla_crash_dir | length > 0 else '') }}"
+            java_options_all: "{{ zilla_java_options ~ (' -XX:ErrorFile=/crash/hs_err_pid%p.log -XX:OnError=/crash/abort-jvm.sh' if zilla_crash_dir | length > 0 else '') }}"
             java_options_args: >-
               {{ "-e JAVA_OPTIONS='" ~ java_options_all | trim ~ "'" if java_options_all | trim | length > 0 else '' }}
-            crash_args: "{{ ('-v ' ~ zilla_crash_dir ~ ':/crash --ulimit core=-1') if zilla_crash_dir | length > 0 else '' }}"
+            crash_args: "{{ ('-v ' ~ zilla_crash_dir ~ ':/crash --ulimit core=-1 --init') if zilla_crash_dir | length > 0 else '' }}"
             # Where the files live: the image's zilla.properties sets zilla.engine.directory=/var/run/zilla (the container's overlay, on
             # the broker's root volume), the engine cache directory defaults to <engine dir>/cache and the Kafka cache to
             # <engine cache dir>/kafka. zilla_engine_tmpfs_gib > 0 puts the engine directory (stream rings data<N>, buffers<N>, events<N>,

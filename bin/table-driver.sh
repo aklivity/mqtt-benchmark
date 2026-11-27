@@ -73,7 +73,7 @@ for s in "$@"; do
   if [ -n "${CRASH_DIR:-}" ]; then   # CRASH_DIR=<host dir of zilla_crash_dir>: keep what a JVM crash left (hs_err files, cores) before the next deploy
     ssh "${SSHO[@]}" ubuntu@$BROKER "ls -la $CRASH_DIR; cat $CRASH_DIR/hs_err*.log 2>/dev/null" > "results/$RUN/crash-dir.txt" 2>&1 || true
     for core in $(ssh "${SSHO[@]}" ubuntu@$BROKER "ls $CRASH_DIR/core.* 2>/dev/null"); do
-      ssh "${SSHO[@]}" ubuntu@$BROKER "gzip -1 -c $core" | aws s3 cp - "s3://$BUCKET/results/$RUN-$(basename $core).gz" --only-show-errors \
+      ssh "${SSHO[@]}" ubuntu@$BROKER "sudo gzip -1 -c $core" | aws s3 cp - "s3://$BUCKET/results/$RUN-$(basename $core).gz" --only-show-errors \
         && echo "$core uploaded to s3://$BUCKET/results/$RUN-$(basename $core).gz" >> "results/$RUN/crash-dir.txt" || true
     done
     ssh "${SSHO[@]}" ubuntu@$BROKER "sudo rm -f $CRASH_DIR/core.* $CRASH_DIR/hs_err*.log" >/dev/null 2>&1 || true
