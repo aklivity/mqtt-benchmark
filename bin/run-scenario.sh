@@ -86,12 +86,13 @@ ev() { echo "$(date +%s%3N) $1" >> "$OUT/events.txt"; }
 # share <total> <k>: clients for host k when <total> is split evenly; first <total> <k>: sequence start for host k
 share() { echo $(( $1 / N + ($2 < $1 % N ? 1 : 0) )); }
 first() { local i s=1; for ((i = 0; i < $2; i++)); do s=$((s + $(share "$1" "$i"))); done; echo "$s"; }
-# snapshot <label>: save every emqtt-bench /metrics page (role-host-label.txt) for the summary
+# snapshot <label>: save every emqtt-bench /metrics page (role-host-label.txt) for the summary; the last line of a page is
+# "# read_ms <epoch ms on that client host>", the time the counters were read, so rates divide by the real interval
 snapshot() {
   local k
   for k in "${!CLIENTS[@]}"; do
-    on "${CLIENTS[$k]}" "curl -s localhost:$PUB_API/metrics" > "$OUT/metrics/pub-$k-$1.txt" 2>/dev/null || true
-    on "${CLIENTS[$k]}" "curl -s localhost:$SUB_API/metrics" > "$OUT/metrics/sub-$k-$1.txt" 2>/dev/null || true
+    on "${CLIENTS[$k]}" "t=\$(date +%s%3N); curl -s localhost:$PUB_API/metrics; echo \"# read_ms \$t\"" > "$OUT/metrics/pub-$k-$1.txt" 2>/dev/null || true
+    on "${CLIENTS[$k]}" "t=\$(date +%s%3N); curl -s localhost:$SUB_API/metrics; echo \"# read_ms \$t\"" > "$OUT/metrics/sub-$k-$1.txt" 2>/dev/null || true
   done
 }
 total() {   # total <role pub|sub> <counter>: sum of a counter over all client hosts, live

@@ -5,7 +5,7 @@ Inputs in the run directory: run-values.json, metrics/{pub,sub}-<host>-{t0,t1}.t
 at the start and end of the measurement window), puback-probe.json (optional). The scenario file gives the targets.
 Usage: summarize.py <run dir> <scenario .env>
 """
-import glob, json, os, re, sys
+import glob, json, os, re, sys, tarfile
 
 run_dir, scenario_file = sys.argv[1], sys.argv[2]
 values = json.load(open(os.path.join(run_dir, 'run-values.json')))
@@ -61,6 +61,60 @@ def totals(role, label):
 
 def delta(role, name):
     return totals(role, 't1').get(name, 0) - totals(role, 't0').get(name, 0)
+
+
+def read_ms(path):
+    """Epoch ms on the client host at which a metrics page was read ('# read_ms' last line), or None for older runs."""
+    found = None
+    if os.path.exists(path):
+        for line in open(path):
+            if line.startswith('# read_ms '):
+                found = int(line.split()[2])
+    return found
+
+
+def host_rate(role, name):
+    """Counter rate per second: for every client host, the counter delta over the interval between that host's own two reads,
+    summed over the hosts. None when a page has no read time (a run from before the timestamps)."""
+    total = 0.0
+    pages = 0
+    for t1_path in glob.glob(os.path.join(run_dir, 'metrics', f'{role}-*-t1.txt')):
+        t0_path = t1_path[:-len('t1.txt')] + 't0.txt'
+        a, b = read_ms(t0_path), read_ms(t1_path)
+        if a is None or b is None or b <= a:
+            return None
+        total += (parse(t1_path).get(name, 0) - parse(t0_path).get(name, 0)) * 1000.0 / (b - a)
+        pages += 1
+    return total if pages else None
+
+
+def slope_per_s(points):
+    """Least-squares slope of (t_ms, value) points, per second; None with fewer than 3 points."""
+    if len(points) < 3:
+        return None
+    mt = sum(t for t, _ in points) / len(points)
+    mv = sum(v for _, v in points) / len(points)
+    den = sum((t - mt) ** 2 for t, _ in points)
+    return sum((t - mt) * (v - mv) for t, v in points) * 1000.0 / den if den else None
+
+
+def offsets_points(topic, t0_ms, t1_ms, partitions=None):
+    """(midpoint ms, summed end offset of every partition) per pass of the recorder's offsets series (recorder-kafka.tgz,
+    offsets/offsets.tsv: start_ms end_ms topic partition offset), for the passes inside [t0_ms, t1_ms] that saw every partition."""
+    path = os.path.join(run_dir, 'recorder-kafka.tgz')
+    if not os.path.exists(path):
+        return []
+    passes = {}
+    with tarfile.open(path) as tar:
+        for m in tar.getmembers():
+            if m.name.endswith('offsets/offsets.tsv'):
+                for line in tar.extractfile(m).read().decode().splitlines():
+                    p = line.split('\t')
+                    if len(p) == 5 and p[2] == topic:
+                        passes.setdefault((int(p[0]), int(p[1])), {})[p[3]] = int(p[4])
+    width = partitions or max((len(v) for v in passes.values()), default=0)
+    return [((a + b) / 2, sum(v.values())) for (a, b), v in sorted(passes.items())
+            if len(v) == width and t0_ms <= (a + b) / 2 <= t1_ms]
 
 
 def histogram(role, base, use_delta=True):
@@ -121,6 +175,19 @@ else:
     deliveries = num('DELIVERIES_PER_MSG', 1)
     recv = delta('sub', 'recv')
     sent = delta('pub', 'pub')
+    # rates from the real read times: each client host's counter delta over its own interval; Kafka from the slope of the
+    # offset series minus the probe's own messages. The coarse values divide by the whole-second window and are kept beside them.
+    sent_rate = host_rate('pub', 'pub') or sent / window
+    recv_rate = host_rate('sub', 'recv') or recv / window
+    ev = {}
+    if os.path.exists(os.path.join(run_dir, 'events.txt')):
+        for line in open(os.path.join(run_dir, 'events.txt')):
+            p = line.split()
+            if len(p) == 2:
+                ev[p[1]] = int(p[0])
+    kafka_slope = slope_per_s(offsets_points(scenario.get('KAFKA_TOPIC', 'mqtt-devices'), ev.get('t0', 0), ev.get('t1', 0))) \
+        if 't0' in ev and 't1' in ev else None
+    kafka_rate = kafka_slope - probe_msgs / window if kafka_slope is not None else kafka_records / window
     summary.update({
         'target': {'publishers': int(num('PUBLISHERS')), 'subscribers': int(num('SUBSCRIBERS')), 'qos': int(num('QOS')),
                    'sub_qos': int(num('SUB_QOS', 1)), 'payload_bytes': int(num('PAYLOAD_BYTES')),
@@ -131,10 +198,12 @@ else:
                         'pub_connect_fail': int(totals('pub', 't1').get('connect_fail', 0)),
                         'sub_connect_fail': int(totals('sub', 't1').get('connect_fail', 0)),
                         'sub_fail': int(totals('sub', 't1').get('sub_fail', 0))},
-        'sent_msg_rate': round(delta('pub', 'pub') / window, 1),
+        'sent_msg_rate': round(sent_rate, 1),
+        'sent_msg_rate_coarse': round(delta('pub', 'pub') / window, 1),
         'send_failures': int(delta('pub', 'pub_fail')),
-        'kafka_msg_rate': round(kafka_records / window, 1),
-        'received_msg_rate': round(recv / window, 1),
+        'kafka_msg_rate': round(kafka_rate, 1),
+        'kafka_msg_rate_coarse': round(kafka_records / window, 1),
+        'received_msg_rate': round(recv_rate, 1),
         # received vs what the publishers sent in the same window, times subscribers per message (1,000 for fan-out)
         'delivery_pct': round(100 * recv / (sent * deliveries), 2) if sent and num('SUBSCRIBERS') else None,
         'e2e_latency': histogram('sub', 'e2e_latency'),
